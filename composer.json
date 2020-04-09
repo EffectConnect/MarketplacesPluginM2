@@ -1,0 +1,41 @@
+{
+    "name": "effectconnect/marketplaces-plugin-m2",
+    "description": "EffectConnect Marketplaces Magento 2 plugin",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Koek&Peer",
+            "email": "info@koekenpeer.nl",
+            "homepage": "https://www.koekenpeer.nl/"
+        },
+        {
+            "name": "EffectConnect",
+            "email": "info@effectconnect.com",
+            "homepage": "https://www.effectconnect.com/"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-intl": "*",
+        "ext-libxml": "*",
+        "php": "~7.1.3||~7.2||~7.3",
+        "magento/framework": "^102.0",
+        "effectconnect/php-sdk": "^3.2",
+        "myclabs/php-enum": "^1.7",
+        "dragonmantank/cron-expression": "^3.0",
+        "spatie/array-to-xml": "^2.11"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "EffectConnect\\Marketplaces\\": "./"
+        }
+    }
+}

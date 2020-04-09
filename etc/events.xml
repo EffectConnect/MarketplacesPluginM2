@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- Update product offer in EffectConnect connections -->
+    <event name="catalog_product_save_after">
+        <observer name="offerExport" instance="EffectConnect\Marketplaces\Observer\OfferExport" />
+    </event>
+</config>

@@ -1,0 +1,73 @@
+<script>
+    require([
+        'jquery',
+        'validation',
+        'EffectConnect_Marketplaces/js/lib/prettycron',
+        'EffectConnect_Marketplaces/js/lib/later'
+    ], function ($, validation, cron) {
+        var field = $('#<?php echo $block->element->getId(); ?>');
+
+        var container = $('<div />');
+        container.insertAfter(field);
+
+        field.on('change keyup', function() {
+            render();
+        });
+
+        render();
+
+        function render() {
+            container.html('');
+            field.attr('style', 'border-color: ' + (isValid(field) ? '#00c530' : '#e22626') + ' !important');
+
+            var error = $('#<?php echo $block->element->getId(); ?>-error');
+            error.remove();
+
+            if (!isValid(field)) {
+                return;
+            }
+
+            var val = field.val();
+            var readable = isValid(field) ? cron.toString(val) : $.mage.__('Cron expression is not valid.');
+            var pMessage = $('<p />')
+                .css('font-size', '12px')
+                .css('background', isValid(field) ? '#faffec' : '#fff8d6')
+                .css('border-width', '1px')
+                .css('border-style', 'solid')
+                .css('border-color', isValid(field) ? '#00c530' : '#e22626')
+                .css('padding', '6px 10px 10px')
+                .css('margin', '2px 0 2px')
+                .css('color', '#303030')
+                .html(readable);
+
+            container.append(pMessage);
+
+            var divNextContainer = $('<div />')
+                .css('font-size', '10px')
+                .css('padding', '6px 10px 6px')
+                .css('margin', '2px 0 2px')
+                .css('border-width', '1px')
+                .css('border-style', 'solid')
+                .css('border-color', '#adadad')
+                .css('color', '#303030');
+
+            var pNextTitle = $('<p />')
+                .css('font-weight', 'bold')
+                .html($.mage.__('Example of next three cycles') + ':');
+
+            divNextContainer.append(pNextTitle);
+
+            later.schedule(later.parse.cron(val)).next(3).forEach(function (next) {
+                var pNext = $('<p />').css('font-size', '10px')
+                    .html(next.toLocaleString());
+                divNextContainer.append(pNext);
+            });
+
+            container.append(divNextContainer);
+        }
+
+        function isValid(field) {
+           return $.validator.methods['validate-cron'](field.val());
+        }
+    })
+</script>

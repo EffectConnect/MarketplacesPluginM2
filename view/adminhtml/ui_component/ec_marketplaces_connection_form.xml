@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">ec_marketplaces_connection_form.effectconnect_marketplaces_connections_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Connections Form</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+        <item name="buttons" xsi:type="array">
+            <item name="back" xsi:type="array">
+                <item name="name" xsi:type="string">back</item>
+                <item name="label" xsi:type="string" translate="true">Back</item>
+                <item name="class" xsi:type="string">back</item>
+                <item name="url" xsi:type="string">*/*/</item>
+            </item>
+            <item name="save" xsi:type="string">EffectConnect\Marketplaces\Block\Adminhtml\Connection\Edit\SaveButton</item>
+        </item>
+    </argument>
+
+    <settings>
+        <namespace>ec_marketplaces_connection_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>ec_marketplaces_connection_form.effectconnect_marketplaces_connections_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="effectconnect_marketplaces_connections_form_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">EffectConnect\Marketplaces\Model\Connection\DataProvider</argument>
+            <argument name="name" xsi:type="string">effectconnect_marketplaces_connections_form_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">entity_id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="submit_url" xsi:type="url" path="*/*/save"/>
+                    <item name="test_connection_url" xsi:type="url" path="*/*/testconnection"/>
+                </item>
+            </argument>
+        </argument>
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+    </dataSource>
+
+    <fieldset name="connection">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Connection Details</item>
+            </item>
+        </argument>
+        <!-- This field represents form id and is hidden -->
+        <field name="entity_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">false</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">connection</item>
+                </item>
+            </argument>
+        </field>
+        <field name="is_active">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Active</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">connection</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+                <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Yesno</item>
+            </argument>
+        </field>
+        <field name="name">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="required" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Name</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">connection</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">Used for internal reference only.</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
+        <field name="public_key">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="required" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Public key</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">connection</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">Find your public key in the API Key Management section in EffectConnect Marketplaces.</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
+        <field name="secret_key">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="required" xsi:type="boolean">true</item>
+                    <item name="label" xsi:type="string" translate="true">Secret key</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">connection</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">Find your secret key in the API Key Management section in EffectConnect Marketplaces.</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
+        <container name="test_credentials_button">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">container</item>
+                    <item name="title" xsi:type="string" translate="true">Test credentials</item>
+                    <item name="label" xsi:type="string" translate="true">Test credentials</item>
+                    <item name="labelVisible" xsi:type="boolean">true</item>
+                    <item name="component" xsi:type="string">EffectConnect_Marketplaces/js/connection-test-button</item>
+                    <item name="template" xsi:type="string">EffectConnect_Marketplaces/connection-test-button</item>
+                    <item name="actions" xsi:type="array">
+                        <item name="0" xsi:type="array">
+                            <item name="targetName" xsi:type="string">ec_marketplaces_connection_form.ec_marketplaces_connection_form.connection.test_credentials_button</item>
+                            <item name="actionName" xsi:type="string">testConnection</item>
+                        </item>
+                    </item>
+                </item>
+            </argument>
+        </container>
+        <fieldset name="catalog_export">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Catalog Export</item>
+                </item>
+            </argument>
+            <field name="website_id">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Catalog to export</item>
+                        <item name="notice" xsi:type="string" translate="true">The default website's storeview is also used to import orders to. Use channel mapping to choose another storeview for importing orders.</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">catalog_export</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                        <item name="tooltip" xsi:type="array">
+                            <item name="description" xsi:type="string" translate="true">The catalog of which website should be used for exporting to EffectConnect. The mapping of the store-views for each language in the selected website can be set-up below.</item>
+                        </item>
+                    </item>
+                    <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Website</item>
+                </argument>
+            </field>
+            <dynamicRows name="storeview_mapping">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Storeviews to export</item>
+                        <item name="component" xsi:type="string">EffectConnect_Marketplaces/js/connection_storeview_mapping</item>
+                        <item name="template" xsi:type="string">ui/dynamic-rows/templates/default</item>
+                        <item name="componentType" xsi:type="string">dynamicRows</item>
+                        <item name="columnsHeader" xsi:type="boolean">false</item>
+                        <item name="addButton" xsi:type="boolean">false</item>
+                        <item name="defaultRecord" xsi:type="boolean">false</item>
+                        <item name="dndConfig" xsi:type="array">
+                            <item name="enabled" xsi:type="boolean">false</item>
+                        </item>
+                        <item name="recordTemplate" xsi:type="string">record</item>
+                    </item>
+                </argument>
+                <container name="record" component="Magento_Ui/js/dynamic-rows/record">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="isTemplate" xsi:type="boolean">true</item>
+                            <item name="is_collection" xsi:type="boolean">true</item>
+                            <item name="dataScope" xsi:type="string" />
+                        </item>
+                    </argument>
+                    <field name="storeview_name">
+                        <argument name="data" xsi:type="array">
+                            <item name="config" xsi:type="array">
+                                <item name="dataType" xsi:type="string">text</item>
+                                <item name="formElement" xsi:type="string">input</item>
+                                <item name="label" xsi:type="string" translate="true">Storeview</item>
+                                <item name="dataScope" xsi:type="string">storeview_name</item>
+                                <item name="default" xsi:type="string">0</item>
+                                <item name="sortOrder" xsi:type="string">10</item>
+                                <item name="visible" xsi:type="boolean">true</item>
+                                <item name="elementTmpl" xsi:type="string">ui/dynamic-rows/cells/text</item>
+                            </item>
+                        </argument>
+                    </field>
+                    <field name="language_code">
+                        <argument name="data" xsi:type="array">
+                            <item name="config" xsi:type="array">
+                                <item name="dataType" xsi:type="string">text</item>
+                                <item name="label" xsi:type="string" translate="true">Mapping language</item>
+                                <item name="formElement" xsi:type="string">select</item>
+                                <item name="dataScope" xsi:type="string">language_code</item>
+                                <item name="sortOrder" xsi:type="string">20</item>
+                                <item name="notice" xsi:type="string" translate="true">Select the language for this storeview or exclude it from the export.</item>
+                            </item>
+                            <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\Languages</item>
+                        </argument>
+                    </field>
+                    <field name="website_id">
+                        <argument name="data" xsi:type="array">
+                            <item name="config" xsi:type="array">
+                                <item name="dataType" xsi:type="string">text</item>
+                                <item name="dataScope" xsi:type="string">website_id</item>
+                                <item name="formElement" xsi:type="string">hidden</item>
+                            </item>
+                        </argument>
+                    </field>
+                    <field name="storeview_id">
+                        <argument name="data" xsi:type="array">
+                            <item name="config" xsi:type="array">
+                                <item name="dataType" xsi:type="string">text</item>
+                                <item name="dataScope" xsi:type="string">storeview_id</item>
+                                <item name="formElement" xsi:type="string">hidden</item>
+                            </item>
+                        </argument>
+                    </field>
+                </container>
+            </dynamicRows>
+            <field name="image_url_storeview_id">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Storeview for image URLs</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">catalog_export</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                        <item name="tooltip" xsi:type="array">
+                            <item name="description" xsi:type="string" translate="true">This setting determines from which storeview the media URL should be used for the product images when exporting the catalog to EffectConnect Marketplaces.</item>
+                        </item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ConnectionStoreViews</item>
+                </argument>
+            </field>
+        </fieldset>
+    </fieldset>
+</form>

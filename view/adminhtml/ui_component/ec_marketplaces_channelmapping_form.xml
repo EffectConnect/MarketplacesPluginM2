@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">ec_marketplaces_channelmapping_form.effectconnect_marketplaces_channelmapping_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Channel mapping form</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+        <item name="buttons" xsi:type="array">
+            <item name="refresh_channels" xsi:type="array">
+                <item name="name" xsi:type="string">add</item>
+                <item name="label" xsi:type="string" translate="true">Refresh channels</item>
+                <item name="class" xsi:type="string">default</item>
+                <item name="url" xsi:type="string">*/*/refreshchannels</item>
+            </item>
+            <item name="back" xsi:type="array">
+                <item name="name" xsi:type="string">back</item>
+                <item name="label" xsi:type="string" translate="true">Back</item>
+                <item name="class" xsi:type="string">back</item>
+                <item name="url" xsi:type="string">*/*/</item>
+            </item>
+            <item name="save" xsi:type="string">EffectConnect\Marketplaces\Block\Adminhtml\ChannelMapping\Edit\SaveButton</item>
+        </item>
+    </argument>
+
+    <settings>
+        <namespace>ec_marketplaces_channelmapping_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>ec_marketplaces_channelmapping_form.effectconnect_marketplaces_channelmapping_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="effectconnect_marketplaces_channelmapping_form_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">EffectConnect\Marketplaces\Model\ChannelMapping\DataProvider</argument>
+            <argument name="name" xsi:type="string">effectconnect_marketplaces_channelmapping_form_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">entity_id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="submit_url" xsi:type="url" path="*/*/save"/>
+                </item>
+            </argument>
+        </argument>
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+    </dataSource>
+
+    <fieldset name="channelmapping">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Mapping information for importing orders</item>
+            </item>
+        </argument>
+        <!-- This field represents form id and is hidden -->
+        <field name="entity_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">false</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                </item>
+            </argument>
+        </field>
+        <field name="connection_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Connection</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">Only connections that have active channels are listed.</item>
+                    </item>
+                </item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ConnectionsThatHaveChannels</item>
+            </argument>
+        </field>
+        <field name="channel_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Channel</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">The list of channels is automatically fetched from EffectConnect. If your channel is not listed here, create it in EffectConnect, and click 'Refresh channels' on top of this page.</item>
+                    </item>
+                </item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\Channels</item>
+            </argument>
+        </field>
+        <field name="storeview_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">EffectConnect_Marketplaces/js/channelmapping_storeview</item>
+                    <item name="label" xsi:type="string" translate="true">Storeview</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">This list only contains the storeviews corresponding to the website linked to the selected connection.</item>
+                    </item>
+                </item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
+            </argument>
+        </field>
+        <field name="external_fulfilment">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">External fulfilment</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ExternalFulfilment</item>
+            </argument>
+        </field>
+        <field name="discount_code">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="required" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Discount code</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                </item>
+            </argument>
+        </field>
+        <fieldset name="channelmapping_overrides">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Configuration overrides for current channel</item>
+                </item>
+            </argument>
+            <field name="customer_create">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Create (or load an existing) customer</item>
+                        <item name="notice" xsi:type="string" translate="true">Set to 'No' to import the order as guest. Set to 'Yes' to add the order to a customer (a new one will be created if it doesn't exist).</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                        <item name="default" xsi:type="number">2</item>
+                        <item name="switcherConfig" xsi:type="array">
+                            <item name="enabled" xsi:type="boolean">true</item>
+                            <item name="rules" xsi:type="array">
+                                <item name="0" xsi:type="array">
+                                    <item name="value" xsi:type="number">0</item>
+                                    <item name="actions" xsi:type="array">
+                                        <item name="0" xsi:type="array">
+                                            <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.channelmapping_overrides.customer_group_id</item>
+                                            <item name="callback" xsi:type="string">hide</item>
+                                        </item>
+                                        <item name="1" xsi:type="array">
+                                            <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.channelmapping_overrides.customer_id</item>
+                                            <item name="callback" xsi:type="string">show</item>
+                                        </item>
+                                    </item>
+                                </item>
+                                <item name="1" xsi:type="array">
+                                    <item name="value" xsi:type="number">1</item>
+                                    <item name="actions" xsi:type="array">
+                                        <item name="0" xsi:type="array">
+                                            <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.channelmapping_overrides.customer_group_id</item>
+                                            <item name="callback" xsi:type="string">show</item>
+                                        </item>
+                                        <item name="1" xsi:type="array">
+                                            <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.channelmapping_overrides.customer_id</item>
+                                            <item name="callback" xsi:type="string">hide</item>
+                                        </item>
+                                    </item>
+                                </item>
+                                <item name="2" xsi:type="array">
+                                    <item name="value" xsi:type="number">2</item>
+                                    <item name="actions" xsi:type="array">
+                                        <item name="0" xsi:type="array">
+                                            <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.channelmapping_overrides.customer_group_id</item>
+                                            <item name="callback" xsi:type="string">hide</item>
+                                        </item>
+                                        <item name="1" xsi:type="array">
+                                            <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.channelmapping_overrides.customer_id</item>
+                                            <item name="callback" xsi:type="string">hide</item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalYesNo</item>
+                </argument>
+            </field>
+            <field name="customer_group_id">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Assign customer to group</item>
+                        <item name="notice" xsi:type="string" translate="true">The customer group to use for newly created customers. Existing customers will not be affected.</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\CustomerGroups</item>
+                </argument>
+            </field>
+            <field name="customer_id">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Assign all orders to specific customer</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="multiple" xsi:type="boolean">false</item>
+                        <item name="filterOptions" xsi:type="boolean">true</item>
+                        <item name="disableLabel" xsi:type="boolean">true</item>
+                        <!--<item name="isRemoveSelectedIcon" xsi:type="boolean">true</item>-->
+                        <item name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</item>
+                        <item name="elementTmpl" xsi:type="string">ui/grid/filters/elements/ui-select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalCustomers</item>
+                </argument>
+            </field>
+            <field name="send_emails">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Send emails</item>
+                        <item name="notice" xsi:type="string" translate="true">Whether or not to send an email to the customer for each imported order.</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                        <item name="default" xsi:type="number">2</item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalYesNo</item>
+                </argument>
+            </field>
+            <field name="payment_method">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Payment method</item>
+                        <item name="notice" xsi:type="string" translate="true">Select the payment method for imported orders.</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">text</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalPaymentMethods</item>
+                </argument>
+            </field>
+            <field name="shipping_method">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Shipping method</item>
+                        <item name="notice" xsi:type="string" translate="true">Select the shipping method for imported orders.</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">text</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalShippingMethods</item>
+                </argument>
+            </field>
+        </fieldset>
+    </fieldset>
+</form>
