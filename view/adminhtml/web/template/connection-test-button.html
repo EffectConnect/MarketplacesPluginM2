@@ -1,0 +1,10 @@
+<!-- Override for module-ui\view\base\web\templates\form\components\button\container.html -->
+<div class="admin__field" css="$data.additionalClasses" visible="visible">
+    <label class="admin__field-label" if="$data.label" visible="$data.labelVisible">
+        <span text="label"/>
+    </label>
+    <div class="admin__field-control">
+        <render args="elementTmpl"/>
+        <div class="admin__additional-info" if="$data.additionalInfo" html="$data.additionalInfo"></div>
+    </div>
+</div>

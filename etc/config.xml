@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+        <effectconnect_marketplaces>
+            <general_settings>
+                <version />
+            </general_settings>
+            <catalog_export_settings>
+                <schedule>0 21 * * *</schedule>
+                <custom_schedule>0 21 * * *</custom_schedule>
+                <page_size>50</page_size>
+                <attribute_brand>manufacturer</attribute_brand>
+                <attribute_title>name</attribute_title>
+                <attribute_description>description</attribute_description>
+                <attribute_ean>ean</attribute_ean>
+                <attribute_cost>cost</attribute_cost>
+                <attribute_delivery_time>delivery_time</attribute_delivery_time>
+                <attribute_price>price</attribute_price>
+                <price_fallback>1</price_fallback>
+                <use_special_price>1</use_special_price>
+            </catalog_export_settings>
+            <offer_export_settings>
+                <schedule>0 * * * *</schedule>
+                <custom_schedule>0 * * * *</custom_schedule>
+                <queue_size>10</queue_size>
+                <page_size>50</page_size>
+                <msi_active />
+                <quantity_type>salable</quantity_type>
+                <salable_source>website</salable_source>
+                <website />
+                <stock />
+                <msi_type />
+                <sources />
+                <stocks />
+                <stock_tracking>1</stock_tracking>
+                <fictional_stock>0</fictional_stock>
+            </offer_export_settings>
+            <order_import_settings>
+                <schedule>*/5 * * * *</schedule>
+                <custom_schedule>*/5 * * * *</custom_schedule>
+                <payment_method>effectconnect_marketplaces_payment</payment_method>
+                <shipping_method>effectconnect_marketplaces_carrier_effectconnect_marketplaces_carrier</shipping_method>
+                <order_status>processing</order_status>
+                <customer_create>0</customer_create>
+                <customer_group_id />
+                <create_invoice>1</create_invoice>
+                <send_emails>0</send_emails>
+            </order_import_settings>
+            <shipment_export_settings>
+                <queue_size>10</queue_size>
+            </shipment_export_settings>
+            <log_settings>
+                <log_expiration>three_days</log_expiration>
+                <page_size>50</page_size>
+            </log_settings>
+        </effectconnect_marketplaces>
+        <payment>
+            <effectconnect_marketplaces_payment>
+                <title>EffectConnect Marketplaces</title>
+                <model>EffectConnect\Marketplaces\Model\Method\EffectConnectPayment</model>
+                <group>effectconnect_marketplaces_payment_group</group>
+            </effectconnect_marketplaces_payment>
+        </payment>
+        <carriers>
+            <effectconnect_marketplaces_carrier>
+                <title>EffectConnect Marketplaces</title>
+                <model>EffectConnect\Marketplaces\Model\Carrier\EffectConnectShipment</model>
+                <active>1</active>
+            </effectconnect_marketplaces_carrier>
+        </carriers>
+    </default>
+</config>

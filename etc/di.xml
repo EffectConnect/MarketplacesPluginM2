@@ -1,0 +1,93 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="EffectConnect\Marketplaces\Api\LogRepositoryInterface" type="EffectConnect\Marketplaces\Model\Log\LogRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\ConnectionStoreviewRepositoryInterface" type="EffectConnect\Marketplaces\Model\ConnectionStoreview\ConnectionStoreviewRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\ConnectionRepositoryInterface" type="EffectConnect\Marketplaces\Model\Connection\ConnectionRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\ChannelMappingRepositoryInterface" type="EffectConnect\Marketplaces\Model\ChannelMapping\ChannelMappingRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\ChannelRepositoryInterface" type="EffectConnect\Marketplaces\Model\Channel\ChannelRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\OrderLineRepositoryInterface" type="EffectConnect\Marketplaces\Model\OrderLine\OrderLineRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\LogExportQueueItemRepositoryInterface" type="EffectConnect\Marketplaces\Model\LogExportQueueItem\LogExportQueueItemRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\DirectCatalogExportQueueItemRepositoryInterface" type="EffectConnect\Marketplaces\Model\DirectCatalogExportQueueItem\DirectCatalogExportQueueItemRepository"/>
+    <preference for="EffectConnect\Marketplaces\Api\ProductOfferExportQueueItemRepositoryInterface" type="EffectConnect\Marketplaces\Model\ProductOfferExportQueueItem\ProductOfferExportQueueItemRepository"/>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="effectconnect_marketplaces_connections_listing_data_source" xsi:type="string">EffectConnect\Marketplaces\Model\ResourceModel\Connection\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="effectconnect_marketplaces_logs_listing_data_source" xsi:type="string">EffectConnect\Marketplaces\Model\ResourceModel\Log\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="effectconnect_marketplaces_channelmappings_listing_data_source" xsi:type="string">EffectConnect\Marketplaces\Model\ResourceModel\ChannelMapping\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="EffectConnect\Marketplaces\Model\ResourceModel\Connection\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">ec_marketplaces_connection</argument>
+            <argument name="resourceModel" xsi:type="string">EffectConnect\Marketplaces\Model\ResourceModel\Connection</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="EffectConnect\Marketplaces\Model\ResourceModel\Log\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">ec_marketplaces_log</argument>
+            <argument name="resourceModel" xsi:type="string">EffectConnect\Marketplaces\Model\ResourceModel\Log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="EffectConnect\Marketplaces\Model\ResourceModel\ChannelMapping\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">ec_marketplaces_channel_mapping</argument>
+            <argument name="resourceModel" xsi:type="string">EffectConnect\Marketplaces\Model\ResourceModel\ChannelMapping</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="EffectConnect\Marketplaces\Model\Connection\Modifier\Pool" type="Magento\Ui\DataProvider\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="website_switcher" xsi:type="array">
+                    <item name="class" xsi:type="string">EffectConnect\Marketplaces\Model\Connection\Modifier\WebsiteSwitcher</item>
+                    <item name="sortOrder" xsi:type="number">200</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="EffectConnect\Marketplaces\Model\Connection\DataProvider">
+        <arguments>
+            <argument name="pool" xsi:type="object">EffectConnect\Marketplaces\Model\Connection\Modifier\Pool</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="EffectConnect\Marketplaces\Model\ChannelMapping\Modifier\Pool" type="Magento\Ui\DataProvider\Modifier\Pool">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <item name="connection_switcher" xsi:type="array">
+                    <item name="class" xsi:type="string">EffectConnect\Marketplaces\Model\ChannelMapping\Modifier\ConnectionSwitcher</item>
+                    <item name="sortOrder" xsi:type="number">200</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="EffectConnect\Marketplaces\Model\ChannelMapping\DataProvider">
+        <arguments>
+            <argument name="pool" xsi:type="object">EffectConnect\Marketplaces\Model\ChannelMapping\Modifier\Pool</argument>
+        </arguments>
+    </type>
+
+    <!-- Sync the extra columns between the sales_order and sales_order_grid tables -->
+    <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid" type="Magento\Sales\Model\ResourceModel\Grid">
+        <arguments>
+            <argument name="columns">
+                <item name="ec_marketplaces_identification_number" xsi:type="string">sales_order.ec_marketplaces_identification_number</item>
+                <item name="ec_marketplaces_channel_number" xsi:type="string">sales_order.ec_marketplaces_channel_number</item>
+                <item name="ec_marketplaces_connection_id" xsi:type="string">sales_order.ec_marketplaces_connection_id</item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>

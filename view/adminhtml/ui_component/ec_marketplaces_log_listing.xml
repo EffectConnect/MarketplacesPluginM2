@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">ec_marketplaces_log_listing.effectconnect_marketplaces_logs_listing_data_source</item>
+            <item name="deps" xsi:type="string">ec_marketplaces_log_listing.effectconnect_marketplaces_logs_listing_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">spinner_columns</item>
+    </argument>
+    <dataSource name="effectconnect_marketplaces_logs_listing_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
+            <argument name="name" xsi:type="string">effectconnect_marketplaces_logs_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">entity_id</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="params" xsi:type="array">
+                        <item name="filters_modifier" xsi:type="array"/>
+                    </item>
+                    <item name="observers" xsi:type="array">
+                        <item name="filters" xsi:type="object">Magento\Catalog\Ui\Component\Listing\Filters</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <statefull>
+                    <property name="applied" xsi:type="boolean">false</property>
+                </statefull>
+            </settings>
+            <filterSelect name="process" provider="${ $.parentName }" sortOrder="30">
+                <settings>
+                    <options class="EffectConnect\Marketplaces\Model\Config\Source\Process"/>
+                    <label translate="true">Process</label>
+                    <dataScope>process</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+            <filterSelect name="code" provider="${ $.parentName }" sortOrder="30">
+                <settings>
+                    <options class="EffectConnect\Marketplaces\Model\Config\Source\LogCode"/>
+                    <label translate="true">Code</label>
+                    <dataScope>code</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+            <filterSelect name="connection_id" provider="${ $.parentName }" sortOrder="10">
+                <settings>
+                    <options class="EffectConnect\Marketplaces\Model\Config\Source\OptionalConnection"/>
+                    <label translate="true">Connection</label>
+                    <dataScope>connection_id</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+            <filterSelect name="type" provider="${ $.parentName }" sortOrder="20">
+                <settings>
+                    <options class="EffectConnect\Marketplaces\Model\Config\Source\LogType"/>
+                    <label translate="true">Type</label>
+                    <dataScope>type</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+            <filterSelect name="subject_type" provider="${ $.parentName }" sortOrder="30">
+                <settings>
+                    <options class="EffectConnect\Marketplaces\Model\Config\Source\SubjectType"/>
+                    <label translate="true">Subject Type</label>
+                    <dataScope>subject_type</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterSelect>
+            <filterRange name="subject_id" provider="${ $.parentName }" sortOrder="40">
+                <settings>
+                    <rangeType>text</rangeType>
+                    <label translate="true">Subject ID</label>
+                    <dataScope>subject_id</dataScope>
+                    <imports>
+                        <link name="visible">componentType = column, index = ${ $.index }:visible</link>
+                    </imports>
+                </settings>
+            </filterRange>
+        </filters>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="spinner_columns">
+        <column name="entity_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">textRange</item>
+                    <item name="sorting" xsi:type="string">desc</item>
+                    <item name="label" xsi:type="string" translate="true">ID</item>
+                    <item name="sortOrder" xsi:type="number">10</item>
+                </item>
+            </argument>
+        </column>
+        <column name="type" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\Log\Type">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="filter" xsi:type="string">none</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Type</item>
+                    <item name="sortOrder" xsi:type="number">20</item>
+                </item>
+            </argument>
+        </column>
+        <column name="code" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\Log\Code">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">none</item>
+                    <item name="label" xsi:type="string" translate="true">Code</item>
+                    <item name="sortOrder" xsi:type="number">30</item>
+                </item>
+            </argument>
+        </column>
+        <column name="process" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\Log\Process">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">none</item>
+                    <item name="label" xsi:type="string" translate="true">Process</item>
+                    <item name="sortOrder" xsi:type="number">40</item>
+                </item>
+            </argument>
+        </column>
+        <column name="connection" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\Log\Connection">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="label" xsi:type="string" translate="true">Connection</item>
+                    <item name="sortOrder" xsi:type="number">50</item>
+                </item>
+            </argument>
+        </column>
+        <column name="connection_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Connection ID</item>
+                    <item name="filter" xsi:type="string">none</item>
+                    <item name="sortOrder" xsi:type="number">60</item>
+                    <item name="componentDisabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </column>
+        <column name="subject" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\Log\Subject">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="label" xsi:type="string" translate="true">Subject</item>
+                    <item name="sortOrder" xsi:type="number">70</item>
+                    <item name="dataScope" xsi:type="string">subject_id</item>
+                </item>
+            </argument>
+        </column>
+        <column name="subject_type">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Subject Type</item>
+                    <item name="filter" xsi:type="string">none</item>
+                    <item name="sortOrder" xsi:type="number">80</item>
+                    <item name="componentDisabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </column>
+        <column name="subject_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Subject ID</item>
+                    <item name="filter" xsi:type="string">none</item>
+                    <item name="sortOrder" xsi:type="number">90</item>
+                    <item name="componentDisabled" xsi:type="boolean">true</item>
+                </item>
+            </argument>
+        </column>
+        <column name="message">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Message</item>
+                    <item name="componentDisabled" xsi:type="boolean">true</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
+                </item>
+            </argument>
+        </column>
+        <column name="payload">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Payload</item>
+                    <item name="componentDisabled" xsi:type="boolean">true</item>
+                    <item name="sortOrder" xsi:type="number">110</item>
+                </item>
+            </argument>
+        </column>
+        <column name="occurred_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">dateRange</item>
+                    <item name="label" xsi:type="string" translate="true">Occurred At</item>
+                    <item name="sortOrder" xsi:type="number">120</item>
+                </item>
+            </argument>
+        </column>
+        <actionsColumn name="actions" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\Log\Actions">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="indexField" xsi:type="string">entity_id</item>
+                    <item name="sortOrder" xsi:type="number">130</item>
+                </item>
+            </argument>
+        </actionsColumn>
+    </columns>
+</listing>

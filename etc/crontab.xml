@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="effectconnect_marketplaces">
+        <job name="effectconnect_marketplaces_refresh_channels" instance="EffectConnect\Marketplaces\Cron\RefreshChannels" method="execute">
+            <schedule>17 3 * * *</schedule>
+        </job>
+        <job name="effectconnect_marketplaces_clean_log" instance="EffectConnect\Marketplaces\Cron\CleanLog" method="execute">
+            <schedule>30 * * * *</schedule>
+        </job>
+        <job name="effectconnect_marketplaces_export_catalog" instance="EffectConnect\Marketplaces\Cron\ExportCatalog" method="execute">
+            <config_path>crontab/default/jobs/effectconnect_marketplaces_export_catalog/schedule/cron_expr</config_path>
+        </job>
+        <job name="effectconnect_marketplaces_export_offers" instance="EffectConnect\Marketplaces\Cron\ExportOffers" method="execute">
+            <config_path>crontab/default/jobs/effectconnect_marketplaces_export_offers/schedule/cron_expr</config_path>
+        </job>
+        <job name="effectconnect_marketplaces_import_orders" instance="EffectConnect\Marketplaces\Cron\ImportOrders" method="execute">
+            <config_path>crontab/default/jobs/effectconnect_marketplaces_import_orders/schedule/cron_expr</config_path>
+        </job>
+        <job name="effectconnect_marketplaces_handle_product_offer_export_queue" instance="EffectConnect\Marketplaces\Cron\HandleProductOfferExportQueue" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="effectconnect_marketplaces_handle_tracking_export_queue" instance="EffectConnect\Marketplaces\Cron\HandleTrackingExportQueue" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="effectconnect_marketplaces_handle_direct_catalog_export_queue" instance="EffectConnect\Marketplaces\Cron\HandleDirectCatalogExportQueue" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="effectconnect_marketplaces_handle_log_export_queue" instance="EffectConnect\Marketplaces\Cron\HandleLogExportQueue" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+    </group>
+</config>

@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/system_file.xsd">
+    <system>
+        <tab id="effectconnect" translate="label" sortOrder="100" class="effectconnect-tab">
+            <label>EffectConnect</label>
+        </tab>
+        <section id="effectconnect_marketplaces" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Marketplaces</label>
+            <tab>effectconnect</tab>
+            <resource>EffectConnect_Marketplaces::effectconnect_marketplaces</resource>
+            <group id="general_settings" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <comment>For more information about EffectConnect Marketplaces go to the EffectConnect website (www.effectconnect.com).</comment>
+                <field id="version" translate="label comment" type="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Version</label>
+                    <frontend_model>EffectConnect\Marketplaces\Block\Adminhtml\Form\Field\Version</frontend_model>
+                </field>
+            </group>
+            <group id="catalog_export_settings" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Catalog Export</label>
+                <comment>All settings related to the catalog export from the current Magento 2 installation to a EffectConnect Marketplaces connection.</comment>
+                <field id="schedule" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Schedule</label>
+                    <comment>Determines if and when the catalog export process will run.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\CatalogExportSchedule</source_model>
+                    <backend_model>EffectConnect\Marketplaces\Model\Config\Backend\CatalogExportSchedule</backend_model>
+                </field>
+                <field id="custom_schedule" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Custom schedule</label>
+                    <comment>Determines when the catalog export process will run (using cron expression format).</comment>
+                    <validate>validate-cron</validate>
+                    <frontend_model>EffectConnect\Marketplaces\Block\Adminhtml\Form\Field\Cron</frontend_model>
+                    <depends>
+                        <field id="schedule">custom</field>
+                    </depends>
+                </field>
+                <field id="page_size" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Page size</label>
+                    <comment>The number of products per page when obtaining the catalog for the catalog export.</comment>
+                    <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
+                </field>
+                <field id="attribute_brand" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Brand attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's brand when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalSelectableAttribute</source_model>
+                </field>
+                <field id="attribute_title" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's title when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\Attribute</source_model>
+                </field>
+                <field id="attribute_description" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Description attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's description when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalMultilineAttribute</source_model>
+                </field>
+                <field id="attribute_ean" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>EAN attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's EAN (European Article Number) when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\Attribute</source_model>
+                </field>
+                <field id="attribute_cost" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Cost attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's cost price when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalDecimalAttribute</source_model>
+                </field>
+                <field id="attribute_delivery_time" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Delivery time attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's delivery time when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalSelectableAttribute</source_model>
+                </field>
+                <field id="attribute_price" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Price attribute</label>
+                    <comment>Select the attribute that is used for obtaining the product's price when exporting the catalog to EffectConnect Marketplaces.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\DecimalAttribute</source_model>
+                </field>
+                <field id="price_fallback" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Price fallback</label>
+                    <comment>Determines when choosing the non-default price attribute in the setting above, the default Magento 2 price attribute should be used when the custom attribute is empty.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="attribute_price" negative="1">price</field>
+                    </depends>
+                </field>
+                <field id="use_special_price" translate="label comment" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Use special price</label>
+                    <comment>Select whether the default Magento 2 special price attribute should be used when exporting the catalog to EffectConnect Marketplaces. The original price will just as well be exported, but in that case as original price attribute.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="offer_export_settings" translate="label comment" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Offer Export</label>
+                <comment>All settings related to the offer (stock, price and delivery time) export from the current Magento 2 installation to a EffectConnect Marketplaces connection.</comment>
+                <field id="schedule" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Schedule</label>
+                    <comment>Determines if and when the offer export process will run.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OfferExportSchedule</source_model>
+                    <backend_model>EffectConnect\Marketplaces\Model\Config\Backend\OfferExportSchedule</backend_model>
+                </field>
+                <field id="custom_schedule" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Custom schedule</label>
+                    <comment>Determines when the offer export process will run (using cron expression format).</comment>
+                    <validate>validate-cron</validate>
+                    <frontend_model>EffectConnect\Marketplaces\Block\Adminhtml\Form\Field\Cron</frontend_model>
+                    <depends>
+                        <field id="schedule">custom</field>
+                    </depends>
+                </field>
+                <field id="queue_size" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Queue size</label>
+                    <comment>The number of offer exports from the queue handled per minute. Offer exports are placed in the queue when a product changes (like stock, price, etc.).</comment>
+                    <validate>validate-digits validate-digits-range digits-range-1-50</validate>
+                </field>
+                <field id="page_size" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Page size</label>
+                    <comment>The number of products per page when obtaining the catalog for the offer export.</comment>
+                    <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
+                </field>
+                <field id="msi_active" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>MSI active</label>
+                    <comment>Determines whether Magento MSI is available, enabled and active in the current Magento version and configuration.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\MsiActive</source_model>
+                </field>
+                <field id="quantity_type" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Quantity type</label>
+                    <comment>Determines whether the physical stock quantity, the salable stock quantity or the traditional (non-MSI) quantity should be used. The salable quantity is the physical quantity minus the ordered quantity in non-shipped orders and is the default stock quantity source in Magento 2.3 and up.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\QuantityType</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                    </depends>
+                </field>
+                <field id="salable_source" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Salable source</label>
+                    <comment>Select whether to base a product's salable stock quantity on a website or on a stock. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\SalableSourceType</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                        <field id="quantity_type">salable</field>
+                    </depends>
+                </field>
+                <field id="website" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Website (salable source)</label>
+                    <comment>Select the website to base the salable stock quantity for a product on. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\Websites</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                        <field id="quantity_type">salable</field>
+                        <field id="salable_source">website</field>
+                    </depends>
+                </field>
+                <field id="stock" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Stock (salable source)</label>
+                    <comment>Select the stock to base the salable stock quantity for a product on. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\Stocks</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                        <field id="quantity_type">salable</field>
+                        <field id="salable_source">stock</field>
+                    </depends>
+                </field>
+                <field id="msi_type" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>MSI stock selection</label>
+                    <comment>Select the Magento MSI source whether the quantity should be used by predefined sources, sources in predefined stocks or sources defined on product level.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\MsiType</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                        <field id="quantity_type">physical</field>
+                    </depends>
+                </field>
+                <field id="sources" translate="label comment" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Sources (MSI)</label>
+                    <comment>Select the sources to base the stock quantity on for a product. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\Sources</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                        <field id="msi_type">sources</field>
+                        <field id="quantity_type">physical</field>
+                    </depends>
+                </field>
+                <field id="stocks" translate="label comment" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Stocks (MSI)</label>
+                    <comment>Select the stocks to base the stock quantity on for a product. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\Stocks</source_model>
+                    <depends>
+                        <field id="msi_active">1</field>
+                        <field id="msi_type">stocks</field>
+                        <field id="quantity_type">physical</field>
+                    </depends>
+                </field>
+                <field id="stock_tracking" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Stock tracking</label>
+                    <comment>When enabled the products will use the individual stock. When disabled a fictional stock is used for all products in the export.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\EnabledDisabled</source_model>
+                </field>
+                <field id="fictional_stock" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Fictional stock</label>
+                    <comment>The stock amount used for all products in the export, when stock tracking is disabled.</comment>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="stock_tracking">0</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="order_import_settings" translate="label comment" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Order Import</label>
+                <comment>All settings related to the order import from a EffectConnect Marketplaces connection to the current Magento 2 installation.</comment>
+                <field id="schedule" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Schedule</label>
+                    <comment>Determines if and when the order import process will run.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OrderImportSchedule</source_model>
+                    <backend_model>EffectConnect\Marketplaces\Model\Config\Backend\OrderImportSchedule</backend_model>
+                </field>
+                <field id="custom_schedule" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Custom schedule</label>
+                    <comment>Determines when the order import process will run (using cron expression format).</comment>
+                    <validate>validate-cron</validate>
+                    <frontend_model>EffectConnect\Marketplaces\Block\Adminhtml\Form\Field\Cron</frontend_model>
+                    <depends>
+                        <field id="schedule">custom</field>
+                    </depends>
+                </field>
+                <field id="payment_method" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment method</label>
+                    <comment>Select the payment method for imported orders.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\PaymentMethods</source_model>
+                </field>
+                <field id="shipping_method" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Shipping method</label>
+                    <comment>Select the shipping method for imported orders.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\ShippingMethods</source_model>
+                </field>
+                <field id="order_status" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Order status</label>
+                    <comment>Select the order status for imported orders. Leave empty to use the status given by EffectConnect.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\OrderStatus</source_model>
+                </field>
+                <field id="customer_create" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Create (or load an existing) customer</label>
+                    <comment>Set to 'No' to import the order as guest. Set to 'Yes' to add the order to a customer (a new one will be created if it doesn't exist).</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="customer_group_id" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Assign customer to group</label>
+                    <comment>The customer group to use for newly created customers. Existing customers will not be affected.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\CustomerGroups</source_model>
+                    <depends>
+                        <field id="customer_create">1</field>
+                    </depends>
+                </field>
+                <field id="create_invoice" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Create invoice</label>
+                    <comment>Whether or not an invoice needs to be created when importing an order.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="send_emails" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send emails</label>
+                    <comment>Whether or not to send an email to the customer for each imported order.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="shipment_export_settings" translate="label comment" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Shipment Export</label>
+                <comment>All settings related to the order shipment export from the current Magento 2 installation to a EffectConnect Marketplaces connection.</comment>
+                <field id="queue_size" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Queue size</label>
+                    <comment>The number of order shipment exports from the queue handled per minute. Order shipment exports are placed in the queue when an order is shipped with tracking number.</comment>
+                    <validate>validate-digits validate-digits-range digits-range-1-50</validate>
+                </field>
+            </group>
+            <group id="log_settings" translate="label comment" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Log</label>
+                <comment>All settings related to the logging behaviour for the EffectConnect Marketplaces log.</comment>
+                <field id="log_expiration" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Log expiration</label>
+                    <comment>Select how long the log should be preserved before the expired entries will automatically be removed from the log.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\LogExpiration</source_model>
+                </field>
+                <field id="page_size" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Page size</label>
+                    <comment>The number of log items per page when obtaining the log items for the log export.</comment>
+                    <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
+                </field>
+            </group>
+        </section>
+        <section id="payment">
+            <group id="effectconnect_marketplaces_payment" translate="label" type="text" sortOrder="500" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>EffectConnect Marketplaces Payment</label>
+                <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Title</label>
+                </field>
+            </group>
+        </section>
+        <section id="carriers">
+            <group id="effectconnect_marketplaces_carrier" translate="label" type="text" sortOrder="500" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>EffectConnect Marketplaces Shipment</label>
+                <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

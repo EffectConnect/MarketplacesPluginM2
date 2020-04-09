@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="EffectConnect_Marketplaces::effectconnect"
+             title="EffectConnect"
+             module="EffectConnect_Marketplaces"
+             sortOrder="60"
+             resource="EffectConnect_Marketplaces::effectconnect"
+        />
+        <add id="EffectConnect_Marketplaces::marketplaces"
+             title="Marketplaces"
+             module="EffectConnect_Marketplaces"
+             sortOrder="10"
+             parent="EffectConnect_Marketplaces::effectconnect"
+             resource="EffectConnect_Marketplaces::marketplaces"
+        />
+        <add id="EffectConnect_Marketplaces::marketplaces_redirect"
+             title="Open Marketplaces"
+             module="EffectConnect_Marketplaces"
+             sortOrder="20"
+             parent="EffectConnect_Marketplaces::marketplaces"
+             resource="EffectConnect_Marketplaces::marketplaces"
+             action="ec_marketplaces/redirect/marketplaces"
+             target="_blank"
+        />
+        <add id="EffectConnect_Marketplaces::marketplaces_connections"
+             title="Connections"
+             module="EffectConnect_Marketplaces"
+             sortOrder="30"
+             parent="EffectConnect_Marketplaces::marketplaces"
+             resource="EffectConnect_Marketplaces::marketplaces_connections"
+             action="ec_marketplaces/connection/index"
+        />
+        <add id="EffectConnect_Marketplaces::marketplaces_channel_mapping"
+             title="Channel Mapping"
+             module="EffectConnect_Marketplaces"
+             sortOrder="40"
+             parent="EffectConnect_Marketplaces::marketplaces"
+             resource="EffectConnect_Marketplaces::marketplaces_channel_mapping"
+             action="ec_marketplaces/channelmapping/index"
+        />
+        <add id="EffectConnect_Marketplaces::marketplaces_configuration"
+             title="Configuration"
+             module="EffectConnect_Marketplaces"
+             sortOrder="50"
+             parent="EffectConnect_Marketplaces::marketplaces"
+             resource="EffectConnect_Marketplaces::marketplaces_configuration"
+             action="adminhtml/system_config/edit/section/effectconnect_marketplaces"
+        />
+        <add id="EffectConnect_Marketplaces::marketplaces_logs"
+             title="Log"
+             module="EffectConnect_Marketplaces"
+             sortOrder="60"
+             parent="EffectConnect_Marketplaces::marketplaces"
+             resource="EffectConnect_Marketplaces::marketplaces_logs"
+             action="ec_marketplaces/log/index"
+        />
+    </menu>
+</config>
