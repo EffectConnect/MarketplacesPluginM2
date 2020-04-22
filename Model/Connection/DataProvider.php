@@ -46,9 +46,9 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
 
     /**
      * DataProvider constructor.
-     * @param $name
-     * @param $primaryFieldName
-     * @param $requestFieldName
+     * @param string $name
+     * @param string $primaryFieldName
+     * @param string $requestFieldName
      * @param RequestInterface $request
      * @param Store $store
      * @param ScopeConfigInterface $scopeConfig
