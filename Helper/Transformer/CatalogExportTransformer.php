@@ -1188,7 +1188,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             }
         }
 
-        return $this->getCategoryTree($categoriesTreeItems);
+        $categoriesTree                     = $this->getCategoryTree($categoriesTreeItems);
+
+        return !is_null($categoriesTree) && !empty($categoriesTree) ? $categoriesTree : null;
     }
 
     /**
