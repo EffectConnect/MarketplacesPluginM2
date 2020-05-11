@@ -10,6 +10,7 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\InventoryApi\Api\Data\StockSourceLinkInterface;
 use Magento\InventoryApi\Api\GetSourceItemsBySkuInterface;
@@ -74,36 +75,30 @@ class MultiSourceInventoryHelper extends TraditionalInventoryHelper
      * @param StockStateInterface $stockState
      * @param SettingsHelper $settingsHelper
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param SourceRepositoryInterface $sourceRepository
-     * @param StockRepositoryInterface $stockRepository
-     * @param GetStockSourceLinksInterface $getStockSourceLinks
-     * @param GetSourceItemsBySkuInterface $getSourceItemsBySku
-     * @param GetProductSalableQtyInterface $getProductSalableQty
-     * @param StockResolverInterface $stockResolver
      */
     public function __construct(
         Context $context,
         ProductRepository $productRepository,
         StockStateInterface $stockState,
         SettingsHelper $settingsHelper,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
-        SourceRepositoryInterface $sourceRepository,
-        StockRepositoryInterface $stockRepository,
-        GetStockSourceLinksInterface $getStockSourceLinks,
-        GetSourceItemsBySkuInterface $getSourceItemsBySku,
-        GetProductSalableQtyInterface $getProductSalableQty,
-        StockResolverInterface $stockResolver
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         parent::__construct($context, $productRepository, $stockState);
 
+        $objectManager                  = ObjectManager::getInstance();
+
         $this->_settingsHelper          = $settingsHelper;
         $this->_searchCriteriaBuilder   = $searchCriteriaBuilder;
-        $this->_stockRepository         = $stockRepository;
-        $this->_sourceRepository        = $sourceRepository;
-        $this->_getStockSourceLinks     = $getStockSourceLinks;
-        $this->_getSourceItemsBySku     = $getSourceItemsBySku;
-        $this->_getProductSalableQty    = $getProductSalableQty;
-        $this->_stockResolver           = $stockResolver;
+
+        // Used object manager to create the instances of the dependencies below,
+        // because when using dependency injection, setup:di:compile command fails
+        // when the Magento Inventory modules are excluded in the composer.json.
+        $this->_sourceRepository        = $objectManager->create(SourceRepositoryInterface::class);
+        $this->_stockRepository         = $objectManager->create(StockRepositoryInterface::class);
+        $this->_getStockSourceLinks     = $objectManager->create(GetStockSourceLinksInterface::class);
+        $this->_getSourceItemsBySku     = $objectManager->create(GetSourceItemsBySkuInterface::class);
+        $this->_getProductSalableQty    = $objectManager->create(GetProductSalableQtyInterface::class);
+        $this->_stockResolver           = $objectManager->create(StockResolverInterface::class);
     }
 
     /**
