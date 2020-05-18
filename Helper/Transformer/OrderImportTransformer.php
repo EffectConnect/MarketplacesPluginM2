@@ -810,14 +810,10 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             /* @var ProductModel $product */
             $product = $this->_productFactory->create()->setStoreId($this->_storeId);
 
-            // Try to match product on SKU.
+            // Try to match the product by it's Magento ID (which we provided before in the catalog export to EffectConnect).
             /* @var LineProductIdentifiers $productIdentifiers */
             $productIdentifiers = $orderLine->getProduct();
-            $productId = $product->getIdBySku($productIdentifiers->getSku());
-            if (!$productId)
-            {
-                throw new OrderImportAddProductsToQuoteFailedException(__('Order import failed when trying to match product by sku %1.', $productIdentifiers->getSku()));
-            }
+            $productId = $productIdentifiers->getIdentifier();
 
             // Load the product by it's id.
             try
