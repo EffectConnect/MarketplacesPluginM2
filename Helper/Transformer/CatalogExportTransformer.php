@@ -1320,7 +1320,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $value                          = $this->getRawAttributeValue($product, $code);
 
-        if (is_null($value)) {
+        if (is_null($value) || empty($value)) {
             return;
         }
 
@@ -1482,6 +1482,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             if (!is_null($value) && !is_object($value) && !is_array($value)) {
                 $stringValue                = is_bool($value) ? ($value ? 'true' : 'false') : strval($value);
 
+                if (is_null($stringValue) || empty($stringValue)) {
+                    continue;
+                }
+
                 $valueArray                 =  [
                     'code'                  => [
                         '_cdata'            => strtolower((new SeparatorToCamelCase())->filter($key)),
@@ -1536,6 +1540,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         foreach ($arrayValue as $itemValue) {
             if (!is_null($itemValue) && !is_object($itemValue) && !is_array($itemValue)) {
+                if (empty($itemValue)) {
+                    continue;
+                }
+
                 $valueArray             =  [
                     'code'              => [
                         '_cdata'        => strtolower((new SeparatorToCamelCase())->filter($itemValue))
