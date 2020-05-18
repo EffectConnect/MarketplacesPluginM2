@@ -480,6 +480,11 @@ trait CatalogLoggablesTrait
             ]
         );
 
+        $loggable->setSubject(
+            LogSubjectType::PRODUCT(),
+            $productId
+        );
+
         $loggable->setPayload(json_encode([
             'value' => strval($value)
         ]));
@@ -512,6 +517,11 @@ trait CatalogLoggablesTrait
                 $productId,
                 $connectionId
             ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::PRODUCT(),
+            $productId
         );
 
         $loggable->setPayload(json_encode([
