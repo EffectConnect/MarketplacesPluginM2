@@ -601,4 +601,36 @@ trait CatalogLoggablesTrait
 
         return $this->insertLogItem($loggable);
     }
+
+    /**
+     * Log when a product does not have a SKU.
+     *
+     * @param int $connectionId
+     * @param int $productId
+     * @return bool
+     */
+    public function logCatalogExportProductHasNoSku(int $connectionId, int $productId) : bool
+    {
+        $loggable = new Loggable(
+            LogType::WARNING(),
+            LogCode::CATALOG_EXPORT_PRODUCT_HAS_NO_SKU(),
+            Process::EXPORT_CATALOG(),
+            $connectionId
+        );
+
+        $loggable->setFormattedMessage(
+            'Product %s can not be included in the catalog export because it does not have a SKU (connection %s).',
+            [
+                $productId,
+                $connectionId
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::PRODUCT(),
+            $productId
+        );
+
+        return $this->insertLogItem($loggable);
+    }
 }

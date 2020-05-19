@@ -5,7 +5,9 @@ namespace EffectConnect\Marketplaces\Helper;
 use EffectConnect\Marketplaces\Enums\MsiType;
 use EffectConnect\Marketplaces\Enums\QuantityType;
 use EffectConnect\Marketplaces\Enums\SalableSourceType;
+use EffectConnect\Marketplaces\Exception\CatalogExportProductHasNoSkuException;
 use Exception;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -102,18 +104,24 @@ class MultiSourceInventoryHelper extends TraditionalInventoryHelper
     }
 
     /**
-     * @param string $productSku
+     * @param ProductInterface $product
      * @param int $websiteId
      * @return float
-     * @throws NoSuchEntityException
+     * @throws CatalogExportProductHasNoSkuException
      */
-    public function getProductStockQuantity(string $productSku, int $websiteId): float
+    public function getProductStockQuantity(ProductInterface $product, int $websiteId): float
     {
         $stock                          = 0;
 
         if ($this->traditionalActive($websiteId)) {
-            $stock                      = $this->getDefaultStockQuantityBySku($productSku);
+            $stock                      = $this->getDefaultStockQuantity($product);
         } else {
+            $sku = $product->getSku();
+
+            if (is_null($sku) || empty($sku) || !is_string($sku)) {
+                throw new CatalogExportProductHasNoSkuException(__('Product with ID %1 does not have a SKU and will therefor not be included in the catalog export.', $product->getId()));
+            }
+
             $quantityType               = strval($this->_settingsHelper->getOfferExportQuantityType(SettingsHelper::SCOPE_WEBSITE, $websiteId) ?? QuantityType::SALABLE()->getValue());
 
             if ($quantityType === QuantityType::SALABLE()->getValue()) {
@@ -133,14 +141,14 @@ class MultiSourceInventoryHelper extends TraditionalInventoryHelper
                 }
 
                 try {
-                    $stock              = $this->_getProductSalableQty->execute($productSku, $stockId);
+                    $stock              = $this->_getProductSalableQty->execute($sku, $stockId);
                 } catch (Exception $e) {
                     $stock              = 0;
                 }
             } else {
                 $codes                  = $this->getConfiguredSources($websiteId);
                 $stock                  = 0;
-                $sourceItemsBySku       = $this->_getSourceItemsBySku->execute($productSku);
+                $sourceItemsBySku       = $this->_getSourceItemsBySku->execute($sku);
 
                 foreach ($sourceItemsBySku as $sourceItem) {
                     if (in_array($sourceItem->getSourceCode(), $codes)) {
