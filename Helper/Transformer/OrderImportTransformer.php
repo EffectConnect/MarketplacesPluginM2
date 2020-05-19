@@ -818,7 +818,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             // Load the product by it's id.
             try
             {
-                $product = $this->_productRepository->getById($productId, false, $this->_storeId);
+                $product = $this->_productRepository->getById(intval($productId), false, $this->_storeId);
                 $product->setSkipCheckRequiredOption(true);
             }
             catch (Exception $e)

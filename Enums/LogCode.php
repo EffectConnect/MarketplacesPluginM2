@@ -21,7 +21,7 @@ namespace EffectConnect\Marketplaces\Enums;
  * @method static LogCode CATALOG_EXPORT_PRODUCT_NOT_VISIBLE()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_TYPE_NOT_SUPPORTED()
  * @method static LogCode CATALOG_EXPORT_MAXIMUM_IMAGES_EXCEEDED()
- * @method static LogCode CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED
+ * @method static LogCode CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED()
  * @method static LogCode OFFERS_EXPORT_HAS_STARTED()
  * @method static LogCode OFFERS_EXPORT_HAS_ENDED()
  * @method static LogCode OFFERS_EXPORT_PRODUCT_SUCCESS()
