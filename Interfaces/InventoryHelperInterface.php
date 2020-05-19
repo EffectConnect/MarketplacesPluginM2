@@ -2,6 +2,8 @@
 
 namespace EffectConnect\Marketplaces\Interfaces;
 
+use Magento\Catalog\Api\Data\ProductInterface;
+
 /**
  * Interface InventoryHelperInterface
  * @package EffectConnect\Marketplaces\Interfaces
@@ -9,18 +11,11 @@ namespace EffectConnect\Marketplaces\Interfaces;
 interface InventoryHelperInterface
 {
     /**
-     * @param string $productSku
+     * @param ProductInterface $product
      * @param int $websiteId
      * @return float
      */
-    public function getProductStockQuantity(string $productSku, int $websiteId) : float;
-
-    /**
-     * @param int $entityId
-     * @param int $websiteId
-     * @return float
-     */
-    public function getProductStockQuantityById(int $entityId, int $websiteId) : float;
+    public function getProductStockQuantity(ProductInterface $product, int $websiteId) : float;
 
     /**
      * @return array

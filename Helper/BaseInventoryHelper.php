@@ -3,6 +3,7 @@
 namespace EffectConnect\Marketplaces\Helper;
 
 use EffectConnect\Marketplaces\Interfaces\InventoryHelperInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 
 /**
@@ -14,21 +15,11 @@ use Magento\Framework\App\Helper\AbstractHelper;
 abstract class BaseInventoryHelper extends AbstractHelper implements InventoryHelperInterface
 {
     /**
-     * @param string $productSku
+     * @param ProductInterface $product
      * @param int $websiteId
      * @return float
      */
-    public function getProductStockQuantity(string $productSku, int $websiteId) : float
-    {
-        return 0;
-    }
-
-    /**
-     * @param int $entityId
-     * @param int $websiteId
-     * @return float
-     */
-    public function getProductStockQuantityById(int $entityId, int $websiteId) : float
+    public function getProductStockQuantity(ProductInterface $product, int $websiteId) : float
     {
         return 0;
     }

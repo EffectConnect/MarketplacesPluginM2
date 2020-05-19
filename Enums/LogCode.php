@@ -21,7 +21,8 @@ namespace EffectConnect\Marketplaces\Enums;
  * @method static LogCode CATALOG_EXPORT_PRODUCT_NOT_VISIBLE()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_TYPE_NOT_SUPPORTED()
  * @method static LogCode CATALOG_EXPORT_MAXIMUM_IMAGES_EXCEEDED()
- * @method static LogCode CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED
+ * @method static LogCode CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED()
+ * @method static LogCode CATALOG_EXPORT_PRODUCT_HAS_NO_SKU()
  * @method static LogCode OFFERS_EXPORT_HAS_STARTED()
  * @method static LogCode OFFERS_EXPORT_HAS_ENDED()
  * @method static LogCode OFFERS_EXPORT_PRODUCT_SUCCESS()
@@ -140,6 +141,11 @@ class LogCode extends AbstractEnum
      * There are no storeview mappings in the current connection.
      */
     const CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED           = 'catalog_export_no_storeview_mapping_defined';
+
+    /**
+     * A certain product (option) has no SKU.
+     */
+    const CATALOG_EXPORT_PRODUCT_HAS_NO_SKU                     = 'catalog_export_product_has_no_sku';
 
     /**
      * Exporting the offers has started.

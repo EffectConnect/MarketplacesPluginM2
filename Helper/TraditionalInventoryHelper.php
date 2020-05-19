@@ -2,6 +2,8 @@
 
 namespace EffectConnect\Marketplaces\Helper;
 
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Helper\Context;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\CatalogInventory\Api\StockStateInterface;
@@ -44,37 +46,21 @@ class TraditionalInventoryHelper extends BaseInventoryHelper
     }
 
     /**
-     * @param string $productSku
+     * @param ProductInterface $product
      * @param int $websiteId
      * @return float
-     * @throws NoSuchEntityException
      */
-    public function getProductStockQuantity(string $productSku, int $websiteId) : float
+    public function getProductStockQuantity(ProductInterface $product, int $websiteId) : float
     {
-        return $this->getDefaultStockQuantityBySku($productSku);
+        return $this->getDefaultStockQuantity($product);
     }
 
     /**
-     * @param int $entityId
-     * @param int $websiteId
+     * @param ProductInterface $product
      * @return float
-     * @throws NoSuchEntityException
      */
-    public function getProductStockQuantityById(int $entityId, int $websiteId) : float
+    protected function getDefaultStockQuantity(ProductInterface $product) : float
     {
-        return $this->getProductStockQuantity($this->_productRepository->getById($entityId)->getSku(), $websiteId);
-    }
-
-    /**
-     * @param string $productSku
-     * @return float
-     * @throws NoSuchEntityException
-     */
-    protected function getDefaultStockQuantityBySku(string $productSku) : float
-    {
-        $product    = $this->_productRepository->get($productSku);
-        $quantity   = $this->_stockState->getStockQty($product->getId());
-
-        return $quantity;
+        return $this->_stockState->getStockQty($product->getId());
     }
 }

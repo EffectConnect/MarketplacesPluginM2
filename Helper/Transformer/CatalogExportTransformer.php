@@ -5,6 +5,7 @@ namespace EffectConnect\Marketplaces\Helper\Transformer;
 use EffectConnect\Marketplaces\Enums\LogCode;
 use EffectConnect\Marketplaces\Exception\CatalogExportEanNotValidException;
 use EffectConnect\Marketplaces\Exception\CatalogExportObligatedAttributeIsNullException;
+use EffectConnect\Marketplaces\Exception\CatalogExportProductHasNoSkuException;
 use EffectConnect\Marketplaces\Helper\InventoryHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
@@ -12,6 +13,7 @@ use EffectConnect\Marketplaces\Helper\XmlGenerator;
 use EffectConnect\Marketplaces\Interfaces\ValueType;
 use DOMException;
 use EffectConnect\Marketplaces\Model\Connection;
+use Exception;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
@@ -881,13 +883,19 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         }
 
         try {
-            $stock = intval($this->_inventoryHelper->getProductStockQuantityById($product->getId(), intval($this->_connection->getWebsiteId())));
+            $stock = intval($this->_inventoryHelper->getProductStockQuantity($product, intval($this->_connection->getWebsiteId())));
             switch (true) {
                 case $stock < 0: return 0;
                 case $stock > 9999: return 9999;
                 default: return $stock;
             }
-        } catch (NoSuchEntityException $e) {
+        } catch (CatalogExportProductHasNoSkuException $e) {
+            $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_HAS_NO_SKU(), [
+                intval($this->_connection->getEntityId()),
+                intval($product->getId())
+            ]);
+            return null;
+        } catch (Exception $e) {
             return null;
         }
     }
@@ -1320,7 +1328,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $value                          = $this->getRawAttributeValue($product, $code);
 
-        if (is_null($value)) {
+        if (is_null($value) || empty($value)) {
             return;
         }
 
@@ -1482,6 +1490,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             if (!is_null($value) && !is_object($value) && !is_array($value)) {
                 $stringValue                = is_bool($value) ? ($value ? 'true' : 'false') : strval($value);
 
+                if (is_null($stringValue) || empty($stringValue)) {
+                    continue;
+                }
+
                 $valueArray                 =  [
                     'code'                  => [
                         '_cdata'            => strtolower((new SeparatorToCamelCase())->filter($key)),
@@ -1536,6 +1548,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         foreach ($arrayValue as $itemValue) {
             if (!is_null($itemValue) && !is_object($itemValue) && !is_array($itemValue)) {
+                if (empty($itemValue)) {
+                    continue;
+                }
+
                 $valueArray             =  [
                     'code'              => [
                         '_cdata'        => strtolower((new SeparatorToCamelCase())->filter($itemValue))
@@ -1970,6 +1986,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 return $this->_logHelper->logCatalogExportMaximumImagesExceeded(...$parameters);
             case LogCode::CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED():
                 return $this->_logHelper->logCatalogExportNoStoreviewMappingDefined(...$parameters);
+            case LogCode::CATALOG_EXPORT_PRODUCT_HAS_NO_SKU():
+                return $this->_logHelper->logCatalogExportProductHasNoSku(...$parameters);
             default:
                 return false;
         }
