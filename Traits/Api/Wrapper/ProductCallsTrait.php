@@ -43,7 +43,6 @@ trait ProductCallsTrait
         $apiCall        = $productsCall->create($curlFile);
 
         if (!is_null($this->_timeout)) {
-            var_dump($this->_timeout);
             $apiCall->setTimeout($this->_timeout);
         }
 
