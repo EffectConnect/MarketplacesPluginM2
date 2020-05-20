@@ -41,18 +41,26 @@ class ApiWrapper
     protected $_sdkCore;
 
     /**
+     * @var int|null
+     */
+    protected $_timeout;
+
+    /**
      * Api constructor.
      *
      * @param string $publicKey
      * @param string $secretKey
+     * @param int|null $timeout
      * @throws InvalidKeyException
      */
     public function __construct(
         string $publicKey,
-        string $secretKey
+        string $secretKey,
+        int $timeout = null
     ) {
         $this->_publicKey       = $publicKey;
         $this->_secretKey       = $secretKey;
+        $this->_timeout         = $timeout;
 
         $this->initializeSdkCore();
     }

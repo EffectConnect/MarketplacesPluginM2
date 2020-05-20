@@ -281,6 +281,15 @@
                     <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
                 </field>
             </group>
+            <group id="advanced_settings" translate="label comment" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Advanced</label>
+                <comment>All advanced settings for the EffectConnect Marketplaces plugin. Be careful when adjusting these settings.</comment>
+                <field id="api_call_timeout" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>API call time-out</label>
+                    <comment>The number of seconds before an API call should time out.</comment>
+                    <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
+                </field>
+            </group>
         </section>
         <section id="payment">
             <group id="effectconnect_marketplaces_payment" translate="label" type="text" sortOrder="500" showInDefault="1" showInWebsite="0" showInStore="0">

@@ -53,6 +53,9 @@
                 <log_expiration>three_days</log_expiration>
                 <page_size>50</page_size>
             </log_settings>
+            <advanced_settings>
+                <api_call_timeout>10</api_call_timeout>
+            </advanced_settings>
         </effectconnect_marketplaces>
         <payment>
             <effectconnect_marketplaces_payment>

@@ -28,6 +28,11 @@ trait LogCallsTrait
         }
 
         $apiCall = $logCall->read();
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);
@@ -59,6 +64,11 @@ trait LogCallsTrait
         }
 
         $apiCall = $logCall->create($curlFile);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);

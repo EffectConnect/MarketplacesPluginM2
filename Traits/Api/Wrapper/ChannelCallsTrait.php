@@ -30,6 +30,11 @@ trait ChannelCallsTrait
         }
 
         $apiCall = $channelListCall->read();
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);
