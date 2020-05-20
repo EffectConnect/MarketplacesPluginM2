@@ -64,6 +64,11 @@ trait OrderCallsTrait
         }
 
         $apiCall = $orderListCall->read($orderList);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);
@@ -92,6 +97,11 @@ trait OrderCallsTrait
         }
 
         $apiCall = $orderCall->read($orderData);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);
@@ -128,6 +138,11 @@ trait OrderCallsTrait
         }
 
         $apiCall = $orderCall->update($orderUpdate);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);
@@ -162,6 +177,11 @@ trait OrderCallsTrait
         }
 
         $apiCall = $orderCall->update($orderUpdate);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);
@@ -208,6 +228,11 @@ trait OrderCallsTrait
         }
 
         $apiCall = $orderCall->update($orderUpdate);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         return $this->getResult($apiCall);

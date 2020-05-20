@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Objects;
 
 use EffectConnect\Marketplaces\Helper\ApiHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
+use EffectConnect\Marketplaces\Helper\SettingsHelper;
 use EffectConnect\Marketplaces\Model\Connection;
 use EffectConnect\Marketplaces\Model\Log;
 use EffectConnect\Marketplaces\Model\OrderLine;
@@ -53,21 +54,29 @@ class ConnectionApi
     protected $_logHelper;
 
     /**
+     * @var SettingsHelper
+     */
+    protected $_settingsHelper;
+
+    /**
      * ConnectionApi constructor.
      *
      * @param Connection $connection
      * @param ApiHelper $apiHelper
      * @param LogHelper $logHelper
+     * @param SettingsHelper $settingsHelper
      * @throws InvalidKeyException
      */
     public function __construct(
         Connection $connection,
         ApiHelper $apiHelper,
-        LogHelper $logHelper
+        LogHelper $logHelper,
+        SettingsHelper $settingsHelper
     ) {
-        $this->_connection  = $connection;
-        $this->_apiHelper   = $apiHelper;
-        $this->_logHelper   = $logHelper;
+        $this->_connection      = $connection;
+        $this->_apiHelper       = $apiHelper;
+        $this->_logHelper       = $logHelper;
+        $this->_settingsHelper  = $settingsHelper;
 
         $this->initializeApiWrapper();
     }
@@ -80,7 +89,11 @@ class ConnectionApi
         $publicKey          = $this->_connection->getPublicKey();
         $secretKey          = $this->_connection->getSecretKey();
 
-        $this->_apiWrapper = new ApiWrapper($publicKey, $secretKey);
+        $settingsTimeout    = $this->_settingsHelper->getAdvancedApiCallTimeout();
+        $timeoutValid       = !is_null($settingsTimeout) && is_numeric($settingsTimeout);
+        $timeout            = $timeoutValid ? intval($settingsTimeout) : null;
+
+        $this->_apiWrapper  = new ApiWrapper($publicKey, $secretKey, $timeout);
     }
 
     /**

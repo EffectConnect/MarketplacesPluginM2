@@ -46,6 +46,11 @@ class ApiHelper extends AbstractHelper
     protected $_logHelper;
 
     /**
+     * @var SettingsHelper
+     */
+    protected $_settingsHelper;
+
+    /**
      * LogHelper constructor.
      *
      * @param Context $context
@@ -53,13 +58,15 @@ class ApiHelper extends AbstractHelper
      * @param SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory
      * @param TransformerHelper $transformerHelper
      * @param LogHelper $logHelper
+     * @param SettingsHelper $settingsHelper
      */
     public function __construct(
         Context $context,
         ConnectionRepositoryInterface $connectionRepository,
         SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory,
         TransformerHelper $transformerHelper,
-        LogHelper $logHelper
+        LogHelper $logHelper,
+        SettingsHelper $settingsHelper
     ) {
         parent::__construct($context);
 
@@ -67,6 +74,7 @@ class ApiHelper extends AbstractHelper
         $this->_searchCriteriaBuilderFactory        = $searchCriteriaBuilderFactory;
         $this->_transformerHelper                   = $transformerHelper;
         $this->_logHelper                           = $logHelper;
+        $this->_settingsHelper                      = $settingsHelper;
 
         $this->instantiateConnectionApis();
     }
@@ -86,7 +94,7 @@ class ApiHelper extends AbstractHelper
         foreach ($connectionCollection->getItems() as $connection) {
             $connectionId                           = $connection->getEntityId();
             try {
-                $instance                           = new ConnectionApi($connection, $this, $this->_logHelper);
+                $instance                           = new ConnectionApi($connection, $this, $this->_logHelper, $this->_settingsHelper);
                 $this->_instances[$connectionId]    = $instance;
             } catch (InvalidKeyException $e) {
                 continue;

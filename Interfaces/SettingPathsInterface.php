@@ -127,4 +127,8 @@ interface SettingPathsInterface
 
     /** Get the number of log items per page when obtaining the log items for the log export. */
     const SETTING_LOG_PAGE_SIZE                             = 'log_settings/page_size';
+
+
+    /** Get the number of seconds before an API call should time out. */
+    const SETTING_ADVANCED_API_CALL_TIMEOUT                  = 'advanced_settings/api_call_timeout';
 }

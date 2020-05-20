@@ -42,6 +42,10 @@ trait ProductCallsTrait
 
         $apiCall        = $productsCall->create($curlFile);
 
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
         $apiCall->call();
 
         if (!$apiCall->isSuccess()) {
@@ -92,6 +96,10 @@ trait ProductCallsTrait
         }
 
         $apiCall        = $productsCall->update($curlFile);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
 
         $apiCall->call();
 
