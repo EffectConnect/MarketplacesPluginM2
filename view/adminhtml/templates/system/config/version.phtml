@@ -4,14 +4,16 @@ use EffectConnect\Marketplaces\Block\Adminhtml\Form\Field\Version;
 
 /** @var Version $block */
 ?>
-<span><?php echo $block->getCurrentVersion(); ?></span>
-<span style="font-size: 80%;"><?php echo ' - ' . __('latest') . ' ' . $block->getLatestVersion(); ?></span>
-<?php
-if (!$block->isLatestVersion()) {
-?>
-    <p class="note adminhtml-integration-index">
-        <span class="security-notice" style="display: flex; align-items: center; margin-left: 0;"><?= __('The current installed version is out of date, update the EffectConnect Marketplaces plugin.') ?></span>
-    </p>
-<?php
-}
-?>
+<div style="min-height: 3em;">
+    <span><?php echo $block->getCurrentVersion(); ?></span>
+    <span style="font-size: 80%;"><?php echo ' - ' . __('latest') . ' ' . $block->getLatestVersion(); ?></span>
+    <?php
+    if (!$block->isLatestVersion()) {
+    ?>
+        <p class="note adminhtml-integration-index">
+            <span class="security-notice" style="display: flex; align-items: center; margin-left: 0;"><?= __('The current installed version is out of date, update the EffectConnect Marketplaces plugin.') ?></span>
+        </p>
+    <?php
+    }
+    ?>
+</div>
