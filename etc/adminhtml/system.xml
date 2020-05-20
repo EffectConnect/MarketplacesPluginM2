@@ -201,7 +201,7 @@
                     </depends>
                 </field>
             </group>
-            <group id="order_import_settings" translate="label comment" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="order_import_settings" translate="label comment" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Order Import</label>
                 <comment>All settings related to the order import from a EffectConnect Marketplaces connection to the current Magento 2 installation.</comment>
                 <field id="schedule" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -267,7 +267,7 @@
                     <validate>validate-digits validate-digits-range digits-range-1-50</validate>
                 </field>
             </group>
-            <group id="log_settings" translate="label comment" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="log_settings" translate="label comment" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Log</label>
                 <comment>All settings related to the logging behaviour for the EffectConnect Marketplaces log.</comment>
                 <field id="log_expiration" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
