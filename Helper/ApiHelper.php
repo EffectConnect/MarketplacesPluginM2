@@ -112,7 +112,7 @@ class ApiHelper extends AbstractHelper
     {
         if (!isset($this->_instances[$connectionId])) {
             $connection                             = $this->_connectionRepository->getById($connectionId);
-            $instance                               = new ConnectionApi($connection, $this, $this->_logHelper);
+            $instance                               = new ConnectionApi($connection, $this, $this->_logHelper, $this->_settingsHelper);
             $this->_instances[$connectionId]        = $instance;
         }
         return $this->_instances[$connectionId];
@@ -138,7 +138,7 @@ class ApiHelper extends AbstractHelper
                 $connection = $this->_connectionRepository->create();
                 $connection->setPublicKey($publicKey);
                 $connection->setSecretKey($secretKey);
-                new ConnectionApi($connection, $this, $this->_logHelper);
+                new ConnectionApi($connection, $this, $this->_logHelper, $this->_settingsHelper);
                 return true;
             } catch (InvalidKeyException $e) {}
         }

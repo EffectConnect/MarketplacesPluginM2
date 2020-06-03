@@ -188,7 +188,7 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
             $connectionId       = $connection->getEntityId();
 
             try {
-                $instance       = new ConnectionApi($connection, $this->_apiHelper, $this->_logHelper);
+                $instance       = new ConnectionApi($connection, $this->_apiHelper, $this->_logHelper, $this->_settingsHelper);
                 $instance->exportOffer($product);
             } catch (InvalidKeyException $e) {
                 $this->_logHelper->logOffersExportProductFailed(intval($connectionId), $productId, ['exception' => $e->getMessage()]);
