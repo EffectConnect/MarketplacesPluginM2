@@ -28,6 +28,9 @@ interface SettingPathsInterface
     /** Get the description attribute for products, used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_DESCRIPTION_ATTRIBUTE      = 'catalog_export_settings/attribute_description';
 
+    /** Include and validate the EAN attribute when exporting the catalog. */
+    const SETTING_CATALOG_EXPORT_USE_AND_VALIDATE_EAN       = 'catalog_export_settings/use_and_validate_ean';
+
     /** Get the EAN attribute for products, used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_EAN_ATTRIBUTE              = 'catalog_export_settings/attribute_ean';
 

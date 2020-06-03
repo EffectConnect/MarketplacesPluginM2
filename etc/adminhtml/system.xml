@@ -54,8 +54,16 @@
                     <comment>Select the attribute that is used for obtaining the product's description when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalMultilineAttribute</source_model>
                 </field>
+                <field id="use_and_validate_ean" translate="label comment" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Use and validate EAN</label>
+                    <comment>Select whether the EAN attribute should be included in the catalog export. If set to 'Yes' then products without a valid EAN will not be exported.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="attribute_ean" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>EAN attribute</label>
+                    <depends>
+                        <field id="use_and_validate_ean">1</field>
+                    </depends>
                     <comment>Select the attribute that is used for obtaining the product's EAN (European Article Number) when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Attribute</source_model>
                 </field>

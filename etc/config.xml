@@ -13,6 +13,7 @@
                 <attribute_title>name</attribute_title>
                 <attribute_description>description</attribute_description>
                 <attribute_ean>ean</attribute_ean>
+                <use_and_validate_ean>1</use_and_validate_ean>
                 <attribute_cost>cost</attribute_cost>
                 <attribute_delivery_time>delivery_time</attribute_delivery_time>
                 <attribute_price>price</attribute_price>
