@@ -196,7 +196,7 @@ class TransformerHelper extends AbstractHelper
     public function getSegmentedOffersXmlFile(Connection $connection, array $catalog = null) : string
     {
         $fileLocation = $this->_offersExportTransformer
-            ->saveXmlSegmented($connection, 'offers', false, $catalog);
+            ->saveXmlSegmented($connection, 'offers', $catalog);
 
         if ($fileLocation === false) {
             throw new OffersExportGeneratingCatalogXmlFileFailedException(__('Generating the offers XML file for website %1 failed.', intval($connection->getWebsiteId())));

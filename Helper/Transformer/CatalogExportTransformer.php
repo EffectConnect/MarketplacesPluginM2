@@ -335,11 +335,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      *
      * @param Connection $connection
      * @param string $exportFileName
-     * @param bool $checkForDuplicateEans
      * @param ProductInterface[] $catalog
      * @return bool|string
      */
-    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'catalog', bool $checkForDuplicateEans = true, array $catalog = null)
+    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'catalog', array $catalog = null)
     {
         $this->_connection  = $connection;
 
@@ -394,7 +393,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 /** @var ProductInterface $product */
                 foreach ($catalog as $product) {
                     if ($product instanceof ProductInterface) {
-                        $this->saveProductXml($product, $connection, $transaction, $eans, $checkForDuplicateEans);
+                        $this->saveProductXml($product, $connection, $transaction, $eans);
                     }
                 }
 
@@ -404,7 +403,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             /** @var ProductInterface $product */
             foreach ($catalog as $product) {
                 if ($product instanceof ProductInterface) {
-                    $this->saveProductXml($product, $connection, $transaction, $eans, $checkForDuplicateEans);
+                    $this->saveProductXml($product, $connection, $transaction, $eans);
                 }
             }
         }
@@ -427,10 +426,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Connection $connection
      * @param XmlGenerator $transaction
      * @param array $eans
-     * @param bool $checkForDuplicateEans
      * @return void
      */
-    protected function saveProductXml(ProductInterface $product, Connection $connection, XmlGenerator &$transaction, array &$eans, $checkForDuplicateEans = true)
+    protected function saveProductXml(ProductInterface $product, Connection $connection, XmlGenerator &$transaction, array &$eans)
     {
         $parentIds      = $this->_configurableType->getParentIdsByChild($product->getId());
 
@@ -450,7 +448,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             return;
         }
 
-        if ($checkForDuplicateEans === true) {
+        if ($this->checkForDuplicateEans() === true) {
             $options = isset($transformed['options']) ? ($transformed['options']['option'] ?? []) : [];
             foreach ($options as $index => $option) {
                 $ean        = $option['ean'];
@@ -525,10 +523,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * Transform the catalog products to the EffectConnect Marketplaces SDK expected format.
      *
      * @param array $products
-     * @param bool $checkForDuplicateEans
      * @return array
      */
-    protected function transformCatalog(array $products, bool $checkForDuplicateEans = true) : array
+    protected function transformCatalog(array $products) : array
     {
         $transformedProducts = [];
 
@@ -555,7 +552,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             }
         }
 
-        if ($checkForDuplicateEans === true) {
+        if ($this->checkForDuplicateEans() === true) {
             $eans = [];
 
             foreach ($transformedProducts as $productIndex => $product) {
@@ -676,18 +673,23 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $images         = $this->getProductImages($productOption);
         $attributes     = $this->getProductAttributes($productOption);
 
-        try {
-            $ean            = $this->getProductEan($productOption);
-        } catch (CatalogExportEanNotValidException $e) {
-            $this->writeToLog(LogCode::CATALOG_EXPORT_EAN_NOT_VALID(), [
-                intval($this->_connection->getEntityId()),
-                intval($identifier),
-                strval($e->getParameters()[1] ?? '')
-            ]);
-            return null;
-        }
-
         $transformed    = [];
+
+        $exportEan      = boolval($this->_settingsHelper->getCatalogExportUseAndValidateEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+        if ($exportEan)
+        {
+            try {
+                $ean = $this->getProductEan($productOption);
+                $this->setValueToArray($transformed, 'ean', $ean, true, null, false);
+            } catch (CatalogExportEanNotValidException $e) {
+                $this->writeToLog(LogCode::CATALOG_EXPORT_EAN_NOT_VALID(), [
+                    intval($this->_connection->getEntityId()),
+                    intval($identifier),
+                    strval($e->getParameters()[1] ?? '')
+                ]);
+                return null;
+            }
+        }
 
         try {
             $this->setValueToArray($transformed, 'identifier', $identifier, true);
@@ -698,7 +700,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             $this->setValueToArray($transformed, 'titles', $titles, true, []);
             $this->setValueToArray($transformed, 'urls', $urls);
             $this->setValueToArray($transformed, 'descriptions', $descriptions);
-            $this->setValueToArray($transformed, 'ean', $ean, true, null, false);
             $this->setValueToArray($transformed, 'sku', $sku, true, '');
             $this->setValueToArray($transformed, 'deliveryTime', $deliveryTime);
             $this->setValueToArray($transformed, 'images', $images);
@@ -1991,5 +1992,14 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             default:
                 return false;
         }
+    }
+
+    /**
+     * For the catalog export we will do a duplicate EAN check in case the EAN attribute should be exported.
+     * @return bool
+     */
+    protected function checkForDuplicateEans()
+    {
+        return boolval($this->_settingsHelper->getCatalogExportUseAndValidateEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
     }
 }

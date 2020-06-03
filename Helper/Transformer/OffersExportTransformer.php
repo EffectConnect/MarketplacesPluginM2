@@ -70,7 +70,7 @@ class OffersExportTransformer extends CatalogExportTransformer
      */
     protected function transformOffers(array $products) : array
     {
-        return parent::transformCatalog($products, false);
+        return parent::transformCatalog($products);
     }
 
     /**
@@ -78,13 +78,12 @@ class OffersExportTransformer extends CatalogExportTransformer
      *
      * @param Connection $connection
      * @param string $exportFileName
-     * @param bool $checkForDuplicateEans
      * @param ProductInterface[] $catalog
      * @return bool|string
      */
-    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'offers', bool $checkForDuplicateEans = false, array $catalog = null)
+    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'offers', array $catalog = null)
     {
-        return parent::saveXmlSegmented($connection, $exportFileName, $checkForDuplicateEans, $catalog);
+        return parent::saveXmlSegmented($connection, $exportFileName, $catalog);
     }
 
     /**
@@ -227,4 +226,14 @@ class OffersExportTransformer extends CatalogExportTransformer
                 return false;
         }
     }
+
+    /**
+     * For the offers export we will never do a duplicate EAN check.
+     * @return bool
+     */
+    protected function checkForDuplicateEans()
+    {
+        return false;
+    }
+
 }
