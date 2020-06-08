@@ -428,3 +428,5 @@
 "Obtaining the log XML file (%1) failed.","Obtaining the log XML file (%1) failed.","module","EffectConnect_Marketplaces"
 "Create invoice","Create invoice","module","EffectConnect_Marketplaces"
 "Whether or not an invoice needs to be created when importing an order.","Whether or not an invoice needs to be created when importing an order.","module","EffectConnect_Marketplaces"
+"Use and validate EAN","Use and validate EAN","module","EffectConnect_Marketplaces"
+"Select whether the EAN attribute should be included in the catalog export. If set to 'Yes' then products without a valid EAN will not be exported.","Select whether the EAN attribute should be included in the catalog export. If set to 'Yes' then products without a valid EAN will not be exported.","module","EffectConnect_Marketplaces"
