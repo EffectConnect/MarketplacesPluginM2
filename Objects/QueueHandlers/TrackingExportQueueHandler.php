@@ -120,7 +120,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
             foreach ($orderLinesToExport->getItems() as $orderLineToExport)
             {
                 $shipmentTrack = $this->_shipmentTrackRepository->get($orderLineToExport->getTrackId());
-                if ($shipmentTrack->getEntityId() > 0 )
+                if ($shipmentTrack->getEntityId() > 0)
                 {
                     // Save that we are exporting this tracking code to prevent other cronjobs to process the same item.
                     // Bad luck if the export fails, we will not try to do this again.
