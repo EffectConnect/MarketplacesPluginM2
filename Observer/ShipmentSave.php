@@ -71,7 +71,7 @@ class ShipmentSave implements ObserverInterface
                     foreach ($ecOrderLines as $ecOrderLine)
                     {
                         // Only assign order lines that haven't been assigned to a shipment yet.
-                        if (intval($ecOrderLine->getShipmentId()) == 0 && $qtyAssigned < $qtyShipped) {
+                        if (intval($ecOrderLine->getShipmentId()) === 0 && $qtyAssigned < $qtyShipped) {
                             $ecOrderLine->setShipmentId($shipmentId);
                             $this->_orderLineRepository->save($ecOrderLine);
                             $qtyAssigned++;

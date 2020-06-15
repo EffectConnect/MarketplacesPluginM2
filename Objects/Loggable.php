@@ -68,13 +68,13 @@ class Loggable
      * @param LogType $type
      * @param LogCode $code
      * @param Process $process
-     * @param int $connectionId
+     * @param int|null $connectionId
      */
     public function __construct(
         LogType $type,
         LogCode $code,
         Process $process,
-        int $connectionId
+        int $connectionId = null
     ) {
         $this->_type            = $type;
         $this->_code            = $code;
