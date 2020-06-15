@@ -4,4 +4,12 @@
     <event name="catalog_product_save_after">
         <observer name="offerExport" instance="EffectConnect\Marketplaces\Observer\OfferExport" />
     </event>
+    <!-- Save shipment id to ec_marketplaces_order_lines -->
+    <event name="sales_order_shipment_save_after">
+        <observer name="shipmentSave" instance="EffectConnect\Marketplaces\Observer\ShipmentSave" />
+    </event>
+    <!-- Queue the sending of tracking codes to EffectConnect -->
+    <event name="sales_order_shipment_track_save_after">
+        <observer name="trackingExportQueue" instance="EffectConnect\Marketplaces\Observer\TrackingExportQueue" />
+    </event>
 </config>
