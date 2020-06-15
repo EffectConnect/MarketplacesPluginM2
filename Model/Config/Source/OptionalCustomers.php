@@ -84,7 +84,7 @@ class OptionalCustomers implements OptionSourceInterface
         // Prepend empty customer.
         array_unshift($customersArray, [
             'value' => ' ',
-            'label' => _('Select...'),
+            'label' => __('Select...'),
         ]);
 
         return $customersArray;
