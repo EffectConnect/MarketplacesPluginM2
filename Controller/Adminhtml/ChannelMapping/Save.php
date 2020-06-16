@@ -7,6 +7,7 @@ use Exception;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * Class Save
@@ -44,6 +45,11 @@ class Save extends ChannelMapping
                         break;
                 }
 
+                // Check if the customer exists in case a customer ID was filled in.
+                if (isset($formData['customer_id']) && trim($formData['customer_id']) != '') {
+                    $this->_customerRepository->getById(intval($formData['customer_id'])); // Will throw NoSuchEntityException in case the customer does not exist.
+                }
+
                 // Process channel mapping data
                 $channelMappingData = [
                     'connection_id'       => $formData['connection_id'],
@@ -52,7 +58,7 @@ class Save extends ChannelMapping
                     'external_fulfilment' => $formData['external_fulfilment'],
                     'customer_create'     => $formData['customer_create'],
                     'customer_group_id'   => (trim($formData['customer_group_id']) == '' ? null : $formData['customer_group_id']),
-                    'customer_id'         => (!isset($formData['customer_id']) || trim($formData['customer_id']) == '' ? null : $formData['customer_id']), // Can be empty in case of empty multiselect
+                    'customer_id'         => (trim($formData['customer_id']) == '' ? null : $formData['customer_id']),
                     'send_emails'         => $formData['send_emails'],
                     'discount_code'       => $formData['discount_code'],
                     'payment_method'      => (trim($formData['payment_method']) == '' ? null : $formData['payment_method']),
@@ -64,6 +70,8 @@ class Save extends ChannelMapping
                 $this->_channelMappingRepository->save($channelMapping);
 
                 $this->messageManager->addSuccessMessage(__('The channel mapping has been saved.'));
+            } catch (NoSuchEntityException $e) {
+                $this->messageManager->addErrorMessage(__('The channel mapping could not been saved, because the customer does not exist.'));
             } catch (AlreadyExistsException $e) {
                 $this->messageManager->addErrorMessage(__('The channel mapping could not been saved, because a channel mapping already exists for given combination of connection and channel.'));
             } catch (Exception $e) {

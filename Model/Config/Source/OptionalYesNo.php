@@ -17,7 +17,7 @@ class OptionalYesNo extends Yesnocustom
     {
         return array_map(function($item) {
             if (intval($item['value']) === 2) {
-                $item['label'] = _('Use default configuration');
+                $item['label'] = __('Use default configuration');
             }
             return $item;
         }, parent::toOptionArray());

@@ -8,6 +8,7 @@ use EffectConnect\Marketplaces\Api\ChannelMappingRepositoryInterface;
 use EffectConnect\Marketplaces\Helper\ApiHelper;
 use EffectConnect\Marketplaces\Helper\ChannelMappingHelper;
 use Magento\Backend\App\Action;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Backend\App\Action\Context;
 
@@ -48,6 +49,11 @@ abstract class ChannelMapping extends Action
     protected $_channelMappingHelper;
 
     /**
+     * @var CustomerRepositoryInterface
+     */
+    protected $_customerRepository;
+
+    /**
      * ChannelMapping constructor.
      * @param Context $context
      * @param PageFactory $resultPageFactory
@@ -56,6 +62,7 @@ abstract class ChannelMapping extends Action
      * @param ConnectionRepositoryInterface $connectionRepository
      * @param ApiHelper $apiHelper
      * @param ChannelMappingHelper $channelMappingHelper
+     * @param CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
         Context $context,
@@ -64,7 +71,8 @@ abstract class ChannelMapping extends Action
         ChannelRepositoryInterface $channelRepository,
         ConnectionRepositoryInterface $connectionRepository,
         ApiHelper $apiHelper,
-        ChannelMappingHelper $channelMappingHelper
+        ChannelMappingHelper $channelMappingHelper,
+        CustomerRepositoryInterface $customerRepository
     )
     {
         parent::__construct($context);
@@ -74,5 +82,6 @@ abstract class ChannelMapping extends Action
         $this->_connectionRepository     = $connectionRepository;
         $this->_apiHelper                = $apiHelper;
         $this->_channelMappingHelper     = $channelMappingHelper;
+        $this->_customerRepository       = $customerRepository;
     }
 }
