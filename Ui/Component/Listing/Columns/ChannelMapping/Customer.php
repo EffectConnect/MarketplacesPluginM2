@@ -2,7 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Ui\Component\Listing\Columns\ChannelMapping;
 
-use Magento\Customer\Model\ResourceModel\CustomerRepository;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
@@ -27,7 +27,7 @@ class Customer extends Column
     protected $_urlBuilder;
 
     /**
-     * @var CustomerRepository
+     * @var CustomerRepositoryInterface
      */
     protected $_customerRepository;
 
@@ -37,7 +37,7 @@ class Customer extends Column
      * @param ContextInterface $context
      * @param UiComponentFactory $uiComponentFactory
      * @param UrlInterface $urlBuilder
-     * @param CustomerRepository $customerRepository
+     * @param CustomerRepositoryInterface $customerRepository
      * @param array $components
      * @param array $data
      */
@@ -45,7 +45,7 @@ class Customer extends Column
         ContextInterface $context,
         UiComponentFactory $uiComponentFactory,
         UrlInterface $urlBuilder,
-        CustomerRepository $customerRepository,
+        CustomerRepositoryInterface $customerRepository,
         array $components       = [],
         array $data             = []
     ) {
