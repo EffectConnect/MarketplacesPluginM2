@@ -1172,6 +1172,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         ];
 
         foreach ($product->getAttributes() as $code => $attribute) {
+            if (is_null($code) || empty($code)) {
+                continue;
+            }
+
             $this->getProductAttributeData($attributes['attribute'], $product, $code, $attribute);
         }
 
@@ -1329,7 +1333,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $value                          = $this->getRawAttributeValue($product, $code);
 
-        if (is_null($value) || empty($value)) {
+        if (is_null($value) || empty($value) || (is_string($value) && empty(trim($value)))) {
             return;
         }
 
@@ -1354,17 +1358,19 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         } else {
             $valueArray                 = $this->getTranslatedAttributeValue($value, $attribute);
 
-            $attributesOutput[]         = [
-                'code'                  => [
-                    '_cdata'            => $code
-                ],
-                'names'                 => [
-                    'name'              => $titleArray
-                ],
-                'values'                => [
-                    'value'             => $valueArray
-                ]
-            ];
+            if (count($valueArray) > 0) {
+                $attributesOutput[]         = [
+                    'code'                  => [
+                        '_cdata'            => $code
+                    ],
+                    'names'                 => [
+                        'name'              => $titleArray
+                    ],
+                    'values'                => [
+                        'value'             => $valueArray
+                    ]
+                ];
+            }
         }
     }
 
@@ -1382,7 +1388,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         foreach ($this->_storeViewMapping as $language => $storeViewId) {
             $title = $this->getTranslatedAttributeTitle($code, $storeViewId, $attribute);
 
-            if (empty($title)) {
+            if (empty($title) || (is_string($title) && empty(trim($title)))) {
                 $title = '-';
             }
 
@@ -1460,6 +1466,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             $values                 = [];
 
             for ($i = 0; $i < count($valueCode); $i++) {
+                if (empty(trim(strval((array_values($codeArray)[$i]))))) {
+                    continue;
+                }
+
                 $values[]           = [
                     'code'          => [
                         '_cdata'    => array_values($codeArray)[$i]
@@ -1497,7 +1507,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             if (!is_null($value) && !is_object($value) && !is_array($value)) {
                 $stringValue                = is_bool($value) ? ($value ? 'true' : 'false') : strval($value);
 
-                if (is_null($stringValue) || empty($stringValue)) {
+                if (is_null($key) || (is_string($key) && empty(trim($key)))) {
+                    continue;
+                }
+
+                if (is_null($stringValue) || empty(trim($stringValue))) {
                     continue;
                 }
 
@@ -1536,7 +1550,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     ];
                 }
 
-                $values[]                   = $valueArray;
+                if (count($valueArray['names']['name']) > 0 & count($valueArray['values']['value']['names']['name']) > 0) {
+                    $values[]                   = $valueArray;
+                }
             }
         }
 
@@ -1555,7 +1571,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         foreach ($arrayValue as $itemValue) {
             if (!is_null($itemValue) && !is_object($itemValue) && !is_array($itemValue)) {
-                if (empty($itemValue)) {
+                if (empty($itemValue) || (is_string($itemValue) && empty(trim($itemValue)))) {
                     continue;
                 }
 
@@ -1577,7 +1593,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     ];
                 }
 
-                $values[]               = $valueArray;
+                if (count($valueArray['names']['name']) > 0) {
+                    $values[]           = $valueArray;
+                }
             }
         }
 
@@ -1599,7 +1617,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             $valueTitle         = $this->getAttributeValueTranslation($rawValue, $storeViewId, $attribute, true);
 
             $translations[]     = [
-                '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : strval($valueTitle),
+                '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle)),
                 '_attributes'   => [
                     'language'  => strval($language)
                 ]
@@ -1633,7 +1651,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 }
 
                 $translations[$index][]         = [
-                    '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : strval($valueTitle),
+                    '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle)),
                     '_attributes'   => [
                         'language'  => strval($language)
                     ]
