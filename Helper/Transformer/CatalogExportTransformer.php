@@ -1380,8 +1380,14 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $titles = [];
 
         foreach ($this->_storeViewMapping as $language => $storeViewId) {
+            $title = $this->getTranslatedAttributeTitle($code, $storeViewId, $attribute);
+
+            if (empty($title)) {
+                $title = '-';
+            }
+
             $titles[]           = [
-                '_cdata'        => $this->getTranslatedAttributeTitle($code, $storeViewId, $attribute),
+                '_cdata'        => $title,
                 '_attributes'   => [
                     'language'  => strval($language)
                 ]
@@ -1733,8 +1739,14 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 continue;
             }
 
+            $title = $storeViewCategory->getName();
+
+            if (is_null($title) || empty($title)) {
+                $title = '-';
+            }
+
             $translated['title'][]  =  [
-                '_cdata'            => strval($storeViewCategory->getName()),
+                '_cdata'            => strval($title),
                 '_attributes'       => [
                     'language'      => strval($language)
                 ]
