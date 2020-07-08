@@ -121,77 +121,94 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
      */
     public function execute()
     {
-        $oldest     = $this->_productOfferExportQueueItemRepository->getOldestUnexecuted();
         $queueSize  = intval($this->_settingsHelper->getOfferExportQueueSize() ?? static::DEFAULT_MAX_QUEUE_ITEMS_PER_EXECUTE);
-        $counter    = 0;
+        $oldest     = $this->_productOfferExportQueueItemRepository->getOldestUnexecuted($queueSize);
 
-        while ($counter < $queueSize && $oldest->getTotalCount() > 0) {
-            /** @var ProductOfferExportQueueItem $productOfferExportQueueItem */
-            foreach ($oldest->getItems() as $productOfferExportQueueItem) {
-                $productOfferExportQueueItem->setExecutedAt(time());
-
-                try {
-                    $this->_productOfferExportQueueItemRepository->save($productOfferExportQueueItem);
-                } catch (Exception $e) {
-                    continue;
-                }
-
-                $productId = intval($productOfferExportQueueItem->getCatalogProductEntityId());
-
-                try {
-                    $product = $this->_productRepository->getById($productId);
-                    $this->executeProductOfferExport($product);
-                } catch (Exception $e) {
-                    continue;
-                }
-            }
-
-            $counter++;
-
-            if ($counter >= $queueSize) {
-                return;
-            }
-
-            $oldest = $this->_productOfferExportQueueItemRepository->getOldestUnexecuted();
+        if ($oldest->getTotalCount() === 0) {
+            return;
         }
+
+        $products = [];
+
+        /** @var ProductOfferExportQueueItem $productOfferExportQueueItem */
+        foreach ($oldest->getItems() as $productOfferExportQueueItem) {
+            $productOfferExportQueueItem->setExecutedAt(time());
+
+            try {
+                $this->_productOfferExportQueueItemRepository->save($productOfferExportQueueItem);
+            } catch (Exception $e) {
+                continue;
+            }
+
+            $productId = intval($productOfferExportQueueItem->getCatalogProductEntityId());
+
+            try {
+                $product    = $this->_productRepository->getById($productId);
+                $products[] = $product;
+            } catch (Exception $e) {
+                continue;
+            }
+        }
+
+        $this->executeProductsOfferExport($products);
     }
 
     /**
-     * Export a product offer.
+     * Export products offers.
      *
-     * @param ProductInterface $product
+     * @param ProductInterface[] $products
      * @return void
      */
-    protected function executeProductOfferExport(ProductInterface $product)
+    protected function executeProductsOfferExport(array $products)
     {
-        $productId              = intval($product->getId());
-        $websiteIds             = array_map(function($websiteId) {
-            return intval($websiteId);
-        }, $product->getWebsiteIds() ?? []);
+        $exportConnections      = [];
+        $connectionProducts     = [];
 
-        /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
-        $searchCriteriaBuilder  = $this->_searchCriteriaBuilderFactory->create();
-        $searchCriteria         = $searchCriteriaBuilder
-            ->addFilter('is_active', true)
-            ->addFilter(
-                'website_id',
-                $websiteIds,
-                'eq'
-            )->create();
+        foreach ($products as $product) {
+            $websiteIds             = array_map(function($websiteId) {
+                return intval($websiteId);
+            }, $product->getWebsiteIds() ?? []);
 
-        $connections            = $this->_connectionRepository
-            ->getList($searchCriteria)
-            ->getItems();
+            /** @var SearchCriteriaBuilder $searchCriteriaBuilder */
+            $searchCriteriaBuilder  = $this->_searchCriteriaBuilderFactory->create();
+            $searchCriteria         = $searchCriteriaBuilder
+                ->addFilter('is_active', true)
+                ->addFilter(
+                    'website_id',
+                    $websiteIds,
+                    'eq'
+                )->create();
+
+            $connections            = $this->_connectionRepository
+                ->getList($searchCriteria)
+                ->getItems();
+
+            /** @var Connection $connection */
+            foreach ($connections as $connection) {
+                $exportConnections[$connection->getEntityId()] = $connection;
+
+                if (!isset($connectionProducts[$connection->getEntityId()])) {
+                    $connectionProducts[$connection->getEntityId()] = [];
+                }
+
+                $connectionProducts[$connection->getEntityId()][intval($product->getId())] = $product;
+            }
+        }
 
         /** @var Connection $connection */
-        foreach ($connections as $connection) {
+        foreach ($exportConnections as $connection) {
             $connectionId       = $connection->getEntityId();
+            $products           = $connectionProducts[$connectionId] ?? [];
+
+            if (count($products) === 0) {
+                continue;
+            }
 
             try {
                 $instance       = new ConnectionApi($connection, $this->_apiHelper, $this->_logHelper, $this->_settingsHelper);
-                $instance->exportOffer($product);
+                $instance->exportSpecificOffers($products);
             } catch (InvalidKeyException $e) {
-                $this->_logHelper->logOffersExportProductFailed(intval($connectionId), $productId, ['exception' => $e->getMessage()]);
+                $this->_logHelper->logOffersExportConnectionFailed(intval($connectionId), ['exception' => $e->getMessage()]);
                 continue;
             }
         }

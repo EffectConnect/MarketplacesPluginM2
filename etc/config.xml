@@ -23,7 +23,7 @@
             <offer_export_settings>
                 <schedule>0 * * * *</schedule>
                 <custom_schedule>0 * * * *</custom_schedule>
-                <queue_size>10</queue_size>
+                <queue_size>50</queue_size>
                 <page_size>50</page_size>
                 <msi_active />
                 <quantity_type>salable</quantity_type>

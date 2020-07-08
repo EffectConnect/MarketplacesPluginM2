@@ -23,9 +23,10 @@ interface ProductOfferExportQueueItemRepositoryInterface
     /**
      * Lists oldest ProductOfferExportQueueItem entry that is not executed yet.
      *
+     * @param int $count
      * @return SearchResultsInterface
      */
-    public function getOldestUnexecuted() : SearchResultsInterface;
+    public function getOldestUnexecuted(int $count = 1) : SearchResultsInterface;
 
     /**
      * Return ProductOfferExportQueueItem object.

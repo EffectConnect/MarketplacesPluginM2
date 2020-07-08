@@ -165,9 +165,10 @@ class ProductOfferExportQueueItemRepository implements ProductOfferExportQueueIt
     /**
      * Lists oldest ProductOfferExportQueueItem entry that is not executed yet.
      *
+     * @param int $count
      * @return SearchResultsInterface
      */
-    public function getOldestUnexecuted() : SearchResultsInterface
+    public function getOldestUnexecuted(int $count = 1) : SearchResultsInterface
     {
         $sortOrder      = $this->_sortOrderBuilder
             ->setField('created_at')
@@ -180,7 +181,7 @@ class ProductOfferExportQueueItemRepository implements ProductOfferExportQueueIt
                 null,
                 'null'
             )->addSortOrder($sortOrder)
-            ->setPageSize(1)
+            ->setPageSize($count)
             ->setCurrentPage(1)
             ->create();
 

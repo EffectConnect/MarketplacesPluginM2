@@ -160,6 +160,17 @@ class ConnectionApi
     }
 
     /**
+     * Export the offers for these products in the current connection.
+     *
+     * @param ProductInterface[] $products
+     * @return bool
+     */
+    public function exportSpecificOffers(array $products = null) : bool
+    {
+        return $this->exportProductsOffersProcedure($this, $products);
+    }
+
+    /**
      * @return bool|ResponseContainerInterface
      */
     public function getChannels()
