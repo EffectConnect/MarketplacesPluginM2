@@ -23,6 +23,7 @@
             <offer_export_settings>
                 <schedule>0 * * * *</schedule>
                 <custom_schedule>0 * * * *</custom_schedule>
+                <export_on_change>1</export_on_change>
                 <queue_size>50</queue_size>
                 <page_size>50</page_size>
                 <msi_active />

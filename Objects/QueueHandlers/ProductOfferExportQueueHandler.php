@@ -97,6 +97,10 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
      */
     public function schedule(int $productId)
     {
+        if (!boolval($this->_settingsHelper->getOfferExportExportOnChange() ?? false)) {
+            return;
+        }
+
         if ($this->_productOfferExportQueueItemRepository->isNonExecutedProductPresent($productId)) {
             return;
         }

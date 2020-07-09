@@ -212,6 +212,8 @@
 "Custom schedule","Custom schedule","module","EffectConnect_Marketplaces"
 "Determines when the catalog export process will run (using cron expression format).","Determines when the catalog export process will run (using cron expression format).","module","EffectConnect_Marketplaces"
 "Determines when the offer export process will run (using cron expression format).","Determines when the offer export process will run (using cron expression format).","module","EffectConnect_Marketplaces"
+"Export on product change","Export on product change","module","EffectConnect_Marketplaces"
+"Determines if the offer for a product should be exported when the product changes (event based).","Determines if the offer for a product should be exported when the product changes (event based).","module","EffectConnect_Marketplaces"
 "Cron expression is not valid.","Cron expression is not valid.","module","EffectConnect_Marketplaces"
 "Example of next three cycles","Example of next three cycles","module","EffectConnect_Marketplaces"
 "and","and","module","EffectConnect_Marketplaces"

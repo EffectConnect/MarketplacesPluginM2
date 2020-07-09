@@ -56,6 +56,9 @@ interface SettingPathsInterface
     /** Get the custom catalog export schedule, used when exporting the catalog and the schedule is set to custom. */
     const SETTING_OFFER_EXPORT_CUSTOM_SCHEDULE              = 'offer_export_settings/custom_schedule';
 
+    /** Get if the offer for a product should be exported when the product changes (event based). */
+    const SETTING_OFFER_EXPORT_EXPORT_ON_CHANGE              = 'offer_export_settings/export_on_change';
+
     /** Get the queue size of the offer export queue handler. */
     const SETTING_OFFER_EXPORT_QUEUE_SIZE                   = 'offer_export_settings/queue_size';
 
