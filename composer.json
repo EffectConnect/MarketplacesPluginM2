@@ -3,7 +3,7 @@
     "description": "EffectConnect Marketplaces Magento 2 plugin",
     "type": "magento2-module",
     "license": "proprietary",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "authors": [
         {
             "name": "Koek&Peer",

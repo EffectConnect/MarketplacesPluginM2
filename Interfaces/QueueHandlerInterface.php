@@ -11,7 +11,7 @@ interface QueueHandlerInterface
     /**
      * Defines the default maximum number of queue items handled in one execute.
      */
-    const DEFAULT_MAX_QUEUE_ITEMS_PER_EXECUTE = 10;
+    const DEFAULT_MAX_QUEUE_ITEMS_PER_EXECUTE = 50;
 
     /**
      * Schedule an item to be picked up by the queue handler.

@@ -117,19 +117,19 @@
                 <field id="queue_size" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Queue size</label>
                     <comment>The number of offer exports from the queue handled per minute. Offer exports are placed in the queue when a product changes (like stock, price, etc.).</comment>
-                    <validate>validate-digits validate-digits-range digits-range-1-50</validate>
+                    <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
                 </field>
-                <field id="page_size" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="page_size" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Page size</label>
                     <comment>The number of products per page when obtaining the catalog for the offer export.</comment>
                     <validate>validate-digits validate-digits-range digits-range-1-1000</validate>
                 </field>
-                <field id="msi_active" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="msi_active" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>MSI active</label>
                     <comment>Determines whether Magento MSI is available, enabled and active in the current Magento version and configuration.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\MsiActive</source_model>
                 </field>
-                <field id="quantity_type" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="quantity_type" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Quantity type</label>
                     <comment>Determines whether the physical stock quantity, the salable stock quantity or the traditional (non-MSI) quantity should be used. The salable quantity is the physical quantity minus the ordered quantity in non-shipped orders and is the default stock quantity source in Magento 2.3 and up.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\QuantityType</source_model>
@@ -137,7 +137,7 @@
                         <field id="msi_active">1</field>
                     </depends>
                 </field>
-                <field id="salable_source" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="salable_source" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Salable source</label>
                     <comment>Select whether to base a product's salable stock quantity on a website or on a stock. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\SalableSourceType</source_model>
@@ -146,7 +146,7 @@
                         <field id="quantity_type">salable</field>
                     </depends>
                 </field>
-                <field id="website" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="website" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Website (salable source)</label>
                     <comment>Select the website to base the salable stock quantity for a product on. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Websites</source_model>
@@ -156,7 +156,7 @@
                         <field id="salable_source">website</field>
                     </depends>
                 </field>
-                <field id="stock" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="stock" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Stock (salable source)</label>
                     <comment>Select the stock to base the salable stock quantity for a product on. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Stocks</source_model>
@@ -166,7 +166,7 @@
                         <field id="salable_source">stock</field>
                     </depends>
                 </field>
-                <field id="msi_type" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="msi_type" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>MSI stock selection</label>
                     <comment>Select the Magento MSI source whether the quantity should be used by predefined sources, sources in predefined stocks or sources defined on product level.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\MsiType</source_model>
@@ -175,7 +175,7 @@
                         <field id="quantity_type">physical</field>
                     </depends>
                 </field>
-                <field id="sources" translate="label comment" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="sources" translate="label comment" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Sources (MSI)</label>
                     <comment>Select the sources to base the stock quantity on for a product. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Sources</source_model>
@@ -185,7 +185,7 @@
                         <field id="quantity_type">physical</field>
                     </depends>
                 </field>
-                <field id="stocks" translate="label comment" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="stocks" translate="label comment" type="multiselect" sortOrder="120" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Stocks (MSI)</label>
                     <comment>Select the stocks to base the stock quantity on for a product. This is only used to obtain the stock quantity from. When orders are placed, the stock will be reduced using the Magento Source Selection Algorithm and the Channel Mapping. A separate store-view is needed to influence the source priority when it's not equal to the default one.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Stocks</source_model>
@@ -195,12 +195,12 @@
                         <field id="quantity_type">physical</field>
                     </depends>
                 </field>
-                <field id="stock_tracking" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="stock_tracking" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Stock tracking</label>
                     <comment>When enabled the products will use the individual stock. When disabled a fictional stock is used for all products in the export.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\EnabledDisabled</source_model>
                 </field>
-                <field id="fictional_stock" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="fictional_stock" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Fictional stock</label>
                     <comment>The stock amount used for all products in the export, when stock tracking is disabled.</comment>
                     <validate>validate-digits</validate>
