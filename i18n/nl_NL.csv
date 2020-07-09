@@ -212,6 +212,8 @@
 "Custom schedule","Aangepast schema","module","EffectConnect_Marketplaces"
 "Determines when the catalog export process will run (using cron expression format).","Bepaalt wanneer het catalogus export proces uitgevoerd zal worden (gebruik de cron-expressie-indeling).","module","EffectConnect_Marketplaces"
 "Determines when the offer export process will run (using cron expression format).","Bepaalt wanneer het offers export proces uitgevoerd zal worden (gebruik de cron-expressie-indeling).","module","EffectConnect_Marketplaces"
+"Export on product change","Exporteer wanneer product wijzigt","module","EffectConnect_Marketplaces"
+"Determines if the offer for a product should be exported when the product changes (event based).","Bepaalt of een productoffer geëxporteerd dient te worden zodra een product wijzigt (event gebaseerd).","module","EffectConnect_Marketplaces"
 "Cron expression is not valid.","Cron expressie is niet geldig.","module","EffectConnect_Marketplaces"
 "Example of next three cycles","Voorbeeld van de volgende drie cycli","module","EffectConnect_Marketplaces"
 "and","en","module","EffectConnect_Marketplaces"
