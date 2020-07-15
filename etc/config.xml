@@ -14,6 +14,7 @@
                 <attribute_description>description</attribute_description>
                 <attribute_ean>ean</attribute_ean>
                 <use_and_validate_ean>1</use_and_validate_ean>
+                <add_leading_zero_to_ean>0</add_leading_zero_to_ean>
                 <attribute_cost>cost</attribute_cost>
                 <attribute_delivery_time>delivery_time</attribute_delivery_time>
                 <attribute_price>price</attribute_price>

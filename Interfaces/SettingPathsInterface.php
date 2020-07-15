@@ -34,6 +34,9 @@ interface SettingPathsInterface
     /** Get the EAN attribute for products, used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_EAN_ATTRIBUTE              = 'catalog_export_settings/attribute_ean';
 
+    /** Add leading zero to EAN12, used when exporting the catalog. */
+    const SETTING_CATALOG_EXPORT_ADD_LEADING_ZERO_TO_EAN    = 'catalog_export_settings/add_leading_zero_to_ean';
+
     /** Get the cost attribute for products, used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_COST_ATTRIBUTE             = 'catalog_export_settings/attribute_cost';
 

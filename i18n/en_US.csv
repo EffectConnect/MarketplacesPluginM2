@@ -434,3 +434,5 @@
 "Select whether the EAN attribute should be included in the catalog export. If set to 'Yes' then products without a valid EAN will not be exported.","Select whether the EAN attribute should be included in the catalog export. If set to 'Yes' then products without a valid EAN will not be exported.","module","EffectConnect_Marketplaces"
 "The channel mapping could not been saved, because the customer does not exist.","The channel mapping could not been saved, because the customer does not exist.","module","EffectConnect_Marketplaces"
 "Enter the ID of the customer.","Enter the ID of the customer.","module","EffectConnect_Marketplaces"
+"Add leading zero to EAN","Add leading zero to EAN","module","EffectConnect_Marketplaces"
+"Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.","Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.","module","EffectConnect_Marketplaces"
