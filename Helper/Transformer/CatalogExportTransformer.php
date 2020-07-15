@@ -1043,6 +1043,16 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $ean                        = $this->getProductAttribute($product, $attributeCode, static::VALUE_TYPE_STRING, 13);
 
+        // Added leading zero in case EAN consists of 12 characters?
+        if (strlen($ean) === 12)
+        {
+            $addLeadingZero = boolval($this->_settingsHelper->getCatalogExportAddLeadingZeroToEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+            if ($addLeadingZero === true)
+            {
+                $ean = str_pad($ean, 13, '0', STR_PAD_LEFT);
+            }
+        }
+
         $valid                      = (new Barcode('EAN13'))->isValid($ean);
 
         if (!$valid) {

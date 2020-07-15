@@ -67,6 +67,14 @@
                     <comment>Select the attribute that is used for obtaining the product's EAN (European Article Number) when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Attribute</source_model>
                 </field>
+                <field id="add_leading_zero_to_ean" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Add leading zero to EAN</label>
+                    <depends>
+                        <field id="use_and_validate_ean">1</field>
+                    </depends>
+                    <comment>Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="attribute_cost" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Cost attribute</label>
                     <comment>Select the attribute that is used for obtaining the product's cost price when exporting the catalog to EffectConnect Marketplaces.</comment>
