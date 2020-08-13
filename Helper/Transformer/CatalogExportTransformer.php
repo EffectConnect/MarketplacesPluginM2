@@ -1701,7 +1701,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $attribute->setStoreId($storeViewId);
 
-        $attributeValueText         = $attributeValueIsOptionable ? $attributeSource->getOptionText($attributeValueData) : null;
+        try {
+            $attributeValueText     = $attributeValueIsOptionable ? $attributeSource->getOptionText($attributeValueData) : null;
+        } catch (Exception $e) {
+            $attributeValueText     = null;
+        }
 
         if ($attributeValueText instanceof Phrase) {
             $attributeValueText     = $attributeValueText->getText();
