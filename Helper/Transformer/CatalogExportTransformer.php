@@ -1747,7 +1747,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     $category   = null;
                 }
             }
-        } while (!is_null($category));
+        } while (!is_null($category) && !is_null($category->getId()));
 
         return $tree;
     }
