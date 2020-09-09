@@ -71,8 +71,8 @@ class Actions extends Column
                             ),
                             'label' => __('Delete'),
                             'confirm' => [
-                                'title' => __('Delete') . ' "${ $.$data.name }"',
-                                'message' => __('Are you sure you want to delete connection') . ' "${ $.$data.name }"?'
+                                'title' => sprintf(__('Delete') . ' %s', $item['name']),
+                                'message' => sprintf(__('Are you sure you want to delete connection') . ' %s?', $item['name'])
                             ]
                         ],
                         'export_catalog' => [
@@ -84,8 +84,8 @@ class Actions extends Column
                             ),
                             'label' => __('Export Catalog'),
                             'confirm' => [
-                                'title' => __('Export catalog for') . ' "${ $.$data.name }"',
-                                'message' => __('Are you sure you want to export the catalog for connection') . ' "${ $.$data.name }"?'
+                                'title' => sprintf(__('Export catalog for') . ' %s', $item['name']),
+                                'message' => sprintf(__('Are you sure you want to export the catalog for connection') . ' %s?', $item['name'])
                             ]
                         ],
                         'export_log' => [
@@ -97,8 +97,8 @@ class Actions extends Column
                             ),
                             'label' => __('Export Log'),
                             'confirm' => [
-                                'title' => __('Export log for') . ' "${ $.$data.name }"',
-                                'message' => __('Are you sure you want to export the log for connection') . ' "${ $.$data.name }"?'
+                                'title' => sprintf(__('Export log for') . ' %s', $item['name']),
+                                'message' => sprintf(__('Are you sure you want to export the log for connection') . ' %s?', $item['name'])
                             ]
                         ]
                     ];
