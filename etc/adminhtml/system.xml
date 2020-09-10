@@ -54,15 +54,23 @@
                     <comment>Select the attribute that is used for obtaining the product's description when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalMultilineAttribute</source_model>
                 </field>
-                <field id="use_and_validate_ean" translate="label comment" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Use and validate EAN</label>
-                    <comment>Select whether the EAN attribute should be included in the catalog export. If set to 'Yes' then products without a valid EAN will not be exported.</comment>
+                <field id="export_ean" translate="label comment" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Export EAN</label>
+                    <comment>Select whether the EAN attribute should be included in the catalog export.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="export_products_when_ean_invalid" translate="label comment" type="select" sortOrder="58" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>When EAN invalid</label>
+                    <depends>
+                        <field id="export_ean">1</field>
+                    </depends>
+                    <comment>EffectConnect only supports products with a valid EAN or products without an EAN.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\WhenEanInvalid</source_model>
                 </field>
                 <field id="attribute_ean" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>EAN attribute</label>
                     <depends>
-                        <field id="use_and_validate_ean">1</field>
+                        <field id="export_ean">1</field>
                     </depends>
                     <comment>Select the attribute that is used for obtaining the product's EAN (European Article Number) when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\Attribute</source_model>
@@ -70,7 +78,7 @@
                 <field id="add_leading_zero_to_ean" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Add leading zero to EAN</label>
                     <depends>
-                        <field id="use_and_validate_ean">1</field>
+                        <field id="export_ean">1</field>
                     </depends>
                     <comment>Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
