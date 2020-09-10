@@ -13,7 +13,8 @@
                 <attribute_title>name</attribute_title>
                 <attribute_description>description</attribute_description>
                 <attribute_ean>ean</attribute_ean>
-                <use_and_validate_ean>1</use_and_validate_ean>
+                <export_ean>1</export_ean>
+                <export_products_when_ean_invalid>1</export_products_when_ean_invalid>
                 <add_leading_zero_to_ean>0</add_leading_zero_to_ean>
                 <attribute_cost>cost</attribute_cost>
                 <attribute_delivery_time>delivery_time</attribute_delivery_time>
