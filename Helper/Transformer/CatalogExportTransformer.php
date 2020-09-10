@@ -451,6 +451,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         if ($this->checkForDuplicateEans() === true) {
             $options = isset($transformed['options']) ? ($transformed['options']['option'] ?? []) : [];
             foreach ($options as $index => $option) {
+                if (!isset($option['ean'])) {
+                    continue;
+                }
+
                 $ean        = $option['ean'];
 
                 if (in_array($ean, $eans)) {
@@ -558,6 +562,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             foreach ($transformedProducts as $productIndex => $product) {
                 $options = isset($product['options']) ? ($product['options']['option'] ?? []) : [];
                 foreach ($options as $index => $option) {
+                    if (!isset($option['ean'])) {
+                        continue;
+                    }
+
                     $ean = $option['ean'];
                     if (in_array($ean, $eans)) {
                         $this->writeToLog(LogCode::CATALOG_EXPORT_EAN_ALREADY_IN_USE(), [
@@ -660,34 +668,36 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      */
     protected function transformProductOption(ProductInterface $productOption)
     {
-        $identifier     = $this->getProductIdentifier($productOption);
-        $cost           = $this->getProductCost($productOption);
-        $price          = $this->getProductPrice($productOption);
-        $priceOriginal  = $this->getProductPriceOriginal($productOption);
-        $stock          = $this->getProductStock($productOption);
-        $titles         = $this->getProductTitles($productOption);
-        $urls           = $this->getProductUrls($productOption);
-        $descriptions   = $this->getProductDescriptions($productOption);
-        $sku            = $this->getProductSku($productOption);
-        $deliveryTime   = $this->getProductDeliveryTime($productOption);
-        $images         = $this->getProductImages($productOption);
-        $attributes     = $this->getProductAttributes($productOption);
+        $exportEan                      = boolval($this->_settingsHelper->getCatalogExportExportEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+        $exportProductsWhenEanInvalid   = boolval($this->_settingsHelper->getCatalogExportExportProductsWhenEanInvalid(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+        $identifier                     = $this->getProductIdentifier($productOption);
+        $cost                           = $this->getProductCost($productOption);
+        $price                          = $this->getProductPrice($productOption);
+        $priceOriginal                  = $this->getProductPriceOriginal($productOption);
+        $stock                          = $this->getProductStock($productOption);
+        $titles                         = $this->getProductTitles($productOption);
+        $urls                           = $this->getProductUrls($productOption);
+        $descriptions                   = $this->getProductDescriptions($productOption);
+        $sku                            = $this->getProductSku($productOption);
+        $deliveryTime                   = $this->getProductDeliveryTime($productOption);
+        $images                         = $this->getProductImages($productOption);
+        $attributes                     = $this->getProductAttributes($productOption);
+        $transformed                    = [];
 
-        $transformed    = [];
-
-        $exportEan      = boolval($this->_settingsHelper->getCatalogExportUseAndValidateEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
         if ($exportEan)
         {
             try {
                 $ean = $this->getProductEan($productOption);
                 $this->setValueToArray($transformed, 'ean', $ean, true, null, false);
-            } catch (CatalogExportEanNotValidException $e) {
-                $this->writeToLog(LogCode::CATALOG_EXPORT_EAN_NOT_VALID(), [
-                    intval($this->_connection->getEntityId()),
-                    intval($identifier),
-                    strval($e->getParameters()[1] ?? '')
-                ]);
-                return null;
+            } catch (Exception $e) {
+                if (!$exportProductsWhenEanInvalid) {
+                    $this->writeToLog(LogCode::CATALOG_EXPORT_EAN_NOT_VALID(), [
+                        intval($this->_connection->getEntityId()),
+                        intval($identifier),
+                        strval($e->getParameters()[1] ?? '')
+                    ]);
+                    return null;
+                }
             }
         }
 
@@ -2044,6 +2054,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      */
     protected function checkForDuplicateEans()
     {
-        return boolval($this->_settingsHelper->getCatalogExportUseAndValidateEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+        return boolval($this->_settingsHelper->getCatalogExportExportEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
     }
 }
