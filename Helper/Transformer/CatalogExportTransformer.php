@@ -1353,7 +1353,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $value                          = $this->getRawAttributeValue($product, $code);
 
-        if (is_null($value) || empty($value) || (is_string($value) && empty(trim($value)))) {
+        if ((is_null($value) || empty($value) || (is_string($value) && empty(trim($value)))) && ($value != '0')) {
             return;
         }
 
