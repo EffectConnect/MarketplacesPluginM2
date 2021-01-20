@@ -118,6 +118,7 @@
 "Catalog Export Obligated Attribute Not Set","Obligated attribute not set","module","EffectConnect_Marketplaces"
 "Catalog Export Ean Not Valid","EAN not valid","module","EffectConnect_Marketplaces"
 "Catalog Export Ean Already In Use","EAN already in use","module","EffectConnect_Marketplaces"
+"Catalog Export Product Option Already In Export","Product option already in export","module","EffectConnect_Marketplaces"
 "Catalog Export Product Has No Valid Options","Product has no valid options","module","EffectConnect_Marketplaces"
 "Catalog Export Product Not Found","Product not found","module","EffectConnect_Marketplaces"
 "Catalog Export File Creation Failed","File creation failed","module","EffectConnect_Marketplaces"

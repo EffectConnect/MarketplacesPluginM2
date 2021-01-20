@@ -11,6 +11,7 @@ namespace EffectConnect\Marketplaces\Enums;
  * @method static LogCode CATALOG_EXPORT_OBLIGATED_ATTRIBUTE_NOT_SET()
  * @method static LogCode CATALOG_EXPORT_EAN_NOT_VALID()
  * @method static LogCode CATALOG_EXPORT_EAN_ALREADY_IN_USE()
+ * @method static LogCode CATALOG_EXPORT_PRODUCT_OPTION_ALREADY_IN_EXPORT()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_HAS_NO_VALID_OPTIONS()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_NOT_FOUND()
  * @method static LogCode CATALOG_EXPORT_FILE_CREATION_FAILED()
@@ -86,6 +87,11 @@ class LogCode extends AbstractEnum
      * EAN for current product is already used by another product.
      */
     const CATALOG_EXPORT_EAN_ALREADY_IN_USE                     = 'catalog_export_ean_already_in_use';
+
+    /**
+     * Option ID is already added to the export (this can be the case when a simple product is linked to multiple configurable products).
+     */
+    const CATALOG_EXPORT_PRODUCT_OPTION_ALREADY_IN_EXPORT       = 'catalog_export_product_option_already_in_export';
 
     /**
      * A certain product has no (valid) options.

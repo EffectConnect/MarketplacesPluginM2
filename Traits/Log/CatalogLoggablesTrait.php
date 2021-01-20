@@ -331,6 +331,44 @@ trait CatalogLoggablesTrait
     }
 
     /**
+     * Log when an EAN is set in the catalog multiple times.
+     *
+     * @param int $connectionId
+     * @param int $productId
+     * @param mixed $optionId
+     * @return bool
+     */
+    public function logCatalogExportProductOptionAlreadyInExport(int $connectionId, int $productId, $optionId) : bool
+    {
+        $loggable = new Loggable(
+            LogType::WARNING(),
+            LogCode::CATALOG_EXPORT_PRODUCT_OPTION_ALREADY_IN_EXPORT(),
+            Process::EXPORT_CATALOG(),
+            $connectionId
+        );
+
+        $loggable->setFormattedMessage(
+            'Product %s can not be included in the catalog export because the option `%s` is already present in the export (connection %s).',
+            [
+                $productId,
+                $optionId,
+                $connectionId
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::PRODUCT(),
+            $productId
+        );
+
+        $loggable->setPayload(json_encode([
+            'option_id' => $optionId
+        ]));
+
+        return $this->insertLogItem($loggable);
+    }
+
+    /**
      * Log when a product has no (valid) product options.
      *
      * @param int $connectionId
