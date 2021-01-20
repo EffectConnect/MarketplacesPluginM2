@@ -216,6 +216,7 @@ class OffersExportTransformer extends CatalogExportTransformer
                 return $this->_logHelper->logOffersExportXmlGenerationFailed(...$parameters);
             case LogCode::CATALOG_EXPORT_EAN_NOT_VALID():
             case LogCode::CATALOG_EXPORT_EAN_ALREADY_IN_USE():
+            case LogCode::CATALOG_EXPORT_PRODUCT_OPTION_ALREADY_IN_EXPORT():
             case LogCode::CATALOG_EXPORT_PRODUCT_HAS_NO_VALID_OPTIONS():
             case LogCode::CATALOG_EXPORT_ATTRIBUTE_VALUE_REACHED_MAXIMUM():
             case LogCode::CATALOG_EXPORT_ATTRIBUTE_VALUE_REACHED_MINIMUM():

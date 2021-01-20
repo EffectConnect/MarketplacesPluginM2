@@ -352,6 +352,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         }
 
         $eans               = [];
+        $optionIds          = [];
         $directoryType      = 'var';
         $relativeFile       = 'effectconnect/marketplaces/export/' . $exportFileName . '.xml';
 
@@ -393,7 +394,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 /** @var ProductInterface $product */
                 foreach ($catalog as $product) {
                     if ($product instanceof ProductInterface) {
-                        $this->saveProductXml($product, $connection, $transaction, $eans);
+                        $this->saveProductXml($product, $connection, $transaction, $eans, $optionIds);
                     }
                 }
 
@@ -403,7 +404,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             /** @var ProductInterface $product */
             foreach ($catalog as $product) {
                 if ($product instanceof ProductInterface) {
-                    $this->saveProductXml($product, $connection, $transaction, $eans);
+                    $this->saveProductXml($product, $connection, $transaction, $eans, $optionIds);
                 }
             }
         }
@@ -428,7 +429,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param array $eans
      * @return void
      */
-    protected function saveProductXml(ProductInterface $product, Connection $connection, XmlGenerator &$transaction, array &$eans)
+    protected function saveProductXml(ProductInterface $product, Connection $connection, XmlGenerator &$transaction, array &$eans, array &$optionIds)
     {
         $parentIds      = $this->_configurableType->getParentIdsByChild($product->getId());
 
@@ -449,31 +450,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         }
 
         if ($this->checkForDuplicateEans() === true) {
-            $options = isset($transformed['options']) ? ($transformed['options']['option'] ?? []) : [];
-            foreach ($options as $index => $option) {
-                if (!isset($option['ean'])) {
-                    continue;
-                }
-
-                $ean        = $option['ean'];
-
-                if (in_array($ean, $eans)) {
-                    $this->writeToLog(LogCode::CATALOG_EXPORT_EAN_ALREADY_IN_USE(), [
-                        intval($this->_connection->getEntityId()),
-                        isset($option['identifier']['_cdata']) ? intval($option['identifier']['_cdata']) : 0,
-                        $ean
-                    ]);
-                    unset($transformed['options']['option'][$index]);
-                    continue;
-                }
-
-                $eans[]     = $ean;
-            }
-
-            if (isset($transformed['options']['option']) && count($transformed['options']['option']) === 0) {
-                unset($transformed['options']['option']);
-            }
+            $this->removeDuplicateOptions($transformed, 'ean', $eans, LogCode::CATALOG_EXPORT_EAN_ALREADY_IN_USE());
         }
+
+        $this->removeDuplicateOptions($transformed, 'identifier', $optionIds, LogCode::CATALOG_EXPORT_PRODUCT_OPTION_ALREADY_IN_EXPORT());
 
         if (empty($transformed['options'])) {
             $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_HAS_NO_VALID_OPTIONS(), [
@@ -500,6 +480,38 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 intval($product['identifier']) ?? 0
             ]);
             return;
+        }
+    }
+
+    protected function removeDuplicateOptions(array &$transformed, string $property, array &$alreadyUsed, LogCode $logCodeWhenDuplicate)
+    {
+        $options = isset($transformed['options']) ? ($transformed['options']['option'] ?? []) : [];
+        foreach ($options as $index => $option) {
+            if (!isset($option[$property])) {
+                continue;
+            }
+
+            $propertyValue  = $option[$property];
+
+            if (isset($propertyValue['_cdata'])) {
+                $propertyValue = $propertyValue['_cdata'];
+            }
+
+            if (in_array($propertyValue, $alreadyUsed)) {
+                $this->writeToLog($logCodeWhenDuplicate, [
+                    intval($this->_connection->getEntityId()),
+                    isset($option['identifier']['_cdata']) ? intval($option['identifier']['_cdata']) : 0,
+                    $propertyValue
+                ]);
+                unset($transformed['options']['option'][$index]);
+                continue;
+            }
+
+            $alreadyUsed[]  = $propertyValue;
+        }
+
+        if (isset($transformed['options']['option']) && count($transformed['options']['option']) === 0) {
+            unset($transformed['options']['option']);
         }
     }
 
@@ -2019,6 +2031,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 return $this->_logHelper->logCatalogExportEanNotValid(...$parameters);
             case LogCode::CATALOG_EXPORT_EAN_ALREADY_IN_USE():
                 return $this->_logHelper->logCatalogExportEanAlreadyInUse(...$parameters);
+            case LogCode::CATALOG_EXPORT_PRODUCT_OPTION_ALREADY_IN_EXPORT():
+                return $this->_logHelper->logCatalogExportProductOptionAlreadyInExport(...$parameters);
             case LogCode::CATALOG_EXPORT_PRODUCT_HAS_NO_VALID_OPTIONS():
                 return $this->_logHelper->logCatalogExportProductHasNoValidOptions(...$parameters);
             case LogCode::CATALOG_EXPORT_PRODUCT_NOT_FOUND():
