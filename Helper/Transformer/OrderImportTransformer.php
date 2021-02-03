@@ -967,9 +967,29 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
 
             $fees                       = [];
 
+            // Process order based fees.
             foreach ($order->getFees() as $fee) {
                 if ($fee->getAmount() !== 0 && $fee->getType() !== FeeType::COMMISSION()->getValue()) {
-                    $fees[$fee->getType()] = $sourceCurrency->convert($fee->getAmount(), $destinationCurrency);
+                    $feeAmount = $sourceCurrency->convert($fee->getAmount(), $destinationCurrency);
+                    if (isset($fees[$fee->getType()])) {
+                        $fees[$fee->getType()] += $feeAmount;
+                    } else {
+                        $fees[$fee->getType()] = $feeAmount;
+                    }
+                }
+            }
+
+            // Process order line based fees.
+            foreach ($order->getLines() as $orderLine) {
+                foreach ($orderLine->getFees() as $fee) {
+                    if ($fee->getAmount() !== 0 && $fee->getType() !== FeeType::COMMISSION()->getValue()) {
+                        $feeAmount = $sourceCurrency->convert($fee->getAmount(), $destinationCurrency);
+                        if (isset($fees[$fee->getType()])) {
+                            $fees[$fee->getType()] += $feeAmount;
+                        } else {
+                            $fees[$fee->getType()] = $feeAmount;
+                        }
+                    }
                 }
             }
 
