@@ -51,7 +51,7 @@
                 <send_emails>0</send_emails>
             </order_import_settings>
             <shipment_export_settings>
-                <queue_size>10</queue_size>
+                <queue_size>50</queue_size>
             </shipment_export_settings>
             <log_settings>
                 <log_expiration>three_days</log_expiration>

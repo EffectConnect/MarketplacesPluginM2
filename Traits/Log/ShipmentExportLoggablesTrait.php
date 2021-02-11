@@ -20,11 +20,9 @@ trait ShipmentExportLoggablesTrait
 {
     /**
      * @param int $connectionId
-     * @param OrderInterface $order
-     * @param ShipmentTrackInterface $shipmentTrack
      * @return bool
      */
-    public function logExportShipmentSucceeded(int $connectionId, OrderInterface $order, ShipmentTrackInterface $shipmentTrack) : bool
+    public function logExportShipmentSucceeded(int $connectionId) : bool
     {
         $loggable = new Loggable(
             LogType::SUCCESS(),
@@ -33,16 +31,11 @@ trait ShipmentExportLoggablesTrait
             $connectionId
         );
 
-        $loggable->setFormattedMessage(
-            'Shipment export to EffectConnect for order %s successful.',
-            [
-                $order->getIncrementId()
-            ]
-        );
+        $loggable->setMessage('Bulk shipment export to EffectConnect successful.');
 
         $loggable->setSubject(
-            LogSubjectType::SHIPMENT(),
-            $shipmentTrack->getShipment()->getEntityId()
+            LogSubjectType::CONNECTION(),
+            $connectionId
         );
 
         return $this->insertLogItem($loggable);
@@ -50,12 +43,10 @@ trait ShipmentExportLoggablesTrait
 
     /**
      * @param int $connectionId
-     * @param OrderInterface $order
-     * @param ShipmentTrackInterface $shipmentTrack
      * @param string $errorMessage
      * @return bool
      */
-    public function logExportShipmentFailed(int $connectionId, OrderInterface $order, ShipmentTrackInterface $shipmentTrack, string $errorMessage) : bool
+    public function logExportShipmentFailed(int $connectionId, string $errorMessage) : bool
     {
         $loggable = new Loggable(
             LogType::ERROR(),
@@ -65,16 +56,15 @@ trait ShipmentExportLoggablesTrait
         );
 
         $loggable->setFormattedMessage(
-            'Shipment export to EffectConnect for order %s failed with message [%s].',
+            'Bulk shipment export to EffectConnect failed with message [%s].',
             [
-                $order->getIncrementId(),
                 $errorMessage
             ]
         );
 
         $loggable->setSubject(
-            LogSubjectType::SHIPMENT(),
-            $shipmentTrack->getShipment()->getEntityId()
+            LogSubjectType::CONNECTION(),
+            $connectionId
         );
 
         return $this->insertLogItem($loggable);
@@ -138,31 +128,29 @@ trait ShipmentExportLoggablesTrait
     }
 
     /**
-     * @param ShipmentTrackInterface $shipmentTrack
-     * @param OrderInterface $order
+     * @param int $connectionId
      * @param string $errorMessage
      * @return bool
      */
-    public function logExportShipmentConnectionError(ShipmentTrackInterface $shipmentTrack, OrderInterface $order, string $errorMessage) : bool
+    public function logExportShipmentConnectionError(int $connectionId, string $errorMessage) : bool
     {
         $loggable = new Loggable(
             LogType::ERROR(),
             LogCode::SHIPMENT_EXPORT_FAILED(),
             Process::EXPORT_ORDER_SHIPMENT(),
-            null
+            $connectionId
         );
 
         $loggable->setFormattedMessage(
-            'Shipment export for order %s to EffectConnect failed because of connection error. Message: [%s].',
+            'Bulk shipment export to EffectConnect failed because of connection error. Message: [%s].',
             [
-                $order->getIncrementId(),
                 $errorMessage
             ]
         );
 
         $loggable->setSubject(
-            LogSubjectType::SHIPMENT(),
-            $shipmentTrack->getShipment()->getEntityId()
+            LogSubjectType::CONNECTION(),
+            $connectionId
         );
 
         return $this->insertLogItem($loggable);

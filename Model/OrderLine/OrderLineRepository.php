@@ -202,7 +202,7 @@ class OrderLineRepository implements OrderLineRepositoryInterface
                 '',
                 'null'
             )
-            ->setPageSize(1)
+            ->setPageSize(100)
             ->setCurrentPage(1)
             ->create();
         return $this->getList($searchCriteria);
