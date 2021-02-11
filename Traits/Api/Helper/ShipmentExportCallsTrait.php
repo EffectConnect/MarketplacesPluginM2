@@ -3,10 +3,8 @@
 namespace EffectConnect\Marketplaces\Traits\Api\Helper;
 
 use EffectConnect\Marketplaces\Exception\ApiCallFailedException;
-use EffectConnect\Marketplaces\Model\OrderLine;
 use EffectConnect\Marketplaces\Objects\ConnectionApi;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\ShipmentTrackInterface;
+use EffectConnect\Marketplaces\Objects\TrackingExportDataObject;
 
 /**
  * Trait ShipmentExportCallsTrait
@@ -16,12 +14,10 @@ trait ShipmentExportCallsTrait
 {
     /**
      * @param ConnectionApi $connectionApi
-     * @param OrderInterface $order
-     * @param ShipmentTrackInterface $shipmentTrack
-     * @param OrderLine $ecOrderLine
+     * @param TrackingExportDataObject $trackingExportDataObject
      * @return bool
      */
-    protected function exportShipmentProcedure(ConnectionApi $connectionApi, OrderInterface $order, ShipmentTrackInterface $shipmentTrack, OrderLine $ecOrderLine) : bool
+    protected function exportShipmentsProcedure(ConnectionApi $connectionApi, TrackingExportDataObject $trackingExportDataObject) : bool
     {
         $logHelper  = $connectionApi->getLogHelper();
         $apiWrapper = $connectionApi->getApiWrapper();
@@ -29,16 +25,13 @@ trait ShipmentExportCallsTrait
 
         try
         {
-            // Extract ID from the EC order line.
-            $ecOrderLineIdentifiers = [$ecOrderLine->getEcOrderLineId()];
-
-            // Send the tracking code to EffectConnect.
-            $apiWrapper->updateOrderLines($order->getEcMarketplacesIdentificationNumber(), $shipmentTrack->getCarrierCode(), $shipmentTrack->getTrackNumber(), $ecOrderLineIdentifiers);
-            $logHelper->logExportShipmentSucceeded($connection->getEntityId(), $order, $shipmentTrack);
+            // Send the tracking codes to EffectConnect.
+            $apiWrapper->updateOrderLines($trackingExportDataObject);
+            $logHelper->logExportShipmentSucceeded($connection->getEntityId());
         }
         catch (ApiCallFailedException $e)
         {
-            $logHelper->logExportShipmentFailed($connection->getEntityId(), $order, $shipmentTrack, $e->getMessage());
+            $logHelper->logExportShipmentFailed($connection->getEntityId(), $e->getMessage());
             return false;
         }
 

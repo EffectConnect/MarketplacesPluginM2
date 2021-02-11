@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Traits\Api\Wrapper;
 
 use EffectConnect\Marketplaces\Exception\ApiCallFailedException;
 use EffectConnect\Marketplaces\Objects\ApiWrapper;
+use EffectConnect\Marketplaces\Objects\TrackingExportDataObject;
 use EffectConnect\PHPSdk\Core\CallType\OrderCall;
 use EffectConnect\PHPSdk\Core\Interfaces\ResponseContainerInterface;
 use EffectConnect\PHPSdk\Core\Model\Filter\HasStatusFilter;
@@ -188,38 +189,33 @@ trait OrderCallsTrait
     }
 
     /**
-     * @param string $effectConnectNumber
-     * @param string $carrier
-     * @param string $trackingCode
-     * @param string[] $orderLineIds
+     * @param TrackingExportDataObject $trackingExportDataObject
      * @return OrderUpdated
      * @throws ApiCallFailedException
      */
-    public function updateOrderLines(string $effectConnectNumber, string $carrier, string $trackingCode, array $orderLineIds) : OrderUpdated
+    public function updateOrderLines(TrackingExportDataObject $trackingExportDataObject) : OrderUpdated
     {
         try
         {
             /* @var OrderCall $orderCall */
-            $core      = $this->getSdkCore();
-            $orderCall = $core->OrderCall();
-
-            $orderData = new OrderUpdate();
-            $orderData
-                ->setOrderIdentifierType(OrderUpdate::TYPE_EFFECTCONNECT_NUMBER)
-                ->setOrderIdentifier($effectConnectNumber);
-
+            $core        = $this->getSdkCore();
+            $orderCall   = $core->OrderCall();
             $orderUpdate = new OrderUpdateRequest();
-            $orderUpdate->addOrderUpdate($orderData);
 
             // For each order line update the track and trace data.
-            foreach ($orderLineIds as $orderLineId)
+            while ($trackingExportDataObject->valid())
             {
+                $shipmentTrack = $trackingExportDataObject->getCurrentShipmentTrack();
+                $ecOrderLine   = $trackingExportDataObject->getCurrentOrderLine();
+
                 $orderlinesToUpdate = (new OrderLineUpdate())
                     ->setOrderlineIdentifierType(OrderLineUpdate::TYPE_EFFECTCONNECT_LINE_ID)
-                    ->setOrderlineIdentifier($orderLineId)
-                    ->setTrackingNumber($trackingCode)
-                    ->setCarrier($carrier);
+                    ->setOrderlineIdentifier($ecOrderLine->getEcOrderLineId())
+                    ->setTrackingNumber($shipmentTrack->getTrackNumber())
+                    ->setCarrier($shipmentTrack->getCarrierCode());
                 $orderUpdate->addLineUpdate($orderlinesToUpdate);
+
+                $trackingExportDataObject->next();
             }
         }
         catch (Exception $e)

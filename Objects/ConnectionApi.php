@@ -187,14 +187,12 @@ class ConnectionApi
     }
 
     /**
-     * @param OrderInterface $order
-     * @param ShipmentTrackInterface $shipmentTrack
-     * @param OrderLine $ecOrderLine
+     * @param TrackingExportDataObject $trackingExportDataObject
      * @return bool
      */
-    public function exportShipment(OrderInterface $order, ShipmentTrackInterface $shipmentTrack, OrderLine $ecOrderLine)
+    public function exportShipments(TrackingExportDataObject $trackingExportDataObject)
     {
-        return $this->exportShipmentProcedure($this, $order, $shipmentTrack, $ecOrderLine);
+        return $this->exportShipmentsProcedure($this, $trackingExportDataObject);
     }
 
     /**

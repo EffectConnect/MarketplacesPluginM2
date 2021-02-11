@@ -2,13 +2,16 @@
 
 namespace EffectConnect\Marketplaces\Objects\QueueHandlers;
 
+use EffectConnect\Marketplaces\Api\ConnectionRepositoryInterface;
 use EffectConnect\Marketplaces\Api\OrderLineRepositoryInterface;
 use EffectConnect\Marketplaces\Helper\ApiHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
 use EffectConnect\Marketplaces\Interfaces\QueueHandlerInterface;
+use EffectConnect\Marketplaces\Objects\TrackingExportDataObject;
 use Exception;
 use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\ShipmentTrackRepositoryInterface;
 
@@ -49,6 +52,11 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
     protected $_shipmentTrackRepository;
 
     /**
+     * @var ConnectionRepositoryInterface
+     */
+    protected $_connectionRepository;
+
+    /**
      * TrackingExportQueueHandler constructor.
      *
      * @param ApiHelper $apiHelper
@@ -57,6 +65,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
      * @param OrderRepositoryInterface $orderRepositoryInterface
      * @param OrderLineRepositoryInterface $orderLineRepository
      * @param ShipmentTrackRepositoryInterface $shipmentTrackRepository
+     * @param ConnectionRepositoryInterface $connectionRepository
      */
     public function __construct(
         ApiHelper $apiHelper,
@@ -64,7 +73,8 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
         SettingsHelper $settingsHelper,
         OrderRepositoryInterface $orderRepositoryInterface,
         OrderLineRepositoryInterface $orderLineRepository,
-        ShipmentTrackRepositoryInterface $shipmentTrackRepository
+        ShipmentTrackRepositoryInterface $shipmentTrackRepository,
+        ConnectionRepositoryInterface $connectionRepository
     ) {
         $this->_apiHelper               = $apiHelper;
         $this->_logHelper               = $logHelper;
@@ -72,6 +82,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
         $this->_orderRepository         = $orderRepositoryInterface;
         $this->_orderLineRepository     = $orderLineRepository;
         $this->_shipmentTrackRepository = $shipmentTrackRepository;
+        $this->_connectionRepository    =$connectionRepository;
     }
 
     /**
@@ -112,16 +123,38 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
      */
     public function execute()
     {
-        $orderLinesToExport = $this->_orderLineRepository->getItemForTrackExport();
-        $queueSize          = intval($this->_settingsHelper->getShipmentExportQueueSize() ?? static::DEFAULT_MAX_QUEUE_ITEMS_PER_EXECUTE);
-        $counter            = 0;
-        while ($counter < $queueSize && $orderLinesToExport->getTotalCount() > 0)
+        $orderLinesToExport             = $this->_orderLineRepository->getItemForTrackExport();
+        $queueSize                      = intval($this->_settingsHelper->getShipmentExportQueueSize() ?? static::DEFAULT_MAX_QUEUE_ITEMS_PER_EXECUTE);
+        $orderLinesToExportByConnection = [];
+
+        // Group shipments by connection
+        if ($orderLinesToExport->getTotalCount() > 0)
         {
             foreach ($orderLinesToExport->getItems() as $orderLineToExport)
             {
                 $shipmentTrack = $this->_shipmentTrackRepository->get($orderLineToExport->getTrackId());
                 if ($shipmentTrack->getEntityId() > 0)
                 {
+                    try {
+                        // Get order from tracking info.
+                        $orderId = $shipmentTrack->getOrderId();
+                        $order = $this->_orderRepository->get($orderId);
+                    } catch (Exception $e) {
+                        $this->_logHelper->logExportShipmentOrderNotFoundError($shipmentTrack, $e->getMessage());
+                        continue;
+                    }
+
+                    $connectionId = intval($order->getEcMarketplacesConnectionId());
+
+                    if (!isset($orderLinesToExportByConnection[$connectionId])) {
+                        $orderLinesToExportByConnection[$connectionId] = new TrackingExportDataObject();
+                    }
+
+                    // Take config setting for queue size into account
+                    if (count($orderLinesToExportByConnection[$connectionId]) >= $queueSize) {
+                        continue;
+                    }
+
                     // Save that we are exporting this tracking code to prevent other cronjobs to process the same item.
                     // Bad luck if the export fails, we will not try to do this again.
                     $orderLineToExport->setTrackExportedAt(date('Y-m-d H:i:s', time()));
@@ -132,32 +165,39 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
                         continue;
                     }
 
-                    try {
-                        // Get order from tracking info.
-                        $orderId = $shipmentTrack->getOrderId();
-                        $order = $this->_orderRepository->get($orderId);
-                    } catch (Exception $e) {
-                        $this->_logHelper->logExportShipmentOrderNotFoundError($shipmentTrack, $e->getMessage());
-                        continue;
-                    }
-
-                    try {
-                        // Get the connection to export the tracking info to.
-                        $connectionApi = $this->_apiHelper->getConnectionApi(intval($order->getEcMarketplacesConnectionId()));
-                    } catch (Exception $e) {
-                        $this->_logHelper->logExportShipmentConnectionError($shipmentTrack, $order, $e->getMessage());
-                        continue;
-                    }
-
-                    // Export the shipment info to EffectConnect.
-                    $connectionApi->exportShipment($order, $shipmentTrack, $orderLineToExport);
+                    $orderLinesToExportByConnection[$connectionId]->addTrackingExportData(
+                        $shipmentTrack,
+                        $orderLineToExport
+                    );
                 }
             }
-            $counter++;
-            if ($counter >= $queueSize) {
-                return;
+        }
+
+        // API call for each conenction
+        foreach ($orderLinesToExportByConnection as $connectionId => $trackingExportDataObject)
+        {
+            // Only export to existing and active connections
+            try {
+                $connection = $this->_connectionRepository->getById($connectionId);
+            } catch (NoSuchEntityException $e) {
+                $this->_logHelper->logExportShipmentConnectionError($connectionId, $e->getMessage());
+                continue;
             }
-            $orderLinesToExport = $this->_orderLineRepository->getItemForTrackExport();
+
+            if (intval($connection->getIsActive()) === 0) {
+                continue;
+            }
+
+            try {
+                // Get the connection to export the tracking info to.
+                $connectionApi = $this->_apiHelper->getConnectionApi($connectionId);
+            } catch (Exception $e) {
+                $this->_logHelper->logExportShipmentConnectionError($connectionId, $e->getMessage());
+                continue;
+            }
+
+            // Export the shipments info to EffectConnect.
+            $connectionApi->exportShipments($trackingExportDataObject);
         }
     }
 }
