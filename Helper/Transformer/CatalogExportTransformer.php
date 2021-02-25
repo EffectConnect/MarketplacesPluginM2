@@ -1954,7 +1954,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 break;
             case static::VALUE_TYPE_STRING:
             default:
-                $attributeValue = strval($attributeValue);
+                $attributeValue = trim(strval($attributeValue));
                 if ($max > 0 && strlen($attributeValue) > $max) {
                     $this->writeToLog(LogCode::CATALOG_EXPORT_ATTRIBUTE_VALUE_REACHED_MAXIMUM(), [
                         intval($this->_connection->getEntityId()),
