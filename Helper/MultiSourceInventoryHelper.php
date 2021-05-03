@@ -286,7 +286,8 @@ class MultiSourceInventoryHelper extends TraditionalInventoryHelper
     public function traditionalActive(int $websiteId) : bool
     {
         return
-            !$this->isMsiActive() ||
+            !$this->isMsiAvailable() ||
+            !$this->isMsiEnabled() ||
             $this->_settingsHelper->getOfferExportQuantityType(SettingsHelper::SCOPE_WEBSITE, $websiteId) === QuantityType::TRADITIONAL()->getValue();
     }
 
