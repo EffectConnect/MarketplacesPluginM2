@@ -48,7 +48,14 @@ class ConnectionSwitcher extends AbstractModifier
                         ]
                     ],
                     [
-                        'target'   => 'ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id',
+                        'target'   => 'ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_internal',
+                        'callback' => 'filterByConnectionId',
+                        'params'   => [
+                            strval($connection->getEntityId())
+                        ]
+                    ],
+                    [
+                        'target'   => 'ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external',
                         'callback' => 'filterByConnectionId',
                         'params'   => [
                             strval($connection->getEntityId())

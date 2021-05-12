@@ -2,6 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Model;
 
+use EffectConnect\Marketplaces\Enums\ExternalFulfilment;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Model\Context;
@@ -11,7 +12,8 @@ use Magento\Framework\Registry;
  * Class ChannelMapping
  * @method string|null getConnectionId()
  * @method string|null getChannelId()
- * @method string|null getStoreviewId()
+ * @method string|null getStoreviewIdInternal()
+ * @method string|null getStoreviewIdExternal()
  * @method string|null getExternalFulfilment()
  * @method string|null getCustomerCreate()
  * @method string|null getCustomerGroupId()
@@ -22,7 +24,8 @@ use Magento\Framework\Registry;
  * @method string|null getPaymentMethod()
  * @method Connection setConnectionId(string|null $string)
  * @method Connection setChannelId(string|null $string)
- * @method Connection setStoreviewId(string|null $string)
+ * @method Connection setStoreviewIdInternal(string|null $string)
+ * @method Connection setStoreviewIdExternal(string|null $string)
  * @method Connection setExternalFulfilment(string|null $string)
  * @method Connection setCustomerCreate(string|null $string)
  * @method Connection setCustomerGroupId(string|null $string)
@@ -72,7 +75,7 @@ class ChannelMapping extends AbstractModel
 
             // By default use currently loaded storeview id from model, but this can be overriden by $storeviewId (can be used in case the model data is not loaded yet).
             if ($storeviewId == 0) {
-                $storeviewId = intval($this->getStoreviewId());
+                $storeviewId = $this->getStoreviewId();
             }
 
             // Get default 'customer_create' setting.
@@ -99,7 +102,7 @@ class ChannelMapping extends AbstractModel
 
             // By default use currently loaded storeview id from model, but this can be overriden by $storeviewId (can be used in case the model data is not loaded yet).
             if ($storeviewId == 0) {
-                $storeviewId = intval($this->getStoreviewId());
+                $storeviewId = $this->getStoreviewId();
             }
 
             // Get default 'customer_group_id' setting.
@@ -126,7 +129,7 @@ class ChannelMapping extends AbstractModel
 
             // By default use currently loaded storeview id from model, but this can be overriden by $storeviewId (can be used in case the model data is not loaded yet).
             if ($storeviewId == 0) {
-                $storeviewId = intval($this->getStoreviewId());
+                $storeviewId = $this->getStoreviewId();
             }
 
             // Get default 'send_emails' setting.
@@ -151,7 +154,7 @@ class ChannelMapping extends AbstractModel
 
             // By default use currently loaded storeview id from model, but this can be overriden by $storeviewId (can be used in case the model data is not loaded yet).
             if ($storeviewId == 0) {
-                $storeviewId = intval($this->getStoreviewId());
+                $storeviewId = $this->getStoreviewId();
             }
 
             // Get default setting.
@@ -176,7 +179,7 @@ class ChannelMapping extends AbstractModel
 
             // By default use currently loaded storeview id from model, but this can be overriden by $storeviewId (can be used in case the model data is not loaded yet).
             if ($storeviewId == 0) {
-                $storeviewId = intval($this->getStoreviewId());
+                $storeviewId = $this->getStoreviewId();
             }
 
             // Get default setting.
@@ -185,5 +188,16 @@ class ChannelMapping extends AbstractModel
 
         // Just return currently loaded data.
         return $this->getShippingMethod();
+    }
+
+    /**
+     * @return int
+     */
+    public function getStoreviewId()
+    {
+        if ($this->getExternalFulfilment() == ExternalFulfilment::EXTERNAL_ORDERS) {
+            return intval($this->getStoreviewIdExternal());
+        }
+        return intval($this->getStoreviewIdInternal());
     }
 }

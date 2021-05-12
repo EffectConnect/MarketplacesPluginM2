@@ -104,11 +104,70 @@
                 <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\Channels</item>
             </argument>
         </field>
-        <field name="storeview_id">
+        <field name="external_fulfilment">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">External fulfilment</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">number</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                    <item name="switcherConfig" xsi:type="array">
+                        <item name="enabled" xsi:type="boolean">true</item>
+                        <item name="rules" xsi:type="array">
+                            <item name="0" xsi:type="array">
+                                <item name="value" xsi:type="string">internal_orders</item>
+                                <item name="actions" xsi:type="array">
+                                    <item name="0" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_internal</item>
+                                        <item name="callback" xsi:type="string">show</item>
+                                    </item>
+                                    <item name="1" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external</item>
+                                        <item name="callback" xsi:type="string">hide</item>
+                                    </item>
+                                </item>
+                            </item>
+                            <item name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">external_orders</item>
+                                <item name="actions" xsi:type="array">
+                                    <item name="0" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_internal</item>
+                                        <item name="callback" xsi:type="string">hide</item>
+                                    </item>
+                                    <item name="1" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external</item>
+                                        <item name="callback" xsi:type="string">show</item>
+                                    </item>
+                                </item>
+                            </item>
+                            <item name="2" xsi:type="array">
+                                <item name="value" xsi:type="string">external_and_internal_orders</item>
+                                <item name="actions" xsi:type="array">
+                                    <item name="0" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_internal</item>
+                                        <item name="callback" xsi:type="string">show</item>
+                                    </item>
+                                    <item name="1" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external</item>
+                                        <item name="callback" xsi:type="string">show</item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ExternalFulfilment</item>
+            </argument>
+        </field>
+        <field name="storeview_id_internal">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="component" xsi:type="string">EffectConnect_Marketplaces/js/channelmapping_storeview</item>
-                    <item name="label" xsi:type="string" translate="true">Storeview</item>
+                    <item name="label" xsi:type="string" translate="true">Storeview for internal orders</item>
                     <item name="visible" xsi:type="boolean">true</item>
                     <item name="dataType" xsi:type="string">number</item>
                     <item name="formElement" xsi:type="string">select</item>
@@ -123,10 +182,11 @@
                 <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
             </argument>
         </field>
-        <field name="external_fulfilment">
+        <field name="storeview_id_external">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="label" xsi:type="string" translate="true">External fulfilment</item>
+                    <item name="component" xsi:type="string">EffectConnect_Marketplaces/js/channelmapping_storeview</item>
+                    <item name="label" xsi:type="string" translate="true">Storeview for externally fulfilled orders</item>
                     <item name="visible" xsi:type="boolean">true</item>
                     <item name="dataType" xsi:type="string">number</item>
                     <item name="formElement" xsi:type="string">select</item>
@@ -134,8 +194,11 @@
                     <item name="validation" xsi:type="array">
                         <item name="required-entry" xsi:type="boolean">true</item>
                     </item>
+                    <item name="tooltip" xsi:type="array">
+                        <item name="description" xsi:type="string" translate="true">This list only contains the storeviews corresponding to the website linked to the selected connection.</item>
+                    </item>
                 </item>
-                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ExternalFulfilment</item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
             </argument>
         </field>
         <field name="discount_code">

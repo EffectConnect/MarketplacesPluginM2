@@ -3,6 +3,7 @@
 namespace EffectConnect\Marketplaces\Controller\Adminhtml\ChannelMapping;
 
 use EffectConnect\Marketplaces\Controller\Adminhtml\ChannelMapping;
+use EffectConnect\Marketplaces\Enums\ExternalFulfilment;
 use Exception;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
@@ -52,17 +53,18 @@ class Save extends ChannelMapping
 
                 // Process channel mapping data
                 $channelMappingData = [
-                    'connection_id'       => $formData['connection_id'],
-                    'channel_id'          => $formData['channel_id'],
-                    'storeview_id'        => $formData['storeview_id'],
-                    'external_fulfilment' => $formData['external_fulfilment'],
-                    'customer_create'     => $formData['customer_create'],
-                    'customer_group_id'   => (trim($formData['customer_group_id']) == '' ? null : $formData['customer_group_id']),
-                    'customer_id'         => (trim($formData['customer_id']) == '' ? null : $formData['customer_id']),
-                    'send_emails'         => $formData['send_emails'],
-                    'discount_code'       => $formData['discount_code'],
-                    'payment_method'      => (trim($formData['payment_method']) == '' ? null : $formData['payment_method']),
-                    'shipping_method'     => (trim($formData['shipping_method']) == '' ? null : $formData['shipping_method']),
+                    'connection_id'         => $formData['connection_id'],
+                    'channel_id'            => $formData['channel_id'],
+                    'storeview_id_internal' => $formData['external_fulfilment'] == ExternalFulfilment::EXTERNAL_ORDERS() ? null : $formData['storeview_id_internal'],
+                    'storeview_id_external' => $formData['external_fulfilment'] == ExternalFulfilment::INTERNAL_ORDERS() ? null : $formData['storeview_id_external'],
+                    'external_fulfilment'   => $formData['external_fulfilment'],
+                    'customer_create'       => $formData['customer_create'],
+                    'customer_group_id'     => (trim($formData['customer_group_id']) == '' ? null : $formData['customer_group_id']),
+                    'customer_id'           => (trim($formData['customer_id']) == '' ? null : $formData['customer_id']),
+                    'send_emails'           => $formData['send_emails'],
+                    'discount_code'         => $formData['discount_code'],
+                    'payment_method'        => (trim($formData['payment_method']) == '' ? null : $formData['payment_method']),
+                    'shipping_method'       => (trim($formData['shipping_method']) == '' ? null : $formData['shipping_method']),
                 ];
                 $channelMapping->addData($channelMappingData);
 

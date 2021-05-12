@@ -2,6 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Setup;
 
+use EffectConnect\Marketplaces\Enums\ExternalFulfilment;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
@@ -45,13 +46,17 @@ class UpgradeData implements UpgradeDataInterface
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
     ) {
+        $setup->startSetup();
+
         $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
         $this->createDeliveryTimeAttribute($eavSetup);
         $this->createEanAttribute($eavSetup);
 
-        if (version_compare($context->getVersion(), "0.0.1", "<")) {
-            // Version dependent data mutations.
+        if (version_compare($context->getVersion(), "1.0.25", "<")) {
+            $this->migrateChannelMappingStoreviewId($setup);
         }
+
+        $setup->endSetup();
     }
 
     /**
@@ -148,5 +153,25 @@ class UpgradeData implements UpgradeDataInterface
                 'apply_to'                  => ''
             ]
         );
+    }
+
+    /**
+     * Migrate storeview_id data to storeview_id_internal and storeview_id_external.
+     *
+     * @param ModuleDataSetupInterface $setup
+     */
+    protected function migrateChannelMappingStoreviewId(ModuleDataSetupInterface $setup)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_channel_mapping');
+        if ($setup->getConnection()->isTableExists($tableName) == true) {
+            // Set storeview_id_internal
+            $setup->getConnection()->query('UPDATE ' . $tableName . ' SET `storeview_id_internal` = `storeview_id` WHERE `external_fulfilment` != "' . ExternalFulfilment::EXTERNAL_ORDERS() . '"');
+
+            // Set storeview_id_external
+            $setup->getConnection()->query('UPDATE ' . $tableName . ' SET `storeview_id_external` = `storeview_id` WHERE `external_fulfilment` != "' . ExternalFulfilment::INTERNAL_ORDERS() . '"');
+
+            // Remove storeview_id
+            $setup->getConnection()->query('UPDATE ' . $tableName . ' SET `storeview_id` = NULL WHERE 1');
+        }
     }
 }
