@@ -441,3 +441,7 @@
 "Enter the ID of the customer.","Enter the ID of the customer.","module","EffectConnect_Marketplaces"
 "Add leading zero to EAN","Add leading zero to EAN","module","EffectConnect_Marketplaces"
 "Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.","Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.","module","EffectConnect_Marketplaces"
+"Storeview internal","Storeview internal","module","EffectConnect_Marketplaces"
+"Storeview external","Storeview external","module","EffectConnect_Marketplaces"
+"Storeview for internal orders","Storeview for internal orders","module","EffectConnect_Marketplaces"
+"Storeview for externally fulfilled orders","Storeview for externally fulfilled orders","module","EffectConnect_Marketplaces"

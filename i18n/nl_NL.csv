@@ -441,3 +441,7 @@
 "Enter the ID of the customer.","Vul het ID van de klant in.","module","EffectConnect_Marketplaces"
 "Add leading zero to EAN","Voorloopnul toevoegen aan EAN","module","EffectConnect_Marketplaces"
 "Select whether the plugin should automatically add a leading zero to an EAN that consists of 12 characters.","Selecteer of een EAN waarde die uit 12 tekens bestaat aangevuld moet worden met een voorloopnul.","module","EffectConnect_Marketplaces"
+"Storeview internal","Winkelaanzicht intern","module","EffectConnect_Marketplaces"
+"Storeview external","Winkelaanzicht extern","module","EffectConnect_Marketplaces"
+"Storeview for internal orders","Winkelaanzicht voor interne orders","module","EffectConnect_Marketplaces"
+"Storeview for externally fulfilled orders","Winkelaanzicht voor orders met logistiek door marketplace","module","EffectConnect_Marketplaces"
