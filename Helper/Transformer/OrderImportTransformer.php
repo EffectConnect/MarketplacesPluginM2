@@ -388,8 +388,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         // Needed variables for importing the order.
         $this->_channelMapping     = $channelMappingForCurrentOrder;
         $this->_connection         = $connection;
-        $this->_storeId            = $this->getStoreviewId($channelMappingForCurrentOrder);
         $this->_effectConnectOrder = $effectConnectOrder;
+        $this->_storeId            = $this->getStoreviewId($channelMappingForCurrentOrder);
 
         // Check if we need to import the order.
         if ($this->skipOrderImport()) {
@@ -1263,9 +1263,12 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     {
         try
         {
-            $channelMappingStoreviewId = intval($channelMapping->getStoreviewId());
-            if ($channelMappingStoreviewId > 0)
-            {
+            // Check channel mapping to known which storeview to import order to (depends on external fulfilment).
+            $channelMappingStoreviewId = intval($channelMapping->getStoreviewIdInternal());
+            if ($this->orderHasExternalFulfilmentTag()) {
+                $channelMappingStoreviewId = intval($channelMapping->getStoreviewIdExternal());
+            }
+            if ($channelMappingStoreviewId > 0) {
                 return $channelMappingStoreviewId;
             }
             // Use default store within current connection.

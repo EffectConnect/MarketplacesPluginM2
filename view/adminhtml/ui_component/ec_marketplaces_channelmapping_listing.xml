@@ -73,19 +73,6 @@
                 </item>
             </argument>
         </column>
-        <column name="storeview_id">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="label" xsi:type="string" translate="true">Storeview</item>
-                    <item name="sortOrder" xsi:type="number">40</item>
-                </item>
-            </argument>
-        </column>
         <column name="external_fulfilment">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ExternalFulfilment</item>
@@ -96,6 +83,32 @@
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="label" xsi:type="string" translate="true">External fulfilment</item>
                     <item name="sortOrder" xsi:type="number">40</item>
+                </item>
+            </argument>
+        </column>
+        <column name="storeview_id_internal">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="sorting" xsi:type="string">asc</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="label" xsi:type="string" translate="true">Storeview internal</item>
+                    <item name="sortOrder" xsi:type="number">44</item>
+                </item>
+            </argument>
+        </column>
+        <column name="storeview_id_external">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="sorting" xsi:type="string">asc</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="label" xsi:type="string" translate="true">Storeview external</item>
+                    <item name="sortOrder" xsi:type="number">46</item>
                 </item>
             </argument>
         </column>
