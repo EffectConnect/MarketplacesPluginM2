@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Helper\Transformer;
 
 use EffectConnect\Marketplaces\Api\ChannelMappingRepositoryInterface;
 use EffectConnect\Marketplaces\Api\OrderLineRepositoryInterface;
+use EffectConnect\Marketplaces\Enums\Api\FilterTag;
 use EffectConnect\Marketplaces\Enums\ExternalFulfilment;
 use EffectConnect\Marketplaces\Enums\FeeType;
 use EffectConnect\Marketplaces\Exception\OrderImportAddAddressToQuoteFailedException;
@@ -1540,7 +1541,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $orderTags                     = $orderIdentifiers = $this->_effectConnectOrder->getTags();
         foreach ($orderTags as $orderTag)
         {
-            if ($orderTag->getTag() == 'external_fulfilment')
+            if ($orderTag->getTag() == FilterTag::EXTERNAL_FULFILMENT_TAG())
             {
                 $orderHasExternalFulfilmentTag = true;
                 break;

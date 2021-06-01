@@ -2,11 +2,13 @@
 
 namespace EffectConnect\Marketplaces\Traits\Api\Wrapper;
 
+use DateTime;
 use EffectConnect\Marketplaces\Exception\ApiCallFailedException;
 use EffectConnect\Marketplaces\Objects\ApiWrapper;
 use EffectConnect\Marketplaces\Objects\TrackingExportDataObject;
 use EffectConnect\PHPSdk\Core\CallType\OrderCall;
 use EffectConnect\PHPSdk\Core\Interfaces\ResponseContainerInterface;
+use EffectConnect\PHPSdk\Core\Model\Filter\FromDateFilter;
 use EffectConnect\PHPSdk\Core\Model\Filter\HasStatusFilter;
 use EffectConnect\PHPSdk\Core\Model\Filter\HasTagFilter;
 use EffectConnect\PHPSdk\Core\Model\Filter\TagFilterValue;
@@ -26,12 +28,14 @@ use Exception;
 trait OrderCallsTrait
 {
     /**
-     * @param bool $onlyStatusPaid
+     * @param array $status
      * @param array $excludeTags
+     * @param array $includeTags
+     * @param DateTime|null $fromDate
      * @return OrderListReadResponseContainer
      * @throws ApiCallFailedException
      */
-    public function orderListRead($onlyStatusPaid = false, $excludeTags = []) : OrderListReadResponseContainer
+    public function orderListRead(array $status = [], array $excludeTags = [], array $includeTags = [], DateTime $fromDate = null) : OrderListReadResponseContainer
     {
         try
         {
@@ -40,28 +44,37 @@ trait OrderCallsTrait
             $orderListCall = $core->OrderListCall();
             $orderList     = new OrderList();
 
-            if ($onlyStatusPaid) {
+            if ($status) {
                 $statusOpenFilter = new HasStatusFilter();
-                $statusOpenFilter->setFilterValue([
-                    HasStatusFilter::STATUS_PAID
-                ]);
+                $statusOpenFilter->setFilterValue($status);
                 $orderList->addFilter($statusOpenFilter);
             }
 
-            if ($excludeTags) {
-                $excludeTagsFilter = new HasTagFilter();
+            if ($excludeTags || $includeTags) {
+                $tagsFilter = new HasTagFilter();
                 foreach ($excludeTags as $excludeTag) {
                     $filterValue = new TagFilterValue();
                     $filterValue->setTagName($excludeTag);
                     $filterValue->setExclude(true);
-                    $excludeTagsFilter->setFilterValue($filterValue);
+                    $tagsFilter->setFilterValue($filterValue);
                 }
-                $orderList->addFilter($excludeTagsFilter);
+                foreach ($includeTags as $includeTag) {
+                    $filterValue = new TagFilterValue();
+                    $filterValue->setTagName($includeTag);
+                    $tagsFilter->setFilterValue($filterValue);
+                }
+                $orderList->addFilter($tagsFilter);
+            }
+
+            if ($fromDate instanceof DateTime) {
+                $fromDateFilter = new FromDateFilter();
+                $fromDateFilter->setFilterValue($fromDate);
+                $orderList->addFilter($fromDateFilter);
             }
         }
         catch (Exception $e)
         {
-            throw new ApiCallFailedException(__('Fetching open orders from EffectConnect failed with message [%1].', $e->getMessage()));
+            throw new ApiCallFailedException(__('Fetching orders from EffectConnect failed with message [%1].', $e->getMessage()));
         }
 
         $apiCall = $orderListCall->read($orderList);
