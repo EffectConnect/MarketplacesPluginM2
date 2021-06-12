@@ -2,6 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -23,50 +24,65 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $connection = $installer->getConnection();
 
         if (version_compare($context->getVersion(), "1.0.25", "<")) {
-            $tableName = $setup->getTable('ec_marketplaces_channel_mapping');
-            if ($connection->isTableExists($tableName) == true)
-            {
-                $connection->addColumn(
-                    $tableName,
-                    'storeview_id_internal',
-                    [
-                        'type'     => Table::TYPE_SMALLINT,
-                        'nullable' => true,
-                        'unsigned' => true,
-                        'default'  => null,
-                        'comment'  => 'Storeview ID for internal orders (foreign key to: store.store_id)',
-                    ]
-                );
-                $connection->addColumn(
-                    $tableName,
-                    'storeview_id_external',
-                    [
-                        'type'     => Table::TYPE_SMALLINT,
-                        'nullable' => true,
-                        'unsigned' => true,
-                        'default'  => null,
-                        'comment'  => 'Storeview ID for external orders (foreign key to: store.store_id)',
-                    ]
-                );
-                $connection->addForeignKey(
-                    $installer->getFkName('ec_marketplaces_channel_mapping', 'storeview_id_internal', 'store', 'store_id'),
-                    $tableName,
-                    'storeview_id_internal',
-                    $installer->getTable('store'),
-                    'store_id',
-                    Table::ACTION_SET_NULL
-                );
-                $connection->addForeignKey(
-                    $installer->getFkName('ec_marketplaces_channel_mapping', 'storeview_id_external', 'store', 'store_id'),
-                    $tableName,
-                    'storeview_id_external',
-                    $installer->getTable('store'),
-                    'store_id',
-                    Table::ACTION_SET_NULL
-                );
-            }
+            $this->addChannelMappingStoreViewIds($setup, $installer, $connection);
         }
 
         $installer->endSetup();
+    }
+
+    /**
+     * Add storeview_id_internal and storeview_id_external to ec_marketplaces_channel_mapping.
+     *
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     */
+    protected function addChannelMappingStoreViewIds(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_channel_mapping');
+        if ($connection->isTableExists($tableName) == true)
+        {
+            $connection->addColumn(
+                $tableName,
+                'storeview_id_internal',
+                [
+                    'type'     => Table::TYPE_SMALLINT,
+                    'nullable' => true,
+                    'unsigned' => true,
+                    'default'  => null,
+                    'comment'  => 'Storeview ID for internal orders (foreign key to: store.store_id)',
+                ]
+            );
+
+            $connection->addColumn(
+                $tableName,
+                'storeview_id_external',
+                [
+                    'type'     => Table::TYPE_SMALLINT,
+                    'nullable' => true,
+                    'unsigned' => true,
+                    'default'  => null,
+                    'comment'  => 'Storeview ID for external orders (foreign key to: store.store_id)',
+                ]
+            );
+
+            $connection->addForeignKey(
+                $installer->getFkName('ec_marketplaces_channel_mapping', 'storeview_id_internal', 'store', 'store_id'),
+                $tableName,
+                'storeview_id_internal',
+                $installer->getTable('store'),
+                'store_id',
+                Table::ACTION_SET_NULL
+            );
+
+            $connection->addForeignKey(
+                $installer->getFkName('ec_marketplaces_channel_mapping', 'storeview_id_external', 'store', 'store_id'),
+                $tableName,
+                'storeview_id_external',
+                $installer->getTable('store'),
+                'store_id',
+                Table::ACTION_SET_NULL
+            );
+        }
     }
 }
