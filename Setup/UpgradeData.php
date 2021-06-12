@@ -56,6 +56,10 @@ class UpgradeData implements UpgradeDataInterface
             $this->migrateChannelMappingStoreviewId($setup);
         }
 
+        if (version_compare($context->getVersion(), "1.0.28", "<")) {
+            $this->copyConnectionStoreviewId($setup);
+        }
+
         $setup->endSetup();
     }
 
@@ -172,6 +176,20 @@ class UpgradeData implements UpgradeDataInterface
 
             // Remove storeview_id
             $setup->getConnection()->query('UPDATE ' . $tableName . ' SET `storeview_id` = NULL WHERE 1');
+        }
+    }
+
+    /**
+     * Copy image_url_storeview_id to base_url_storeview_id.
+     *
+     * @param ModuleDataSetupInterface $setup
+     */
+    protected function copyConnectionStoreviewId(ModuleDataSetupInterface $setup)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_connection');
+        if ($setup->getConnection()->isTableExists($tableName) == true) {
+            // Set the image url storeview as base storeview.
+            $setup->getConnection()->query('UPDATE ' . $tableName . ' SET `base_storeview_id` = `image_url_storeview_id`');
         }
     }
 }

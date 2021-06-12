@@ -33,12 +33,13 @@ class Save extends Connection
 
                 // Process connection data.
                 $connectionData = [
-                    'is_active' => $formData['is_active'],
-                    'name' => $formData['name'],
-                    'public_key' => $formData['public_key'],
-                    'secret_key' => $formData['secret_key'],
-                    'website_id' => $formData['website_id'],
-                    'image_url_storeview_id' => $formData['image_url_storeview_id'],
+                    'is_active'                 => $formData['is_active'],
+                    'name'                      => $formData['name'],
+                    'public_key'                => $formData['public_key'],
+                    'secret_key'                => $formData['secret_key'],
+                    'website_id'                => $formData['website_id'],
+                    'base_storeview_id'         => $formData['base_storeview_id'],
+                    'image_url_storeview_id'    => $formData['image_url_storeview_id'],
                 ];
                 $connection->addData($connectionData);
 

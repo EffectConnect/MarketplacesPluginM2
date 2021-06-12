@@ -41,6 +41,14 @@ class WebsiteSwitcher extends AbstractModifier
                 'value' => intval($website->getId()),
                 'actions' => [
                     [
+                        'target'   => 'ec_marketplaces_connection_form.ec_marketplaces_connection_form.connection.catalog_export.base_storeview_id',
+                        'callback' => 'filter',
+                        'params'   => [
+                            strval($website->getId()),
+                            'website_id'
+                        ]
+                    ],
+                    [
                         'target'   => 'ec_marketplaces_connection_form.ec_marketplaces_connection_form.connection.catalog_export.image_url_storeview_id',
                         'callback' => 'filter',
                         'params'   => [

@@ -246,6 +246,24 @@
                     </field>
                 </container>
             </dynamicRows>
+            <field name="base_storeview_id">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Base storeview</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">catalog_export</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                        <item name="tooltip" xsi:type="array">
+                            <item name="description" xsi:type="string" translate="true">This setting determines from which storeview the website level product information is obtained from when exporting the catalog to EffectConnect Marketplaces.</item>
+                        </item>
+                    </item>
+                    <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ConnectionStoreViews</item>
+                </argument>
+            </field>
             <field name="image_url_storeview_id">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">

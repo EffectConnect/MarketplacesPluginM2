@@ -19,6 +19,7 @@ use Magento\Framework\Api\ExtensibleDataInterface;
  * @method string|null getPublicKey()
  * @method string|null getSecretKey()
  * @method string|null getWebsiteId()
+ * @method string|null getBaseStoreviewId()
  * @method string|null getImageUrlStoreviewId()
  * @method Connection setIsActive(string|null $string)
  * @method Connection setName(string|null $string)
