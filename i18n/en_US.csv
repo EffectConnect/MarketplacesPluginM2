@@ -445,3 +445,5 @@
 "Storeview external","Storeview external","module","EffectConnect_Marketplaces"
 "Storeview for internal orders","Storeview for internal orders","module","EffectConnect_Marketplaces"
 "Storeview for externally fulfilled orders","Storeview for externally fulfilled orders","module","EffectConnect_Marketplaces"
+"Base storeview","Base storeview","module","EffectConnect_Marketplaces"
+"This setting determines from which storeview the website level product information is obtained when exporting the catalog to EffectConnect Marketplaces.","This setting determines from which storeview the website level product information is obtained when exporting the catalog to EffectConnect Marketplaces.","module","EffectConnect_Marketplaces"

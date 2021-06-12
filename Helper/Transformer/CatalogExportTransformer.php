@@ -620,7 +620,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     protected function transformProduct(ProductInterface $product)
     {
         try {
-            $product = $this->_productRepository->getById($product->getId(), false, 0);
+            $product = $this->_productRepository->getById($product->getId(), false, $this->_connection->getBaseStoreviewId());
         } catch (NoSuchEntityException $e) {
             $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_NOT_FOUND(), [
                 intval($this->_connection->getEntityId()),
