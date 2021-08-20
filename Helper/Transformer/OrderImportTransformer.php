@@ -1495,6 +1495,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
 
     /**
      * @return bool
+     * @throws OrderImportFailedException
      */
     protected function skipOrderImport() : bool
     {
@@ -1508,7 +1509,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 $orderIdentifiers->getEffectConnectNumber(),
                 reset($existingOrders)
             );
-            return true;
+            throw new OrderImportFailedException(__('Order Import Already Exists'));
         }
 
         // Check channel mapping to known whether to import order that are externally fulfilled.

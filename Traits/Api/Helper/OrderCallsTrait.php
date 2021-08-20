@@ -91,10 +91,6 @@ trait OrderCallsTrait
                                 );
                             }
                         }
-// TODO: order import was skipped - add tag to make sure order is not imported again?
-//                        else
-//                        {
-//                        }
                     }
                     catch (OrderImportFailedException $e)
                     {
