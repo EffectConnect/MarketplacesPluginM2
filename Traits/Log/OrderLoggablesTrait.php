@@ -6,9 +6,11 @@ use EffectConnect\Marketplaces\Enums\LogCode;
 use EffectConnect\Marketplaces\Enums\LogSubjectType;
 use EffectConnect\Marketplaces\Enums\LogType;
 use EffectConnect\Marketplaces\Enums\Process;
+use EffectConnect\Marketplaces\Helper\ApiResponseFormatter;
 use EffectConnect\Marketplaces\Model\ChannelMapping;
 use EffectConnect\Marketplaces\Objects\Loggable;
 use EffectConnect\PHPSdk\Core\Model\Response\Order as EffectConnectOrder;
+use Exception;
 use Magento\Sales\Model\Order;
 
 /**
@@ -217,9 +219,11 @@ trait OrderLoggablesTrait
 
         $loggable->setMessage($message);
 
-        $loggable->setPayload(
-            json_encode(['EffectConnect Order' => $effectConnectOrder])
-        );
+        try {
+            $loggable->setPayload(ApiResponseFormatter::format($effectConnectOrder));
+        } catch (Exception $e) {
+            $loggable->setPayload('Error while fetching payload');
+        }
 
         return $this->insertLogItem($loggable);
     }
