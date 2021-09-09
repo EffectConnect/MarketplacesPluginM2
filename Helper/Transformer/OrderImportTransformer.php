@@ -56,6 +56,7 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\State\InputMismatchException;
+use Magento\Framework\Registry;
 use Magento\Quote\Api\Data\CurrencyInterface;
 use Magento\Quote\Model\Quote as QuoteModel;
 use Magento\Quote\Model\Quote\Item as QuoteItemModel;
@@ -228,6 +229,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      */
     protected $_taxCalculation;
 
+    /**
+     * @var Registry
+     */
+    protected $_registry;
+
     /*
      * Variables below contain information about the order to import.
      */
@@ -292,13 +298,14 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param LogHelper $logHelper
      * @param CartRepositoryInterface $cartRepositoryInterface
      * @param ProductRepositoryInterface $productRepositoryInterface
-     * @param CurrencyInterface $currencyInterface,
-     * @param CurrencyFactory $currencyFactory,
+     * @param CurrencyInterface $currencyInterface
+     * @param CurrencyFactory $currencyFactory
      * @param AddressHelper $addressHelper
      * @param OrderLineRepositoryInterface $orderLineRepositoryInterface
      * @param OrderSender $orderSender
      * @param TaxHelper $taxHelper
      * @param TaxCalculationInterface $taxCalculationInterface
+     * @param Registry $registry
      */
     public function __construct(
         Context $context,
@@ -330,7 +337,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         OrderLineRepositoryInterface $orderLineRepositoryInterface,
         OrderSender $orderSender,
         TaxHelper $taxHelper,
-        TaxCalculationInterface $taxCalculationInterface
+        TaxCalculationInterface $taxCalculationInterface,
+        Registry $registry
     ) {
         parent::__construct($context);
         $this->_orderRepository          = $orderRepository;
@@ -362,6 +370,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $this->_orderSender              = $orderSender;
         $this->_taxHelper                = $taxHelper;
         $this->_taxCalculation           = $taxCalculationInterface;
+        $this->_registry                 = $registry;
     }
 
     /**
@@ -1378,6 +1387,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             catch (Exception $e)
             {
                 // If saving of address failed, then revert saving of customer.
+                $this->_registry->unregister('isSecureArea');
+                $this->_registry->register('isSecureArea', true);
                 $this->_customerRepository->delete($customer);
                 throw $e;
             }
@@ -1400,6 +1411,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             catch (Exception $e)
             {
                 // If saving of address failed, then revert saving of customer.
+                $this->_registry->unregister('isSecureArea');
+                $this->_registry->register('isSecureArea', true);
                 $this->_addressRepository->delete($billingAddress);
                 $this->_customerRepository->delete($customer);
                 throw $e;
