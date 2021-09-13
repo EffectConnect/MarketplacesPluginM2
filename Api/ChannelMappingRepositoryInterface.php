@@ -52,9 +52,9 @@ interface ChannelMappingRepositoryInterface
     public function deleteById(int $channelMappingId) : bool;
 
     /**
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      * @return SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria) : SearchResultsInterface;
+    public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface;
 
 }
