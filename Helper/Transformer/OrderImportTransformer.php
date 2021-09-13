@@ -381,6 +381,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      */
     public function importOrder(Connection $connection, EffectConnectOrder $effectConnectOrder)
     {
+        $this->_orderComments = [];
+
         // Get channel mappings for current connection.
         $channelMappings = $this->getChannelMappingsByConnectionId($connection->getEntityId());
 

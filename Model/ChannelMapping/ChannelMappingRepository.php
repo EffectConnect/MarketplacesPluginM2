@@ -6,7 +6,7 @@ use EffectConnect\Marketplaces\Api\ChannelMappingRepositoryInterface;
 use EffectConnect\Marketplaces\Model\ChannelMapping;
 use EffectConnect\Marketplaces\Model\ChannelMappingFactory;
 use EffectConnect\Marketplaces\Model\ResourceModel\ChannelMapping as ChannelMappingResource;
-use EffectConnect\Marketplaces\Model\ResourceModel\ChannelMapping\Collection as ChannelMappingCollection;
+use EffectConnect\Marketplaces\Model\ResourceModel\ChannelMapping\CollectionFactory as ChannelMappingCollectionFactory;
 use Exception;
 use Magento\Framework\Api\Search\SearchResultFactory;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
@@ -50,13 +50,13 @@ class ChannelMappingRepository implements ChannelMappingRepositoryInterface
     protected $_collectionProcessor;
 
     /**
-     * @var ChannelMappingCollection
+     * @var ChannelMappingCollectionFactory
      */
-    protected $_channelMappingCollection;
+    protected $_channelMappingCollectionFactory;
 
     /**
      * ChannelMappingRepository constructor.
-     * @param ChannelMappingCollection $channelMappingCollection
+     * @param ChannelMappingCollectionFactory $channelMappingCollectionFactory
      * @param ChannelMappingFactory $channelMappingFactory
      * @param ChannelMappingResource $channelMappingResource
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
@@ -64,7 +64,7 @@ class ChannelMappingRepository implements ChannelMappingRepositoryInterface
      * @param CollectionProcessorInterface $collectionProcessor
      */
     public function __construct(
-        ChannelMappingCollection $channelMappingCollection,
+        ChannelMappingCollectionFactory $channelMappingCollectionFactory,
         ChannelMappingFactory $channelMappingFactory,
         ChannelMappingResource $channelMappingResource,
         SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -73,7 +73,7 @@ class ChannelMappingRepository implements ChannelMappingRepositoryInterface
     ) {
         $this->_channelMappingFactory    = $channelMappingFactory;
         $this->_channelMappingResource   = $channelMappingResource;
-        $this->_channelMappingCollection = $channelMappingCollection;
+        $this->_channelMappingCollectionFactory = $channelMappingCollectionFactory;
         $this->_searchCriteriaBuilder    = $searchCriteriaBuilder;
         $this->_searchResultFactory      = $searchResultFactory;
         $this->_collectionProcessor      = $collectionProcessor;
@@ -174,7 +174,7 @@ class ChannelMappingRepository implements ChannelMappingRepositoryInterface
     }
 
     /**
-     * @param SearchCriteriaInterface $searchCriteria
+     * @param SearchCriteriaInterface|null $searchCriteria
      * @return SearchResultsInterface
      */
     public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
@@ -183,12 +183,13 @@ class ChannelMappingRepository implements ChannelMappingRepositoryInterface
             $searchCriteria = $this->_searchCriteriaBuilder->create();
         }
 
-        $this->_collectionProcessor->process($searchCriteria, $this->_channelMappingCollection);
-        $this->_channelMappingCollection->load();
+        $channelMappingCollection = $this->_channelMappingCollectionFactory->create();
+        $this->_collectionProcessor->process($searchCriteria, $channelMappingCollection);
+        $channelMappingCollection->load();
         $searchResult = $this->_searchResultFactory->create();
         $searchResult->setSearchCriteria($searchCriteria);
-        $searchResult->setItems($this->_channelMappingCollection->getItems());
-        $searchResult->setTotalCount($this->_channelMappingCollection->getSize());
+        $searchResult->setItems($channelMappingCollection->getItems());
+        $searchResult->setTotalCount($channelMappingCollection->getSize());
 
         return $searchResult;
     }
