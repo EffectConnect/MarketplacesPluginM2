@@ -39,6 +39,7 @@ use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Throwable;
 use Zend\Filter\Word\SeparatorToCamelCase;
 use Zend\Filter\Word\UnderscoreToSeparator;
 use Zend\Validator\Barcode;
@@ -1725,7 +1726,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         try {
             $attributeValueText     = $attributeValueIsOptionable ? $attributeSource->getOptionText($attributeValueData) : null;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $attributeValueText     = null;
         }
 
@@ -1886,7 +1887,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $attributeResource  = $product->getResource()->getAttribute($attributeCode);
         $attributeSource    = $attributeResource ? $attributeResource->getSource() : null;
         $attributeValue     = $attributeSource ? $product->getData($attributeCode) : null;
-        $attributeValueText = $attributeSource && !is_null($attributeValue) && (is_string($attributeValue) || is_numeric($attributeValue)) ? $attributeSource->getOptionText($attributeValue) : null;
+        try {
+            $attributeValueText = $attributeSource && !is_null($attributeValue) && (is_string($attributeValue) || is_numeric($attributeValue)) ? $attributeSource->getOptionText($attributeValue) : null;
+        } catch (Throwable $e) {
+            $attributeValueText = null;
+        }
         $attributeValue     = $attributeValueText ?: $attributeValue;
 
         if ($attributeValue instanceof Phrase) {
