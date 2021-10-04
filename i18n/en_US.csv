@@ -291,6 +291,7 @@
 "Order import failed when adding billing address to quote: %1.","Order import failed when adding billing address to quote: %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding shipping address to quote: %1.","Order import failed when adding shipping address to quote: %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding shipping and payment methods to quote: %1.","Order import failed when adding shipping and payment methods to quote: %1.","module","EffectConnect_Marketplaces"
+"Region %1 was not found in the list of regions for country %2 (and region is a required field).","Region %1 was not found in the list of regions for country %2 (and region is a required field)."
 "Applying discount code (%1) failed when importing order.","Applying discount code (%1) failed when importing order.","module","EffectConnect_Marketplaces"
 "Order imported from EffectConnect Marketplaces","Order imported from EffectConnect Marketplaces","module","EffectConnect_Marketplaces"
 "Channel:","Channel:","module","EffectConnect_Marketplaces"
