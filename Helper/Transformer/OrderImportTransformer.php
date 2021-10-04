@@ -17,8 +17,10 @@ use EffectConnect\Marketplaces\Exception\OrderImportAddPaymentAndShippingMethods
 use EffectConnect\Marketplaces\Exception\OrderImportAddProductsToQuoteFailedException;
 use EffectConnect\Marketplaces\Exception\OrderImportCreateQuoteFailedException;
 use EffectConnect\Marketplaces\Exception\OrderImportFailedException;
+use EffectConnect\Marketplaces\Exception\OrderImportRegionIdRequiredException;
 use EffectConnect\Marketplaces\Exception\OrderImportSubmitQuoteFailedException;
 use EffectConnect\Marketplaces\Helper\LogHelper;
+use EffectConnect\Marketplaces\Helper\RegionHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
 use EffectConnect\Marketplaces\Interfaces\ValueType;
 use EffectConnect\Marketplaces\Model\ChannelMapping;
@@ -234,6 +236,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      */
     protected $_registry;
 
+    /**
+     * @var RegionHelper
+     */
+    protected $_regionHelper;
+
     /*
      * Variables below contain information about the order to import.
      */
@@ -306,6 +313,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param TaxHelper $taxHelper
      * @param TaxCalculationInterface $taxCalculationInterface
      * @param Registry $registry
+     * @param RegionHelper $regionHelper
      */
     public function __construct(
         Context $context,
@@ -338,7 +346,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         OrderSender $orderSender,
         TaxHelper $taxHelper,
         TaxCalculationInterface $taxCalculationInterface,
-        Registry $registry
+        Registry $registry,
+        RegionHelper $regionHelper
     ) {
         parent::__construct($context);
         $this->_orderRepository          = $orderRepository;
@@ -371,6 +380,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $this->_taxHelper                = $taxHelper;
         $this->_taxCalculation           = $taxCalculationInterface;
         $this->_registry                 = $registry;
+        $this->_regionHelper             = $regionHelper;
     }
 
     /**
@@ -1327,6 +1337,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @throws InputException
      * @throws LocalizedException
      * @throws InputMismatchException
+     * @throws OrderImportRegionIdRequiredException
      */
     protected function createOrLoadCustomerByEmail()
     {
@@ -1429,6 +1440,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @return array
      * @throws NoSuchEntityException
      * @throws LocalizedException
+     * @throws OrderImportRegionIdRequiredException
      */
     protected function convertECAddressToArray($address) : array
     {
@@ -1494,6 +1506,14 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 break;
         }
 
+        // Get region ID out of region name
+        $regionId = $this->_regionHelper->getRegionId($address->getState(), $address->getCountry());
+
+        // Log in case region ID is required but can not be found
+        if (is_null($regionId) && $this->_regionHelper->regionIdIsRequired($address->getCountry())) {
+            throw new OrderImportRegionIdRequiredException(__('Region %1 was not found in the list of regions for country %2 (and region is a required field).', $address->getState(), $address->getCountry()));
+        }
+
         return [
             'gender'     => $gender,
             'firstname'  => $address->getFirstName(),
@@ -1505,6 +1525,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             'email'      => $address->getEmail(),
             'telephone'  => $address->getPhone(),
             'country_id' => $address->getCountry(),
+            'region'     => $address->getState(),
+            'region_id'  => $regionId
         ];
     }
 

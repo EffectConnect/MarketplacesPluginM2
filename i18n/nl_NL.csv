@@ -291,6 +291,7 @@
 "Order import failed when adding billing address to quote: %1.","Order import mislukt bij het toevoegen van het factuuradres aan de quote. Foutmelding: %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding shipping address to quote: %1.","Order import mislukt bij het toevoegen van het verzendadres aan de quote. Foutmelding: %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding shipping and payment methods to quote: %1.","Order import mislukt bij het toevoegen van de verzend- en betaalmethodes aan de quote: %1.","module","EffectConnect_Marketplaces"
+"Region %1 was not found in the list of regions for country %2 (and region is a required field).","Provincie %1 niet gevonden in lijst met provincies voor land %2 (en de provincie staat ingesteld als verplicht veld)."
 "Applying discount code (%1) failed when importing order.","Toepassen van kortingscode (%1) mislukt bij het importeren van order.","module","EffectConnect_Marketplaces"
 "Order imported from EffectConnect Marketplaces","Order geïmporteerd van EffectConnect Marketplaces","module","EffectConnect_Marketplaces"
 "Channel:","Kanaal:","module","EffectConnect_Marketplaces"
