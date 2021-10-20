@@ -1072,6 +1072,10 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             $quote->setTotalsCollectedFlag(false);
             $quote->collectTotals();
 
+            // Set whether we have notified the client about this order (the actual mail will be send later in the sendOrderEmail function).
+            $sendEmail = $this->_channelMapping->getSendEmailsIncludingConfiguration($this->_storeId);
+            $quote->setCustomerNoteNotify($sendEmail);
+
             // Save the quote.
             $this->_cartRepository->save($quote);
 
@@ -1090,12 +1094,16 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 }
             }
 
-            // Set whether we have notified the client about this order (the actual mail will be send later in the sendOrderEmail function).
-            $sendEmail = $this->_channelMapping->getSendEmailsIncludingConfiguration($this->_storeId);
-            $quote->setCustomerNoteNotify($sendEmail);
+            // https://magento.stackexchange.com/questions/279395/magento-2-place-order-in-custom-controller-difference-between-placeorder-and-su
+            // https://webkul.com/blog/create-quote-and-order-programmatically-in-magento2/
+            // $this->_quoteManagement->submit($quote) HAS NO item_id in db sales_order_tax_item
+            // $this->_cartManagementInterface->placeOrder($quote->getId()) HAS item_id in db sales_order_tax_item
+            // The cause seems to be that placeOrder re-loads the quote and collect totals again, let's do that also
+            $reloadedQuote = $this->_cartRepository->get($quote->getId());
+            $reloadedQuote->collectTotals();
 
-            // Transform the quote into an order.
-            $order = $this->_quoteManagement->submit($quote);
+            // Submit the quote
+            $order = $this->_quoteManagement->submit($reloadedQuote);
 
             // Add comment to order.
             $identifiers = $this->_effectConnectOrder->getIdentifiers();
