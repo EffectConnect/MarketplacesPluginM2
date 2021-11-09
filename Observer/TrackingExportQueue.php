@@ -2,6 +2,8 @@
 
 namespace EffectConnect\Marketplaces\Observer;
 
+use EffectConnect\Marketplaces\Enums\ShipmentEvent as ShipmentEventEnum;
+use EffectConnect\Marketplaces\Helper\SettingsHelper;
 use EffectConnect\Marketplaces\Objects\QueueHandlers\TrackingExportQueueHandler;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -19,13 +21,21 @@ class TrackingExportQueue implements ObserverInterface
     protected $_trackingExportQueueHandler;
 
     /**
+     * @var SettingsHelper
+     */
+    protected $_settingsHelper;
+
+    /**
      * ShipmentExport constructor.
      * @param TrackingExportQueueHandler $trackingExportQueueHandler
+     * @param SettingsHelper $settingsHelper
      */
     public function __construct(
-        TrackingExportQueueHandler $trackingExportQueueHandler
+        TrackingExportQueueHandler $trackingExportQueueHandler,
+        SettingsHelper $settingsHelper
     ) {
         $this->_trackingExportQueueHandler = $trackingExportQueueHandler;
+        $this->_settingsHelper = $settingsHelper;
     }
 
     /**
@@ -33,11 +43,15 @@ class TrackingExportQueue implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        // Get tracking information from event.
-        /* @var ShipmentTrackInterface $shipmentTrack */
-        $shipmentTrack = $observer->getEvent()->getTrack();
+        // Only execute when shipment_export_settings/event setting is set to 'tracking' (default).
+        if (strval($this->_settingsHelper->getShipmentExportEvent()) === strval(ShipmentEventEnum::TRACKING()))
+        {
+            // Get tracking information from event.
+            /* @var ShipmentTrackInterface $shipmentTrack */
+            $shipmentTrack = $observer->getEvent()->getTrack();
 
-        // Add the tracking code to the queue (to be sent to EffectConnect by the cronjob).
-        $this->_trackingExportQueueHandler->schedule($shipmentTrack->getEntityId());
+            // Add the tracking code to the queue (to be sent to EffectConnect by the cronjob).
+            $this->_trackingExportQueueHandler->schedule($shipmentTrack->getEntityId());
+        }
     }
 }

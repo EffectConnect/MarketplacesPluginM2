@@ -448,3 +448,7 @@
 "Storeview for externally fulfilled orders","Storeview for externally fulfilled orders","module","EffectConnect_Marketplaces"
 "Base storeview","Base storeview","module","EffectConnect_Marketplaces"
 "This setting determines from which storeview the website level product information is obtained when exporting the catalog to EffectConnect Marketplaces.","This setting determines from which storeview the website level product information is obtained when exporting the catalog to EffectConnect Marketplaces.","module","EffectConnect_Marketplaces"
+"When shipment is created","When shipment is created","module","EffectConnect_Marketplaces"
+"When tracking code is added to a shipment","When tracking code is added to a shipment","module","EffectConnect_Marketplaces"
+"When to send shipments to EffectConnect","When to send shipments to EffectConnect","module","EffectConnect_Marketplaces"
+"We can only update shipments in EffectConnect once. Set to 'shipment' in case you have no tracking codes or when tracking codes are added to Magento at the same time the shipment is created. Set to 'tracking code' in case shipments are created and tracking codes are added to the shipments later.","We can only update shipments in EffectConnect once. Set to 'shipment' in case you have no tracking codes or when tracking codes are added to Magento at the same time the shipment is created. Set to 'tracking code' in case shipments are created and tracking codes are added to the shipments later.","module","EffectConnect_Marketplaces"

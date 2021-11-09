@@ -154,7 +154,7 @@ class OrderLineRepository implements OrderLineRepositoryInterface
 
     /**
      * Get list of order lines for which the tracking number can be added to the queue.
-     * This means that the track_id and the track_exported_at are both empty.
+     * This means that the track_id, export and the track_exported_at fields are all empty.
      * In case a tracking code is removed from Magento after export, then the track_id is empty and the
      * track_exported_at is not. We do not want to queue the item again.
      *
@@ -172,6 +172,10 @@ class OrderLineRepository implements OrderLineRepositoryInterface
                 'track_id',
                 '',
                 'null'
+            )
+            ->addFilter(
+                'export',
+                0
             )
             ->addFilter(
                 'track_exported_at',
@@ -193,9 +197,8 @@ class OrderLineRepository implements OrderLineRepositoryInterface
     {
         $searchCriteria = $this->_searchCriteriaBuilder
             ->addFilter(
-                'track_id',
-                0,
-                'gt'
+                'export',
+                1
             )
             ->addFilter(
                 'track_exported_at',

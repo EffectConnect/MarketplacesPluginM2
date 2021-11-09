@@ -133,6 +133,9 @@ interface SettingPathsInterface
     /** Get the queue size of the order shipment export queue handler. */
     const SETTING_SHIPMENT_EXPORT_QUEUE_SIZE                        = 'shipment_export_settings/queue_size';
 
+    /** Event to use for exporting shipments/tracking codes to EffectConnect. */
+    const SETTING_SHIPMENT_EXPORT_EVENT                             = 'shipment_export_settings/event';
+
 
     /** Get the expiration for log entries. */
     const SETTING_LOG_EXPIRATION                                    = 'log_settings/log_expiration';

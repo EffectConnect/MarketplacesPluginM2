@@ -14,6 +14,7 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\ShipmentTrackRepositoryInterface;
+use Magento\Sales\Api\ShipmentRepositoryInterface;
 
 /**
  * Class TrackingExportQueueHandler
@@ -52,6 +53,11 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
     protected $_shipmentTrackRepository;
 
     /**
+     * @var ShipmentRepositoryInterface
+     */
+    protected $_shipmentRepository;
+
+    /**
      * @var ConnectionRepositoryInterface
      */
     protected $_connectionRepository;
@@ -65,6 +71,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
      * @param OrderRepositoryInterface $orderRepositoryInterface
      * @param OrderLineRepositoryInterface $orderLineRepository
      * @param ShipmentTrackRepositoryInterface $shipmentTrackRepository
+     * @param ShipmentRepositoryInterface $shipmentRepository
      * @param ConnectionRepositoryInterface $connectionRepository
      */
     public function __construct(
@@ -74,6 +81,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
         OrderRepositoryInterface $orderRepositoryInterface,
         OrderLineRepositoryInterface $orderLineRepository,
         ShipmentTrackRepositoryInterface $shipmentTrackRepository,
+        ShipmentRepositoryInterface $shipmentRepository,
         ConnectionRepositoryInterface $connectionRepository
     ) {
         $this->_apiHelper               = $apiHelper;
@@ -82,7 +90,8 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
         $this->_orderRepository         = $orderRepositoryInterface;
         $this->_orderLineRepository     = $orderLineRepository;
         $this->_shipmentTrackRepository = $shipmentTrackRepository;
-        $this->_connectionRepository    =$connectionRepository;
+        $this->_shipmentRepository      = $shipmentRepository;
+        $this->_connectionRepository    = $connectionRepository;
     }
 
     /**
@@ -104,10 +113,12 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
                 return;
             }
 
-            // Save the tracking ID to each orderline within the shipment.
+            // Save the tracking ID to each order line within the shipment.
             foreach ($ecOrderLines as $ecOrderLine)
             {
                 $ecOrderLine->setTrackId($shipmentTrack->getEntityId());
+                $ecOrderLine->setExport(1);
+
                 try {
                     $this->_orderLineRepository->save($ecOrderLine);
                 } catch (CouldNotSaveException $e) {
@@ -132,48 +143,53 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
         {
             foreach ($orderLinesToExport->getItems() as $orderLineToExport)
             {
+                // Load shipment
+                $shipment = $this->_shipmentRepository->get($orderLineToExport->getShipmentId());
+
+                // Load shipment tracking in case order line has one
                 $shipmentTrack = $this->_shipmentTrackRepository->get($orderLineToExport->getTrackId());
-                if ($shipmentTrack->getEntityId() > 0)
-                {
-                    try {
-                        // Get order from tracking info.
-                        $orderId = $shipmentTrack->getOrderId();
-                        $order = $this->_orderRepository->get($orderId);
-                    } catch (Exception $e) {
-                        $this->_logHelper->logExportShipmentOrderNotFoundError($shipmentTrack, $e->getMessage());
-                        continue;
-                    }
-
-                    $connectionId = intval($order->getEcMarketplacesConnectionId());
-
-                    if (!isset($orderLinesToExportByConnection[$connectionId])) {
-                        $orderLinesToExportByConnection[$connectionId] = new TrackingExportDataObject();
-                    }
-
-                    // Take config setting for queue size into account
-                    if (count($orderLinesToExportByConnection[$connectionId]) >= $queueSize) {
-                        continue;
-                    }
-
-                    // Save that we are exporting this tracking code to prevent other cronjobs to process the same item.
-                    // Bad luck if the export fails, we will not try to do this again.
-                    $orderLineToExport->setTrackExportedAt(date('Y-m-d H:i:s', time()));
-                    try {
-                        $this->_orderLineRepository->save($orderLineToExport);
-                    } catch (CouldNotSaveException $e) {
-                        $this->_logHelper->logExportShipmentOrderLineSaveError($orderLineToExport, $e->getMessage());
-                        continue;
-                    }
-
-                    $orderLinesToExportByConnection[$connectionId]->addTrackingExportData(
-                        $shipmentTrack,
-                        $orderLineToExport
-                    );
+                if (intval($shipmentTrack->getEntityId()) === 0) {
+                    $shipmentTrack = null;
                 }
+
+                try {
+                    // Get order from tracking info.
+                    $orderId = $shipment->getOrderId();
+                    $order = $this->_orderRepository->get($orderId);
+                } catch (Exception $e) {
+                    $this->_logHelper->logExportShipmentOrderNotFoundError($shipmentTrack, $e->getMessage());
+                    continue;
+                }
+
+                $connectionId = intval($order->getEcMarketplacesConnectionId());
+
+                if (!isset($orderLinesToExportByConnection[$connectionId])) {
+                    $orderLinesToExportByConnection[$connectionId] = new TrackingExportDataObject();
+                }
+
+                // Take config setting for queue size into account
+                if (count($orderLinesToExportByConnection[$connectionId]) >= $queueSize) {
+                    continue;
+                }
+
+                // Save that we are exporting this tracking code to prevent other cronjobs to process the same item.
+                // Bad luck if the export fails, we will not try to do this again.
+                $orderLineToExport->setTrackExportedAt(date('Y-m-d H:i:s', time()));
+                try {
+                    $this->_orderLineRepository->save($orderLineToExport);
+                } catch (CouldNotSaveException $e) {
+                    $this->_logHelper->logExportShipmentOrderLineSaveError($orderLineToExport, $e->getMessage());
+                    continue;
+                }
+
+                $orderLinesToExportByConnection[$connectionId]->addTrackingExportData(
+                    $orderLineToExport,
+                    $shipmentTrack
+                );
             }
         }
 
-        // API call for each conenction
+        // API call for each connection
         foreach ($orderLinesToExportByConnection as $connectionId => $trackingExportDataObject)
         {
             // Only export to existing and active connections

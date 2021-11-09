@@ -20,6 +20,7 @@ use EffectConnect\PHPSdk\Core\Model\Request\OrderUpdateRequest;
 use EffectConnect\PHPSdk\Core\Model\Response\OrderListReadResponseContainer;
 use EffectConnect\PHPSdk\Core\Model\Response\OrderUpdateResponseContainer as OrderUpdated;
 use Exception;
+use Magento\Sales\Api\Data\ShipmentTrackInterface;
 
 /**
  * Trait OrderCallsTrait
@@ -208,6 +209,10 @@ trait OrderCallsTrait
      */
     public function updateOrderLines(TrackingExportDataObject $trackingExportDataObject) : OrderUpdated
     {
+        $carrier       = '';
+        $trackingCode  = '';
+        $ecOrderLineId = '';
+
         try
         {
             /* @var OrderCall $orderCall */
@@ -220,20 +225,28 @@ trait OrderCallsTrait
             {
                 $shipmentTrack = $trackingExportDataObject->getCurrentShipmentTrack();
                 $ecOrderLine   = $trackingExportDataObject->getCurrentOrderLine();
+                $ecOrderLineId = $ecOrderLine->getEcOrderLineId();
 
-                $orderlinesToUpdate = (new OrderLineUpdate())
+                $orderLinesToUpdate = (new OrderLineUpdate())
                     ->setOrderlineIdentifierType(OrderLineUpdate::TYPE_EFFECTCONNECT_LINE_ID)
-                    ->setOrderlineIdentifier($ecOrderLine->getEcOrderLineId())
-                    ->setTrackingNumber($shipmentTrack->getTrackNumber())
-                    ->setCarrier($shipmentTrack->getCarrierCode());
-                $orderUpdate->addLineUpdate($orderlinesToUpdate);
+                    ->setOrderlineIdentifier($ecOrderLineId);
+
+                if ($shipmentTrack instanceof ShipmentTrackInterface) {
+                    $trackingCode = $shipmentTrack->getTrackNumber();
+                    $carrier      = $shipmentTrack->getCarrierCode();
+                    $orderLinesToUpdate
+                        ->setTrackingNumber($trackingCode)
+                        ->setCarrier($carrier);
+                }
+
+                $orderUpdate->addLineUpdate($orderLinesToUpdate);
 
                 $trackingExportDataObject->next();
             }
         }
         catch (Exception $e)
         {
-            throw new ApiCallFailedException(__('Updating tracking info (carrier: %1, tracking code: %2) for EffectConnect order %3 failed with message [%4].', $carrier, $trackingCode, $effectConnectNumber, $e->getMessage()));
+            throw new ApiCallFailedException(__('Updating tracking info (carrier: %1, tracking code: %2) for EffectConnect order line ID %3 failed with message [%4].', $carrier, $trackingCode, $ecOrderLineId, $e->getMessage()));
         }
 
         $apiCall = $orderCall->update($orderUpdate);
