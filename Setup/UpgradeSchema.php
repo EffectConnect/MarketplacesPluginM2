@@ -31,6 +31,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addConnectionBaseStoreViewId($setup, $installer, $connection);
         }
 
+        if (version_compare($context->getVersion(), "1.0.36", "<")) {
+            $this->addExportedFieldToOrderLines($setup, $installer, $connection);
+        }
+
         $installer->endSetup();
     }
 
@@ -121,6 +125,32 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $installer->getTable('store'),
                 'store_id',
                 Table::ACTION_SET_DEFAULT
+            );
+        }
+    }
+
+    /**
+     * Add export field to ec_marketplaces_order_lines table.
+     *
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     */
+    protected function addExportedFieldToOrderLines(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_order_lines');
+        if ($connection->isTableExists($tableName) == true)
+        {
+            $connection->addColumn(
+                $tableName,
+                'export',
+                [
+                    'type'     => Table::TYPE_SMALLINT,
+                    'nullable' => false,
+                    'unsigned' => true,
+                    'default'  => 0,
+                    'comment'  => 'Whether the order line is ready for export.',
+                ]
             );
         }
     }
