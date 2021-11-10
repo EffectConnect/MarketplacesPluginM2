@@ -292,7 +292,7 @@
                 <comment>All settings related to the order shipment export from the current Magento 2 installation to a EffectConnect Marketplaces connection.</comment>
                 <field id="event" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>When to send shipments to EffectConnect</label>
-                    <comment>We can only update shipments in EffectConnect once. Set to 'shipment' in case you have no tracking codes or when tracking codes are added to Magento at the same time the shipment is created. Set to 'tracking code' in case shipments are created and tracking codes are added to the shipments later.</comment>
+                    <comment>We can only update shipments in EffectConnect once. Set to 'When shipment is created' in case you have no tracking codes or when tracking codes are added to Magento at the same time the shipment is created. Set to 'When tracking code is added to a shipment' in case shipments are created and tracking codes are added to the shipments later.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\ShipmentEvent</source_model>
                 </field>
                 <field id="queue_size" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
