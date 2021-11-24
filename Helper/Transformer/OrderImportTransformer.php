@@ -1094,16 +1094,14 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 }
             }
 
+            // Submit the quote
             // https://magento.stackexchange.com/questions/279395/magento-2-place-order-in-custom-controller-difference-between-placeorder-and-su
             // https://webkul.com/blog/create-quote-and-order-programmatically-in-magento2/
             // $this->_quoteManagement->submit($quote) HAS NO item_id in db sales_order_tax_item
             // $this->_cartManagementInterface->placeOrder($quote->getId()) HAS item_id in db sales_order_tax_item
-            // The cause seems to be that placeOrder re-loads the quote and collect totals again, let's do that also
-            $reloadedQuote = $this->_cartRepository->get($quote->getId());
-            $reloadedQuote->collectTotals();
-
-            // Submit the quote
-            $order = $this->_quoteManagement->submit($reloadedQuote);
+            // Also placeOrder() does some complementary checks (such as setting the correct customer email address)
+            $orderId = $this->_quoteManagement->placeOrder($quote->getId());
+            $order   = $this->_orderRepository->get($orderId);
 
             // Add comment to order.
             $identifiers = $this->_effectConnectOrder->getIdentifiers();
