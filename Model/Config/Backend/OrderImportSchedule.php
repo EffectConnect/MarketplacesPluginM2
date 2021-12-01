@@ -11,12 +11,12 @@ class OrderImportSchedule extends AbstractSchedule
     /**
      * Cron string path
      */
-    const CRON_STRING_PATH = 'crontab/default/jobs/effectconnect_marketplaces_import_orders/schedule/cron_expr';
+    const CRON_STRING_PATH = 'crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_import_orders/schedule/cron_expr';
 
     /**
      * Cron model path
      */
-    const CRON_MODEL_PATH = 'crontab/default/jobs/effectconnect_marketplaces_import_orders/run/model';
+    const CRON_MODEL_PATH = 'crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_import_orders/run/model';
 
     /**
      * Default cron schedule
