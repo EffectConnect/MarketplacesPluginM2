@@ -11,12 +11,12 @@ class OfferExportSchedule extends AbstractSchedule
     /**
      * Cron string path
      */
-    const CRON_STRING_PATH = 'crontab/default/jobs/effectconnect_marketplaces_export_offers/schedule/cron_expr';
+    const CRON_STRING_PATH = 'crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_export_offers/schedule/cron_expr';
 
     /**
      * Cron model path
      */
-    const CRON_MODEL_PATH = 'crontab/default/jobs/effectconnect_marketplaces_export_offers/run/model';
+    const CRON_MODEL_PATH = 'crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_export_offers/run/model';
 
     /**
      * Default cron schedule

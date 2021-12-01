@@ -7,6 +7,9 @@ use Magento\Catalog\Model\Product;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -58,6 +61,10 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), "1.0.28", "<")) {
             $this->copyConnectionStoreviewId($setup);
+        }
+
+        if (version_compare($context->getVersion(), "1.0.38", "<")) {
+            $this->fixCronConfig();
         }
 
         $setup->endSetup();
@@ -190,6 +197,39 @@ class UpgradeData implements UpgradeDataInterface
         if ($setup->getConnection()->isTableExists($tableName) == true) {
             // Set the image url storeview as base storeview.
             $setup->getConnection()->query('UPDATE ' . $tableName . ' SET `base_storeview_id` = `image_url_storeview_id`');
+        }
+    }
+
+    /**
+     * Copy the cron settings from the default group to the effectconnect_marketplaces group and delete the old ones.
+     * This is part of the solution for the "No callbacks found" bug.
+     */
+    protected function fixCronConfig()
+    {
+        $objectManager  = ObjectManager::getInstance();
+
+        /** @var ScopeConfigInterface $scopeConfig */
+        $scopeConfig    = $objectManager->create(ScopeConfigInterface::class);
+
+        /** @var WriterInterface $scopeWriter */
+        $scopeWriter    = $objectManager->create(WriterInterface::class);
+
+        $paths = [
+            'crontab/%s/jobs/effectconnect_marketplaces_export_catalog/schedule/cron_expr',
+            'crontab/%s/jobs/effectconnect_marketplaces_export_catalog/run/model',
+            'crontab/%s/jobs/effectconnect_marketplaces_export_offers/schedule/cron_expr',
+            'crontab/%s/jobs/effectconnect_marketplaces_export_offers/run/model',
+            'crontab/%s/jobs/effectconnect_marketplaces_import_orders/schedule/cron_expr',
+            'crontab/%s/jobs/effectconnect_marketplaces_import_orders/run/model',
+        ];
+
+        foreach ($paths as $path) {
+            $old = sprintf($path, 'default');
+            $new = sprintf($path, 'effectconnect_marketplaces');
+
+            $value = $scopeConfig->getValue($old);
+            $scopeWriter->save($new, $value);
+            $scopeWriter->delete($old);
         }
     }
 }

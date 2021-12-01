@@ -8,13 +8,13 @@
             <schedule>30 * * * *</schedule>
         </job>
         <job name="effectconnect_marketplaces_export_catalog" instance="EffectConnect\Marketplaces\Cron\ExportCatalog" method="execute">
-            <config_path>crontab/default/jobs/effectconnect_marketplaces_export_catalog/schedule/cron_expr</config_path>
+            <config_path>crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_export_catalog/schedule/cron_expr</config_path>
         </job>
         <job name="effectconnect_marketplaces_export_offers" instance="EffectConnect\Marketplaces\Cron\ExportOffers" method="execute">
-            <config_path>crontab/default/jobs/effectconnect_marketplaces_export_offers/schedule/cron_expr</config_path>
+            <config_path>crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_export_offers/schedule/cron_expr</config_path>
         </job>
         <job name="effectconnect_marketplaces_import_orders" instance="EffectConnect\Marketplaces\Cron\ImportOrders" method="execute">
-            <config_path>crontab/default/jobs/effectconnect_marketplaces_import_orders/schedule/cron_expr</config_path>
+            <config_path>crontab/effectconnect_marketplaces/jobs/effectconnect_marketplaces_import_orders/schedule/cron_expr</config_path>
         </job>
         <job name="effectconnect_marketplaces_handle_product_offer_export_queue" instance="EffectConnect\Marketplaces\Cron\HandleProductOfferExportQueue" method="execute">
             <schedule>* * * * *</schedule>
