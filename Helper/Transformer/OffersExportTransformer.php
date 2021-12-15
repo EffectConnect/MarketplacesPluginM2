@@ -87,7 +87,7 @@ class OffersExportTransformer extends CatalogExportTransformer
     }
 
     /**
-     * Transform a certain product to a offer in the EffectConnect Marketplaces SDK expected format.
+     * Transform a certain product to an offer in the EffectConnect Marketplaces SDK expected format.
      *
      * @param ProductInterface $product
      * @return array|null
@@ -95,7 +95,7 @@ class OffersExportTransformer extends CatalogExportTransformer
     protected function transformProduct(ProductInterface $product)
     {
         try {
-            $product = $this->_productRepository->getById($product->getId(), false, 0);
+            $product = $this->_productRepository->getById($product->getId(), false, $this->_connection->getBaseStoreviewId());
         } catch (NoSuchEntityException $e) {
             $this->writeToLog(LogCode::OFFERS_EXPORT_PRODUCT_NOT_FOUND(), [
                 intval($this->_connection->getEntityId()),
