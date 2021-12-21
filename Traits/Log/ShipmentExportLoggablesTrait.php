@@ -8,7 +8,6 @@ use EffectConnect\Marketplaces\Enums\LogType;
 use EffectConnect\Marketplaces\Enums\Process;
 use EffectConnect\Marketplaces\Model\OrderLine;
 use EffectConnect\Marketplaces\Objects\Loggable;
-use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\ShipmentInterface;
 use Magento\Sales\Api\Data\ShipmentTrackInterface;
 
@@ -20,9 +19,10 @@ trait ShipmentExportLoggablesTrait
 {
     /**
      * @param int $connectionId
+     * @param int $shipmentId
      * @return bool
      */
-    public function logExportShipmentSucceeded(int $connectionId) : bool
+    public function logExportShipmentSucceeded(int $connectionId, int $shipmentId) : bool
     {
         $loggable = new Loggable(
             LogType::SUCCESS(),
@@ -34,8 +34,8 @@ trait ShipmentExportLoggablesTrait
         $loggable->setMessage('Bulk shipment export to EffectConnect successful.');
 
         $loggable->setSubject(
-            LogSubjectType::CONNECTION(),
-            $connectionId
+            LogSubjectType::SHIPMENT(),
+            $shipmentId
         );
 
         return $this->insertLogItem($loggable);
@@ -44,9 +44,10 @@ trait ShipmentExportLoggablesTrait
     /**
      * @param int $connectionId
      * @param string $errorMessage
+     * @param int $shipmentId
      * @return bool
      */
-    public function logExportShipmentFailed(int $connectionId, string $errorMessage) : bool
+    public function logExportShipmentFailed(int $connectionId, string $errorMessage, int $shipmentId) : bool
     {
         $loggable = new Loggable(
             LogType::ERROR(),
@@ -63,8 +64,8 @@ trait ShipmentExportLoggablesTrait
         );
 
         $loggable->setSubject(
-            LogSubjectType::CONNECTION(),
-            $connectionId
+            LogSubjectType::SHIPMENT(),
+            $shipmentId
         );
 
         return $this->insertLogItem($loggable);
@@ -99,11 +100,11 @@ trait ShipmentExportLoggablesTrait
     }
 
     /**
-     * @param ShipmentTrackInterface $shipmentTrack
+     * @param ShipmentInterface $shipment
      * @param string $errorMessage
      * @return bool
      */
-    public function logExportShipmentOrderNotFoundError(ShipmentTrackInterface $shipmentTrack, string $errorMessage) : bool
+    public function logExportShipmentOrderNotFoundError(ShipmentInterface $shipment, string $errorMessage) : bool
     {
         $loggable = new Loggable(
             LogType::ERROR(),
@@ -121,7 +122,7 @@ trait ShipmentExportLoggablesTrait
 
         $loggable->setSubject(
             LogSubjectType::SHIPMENT(),
-            $shipmentTrack->getShipment()->getEntityId()
+            $shipment->getEntityId()
         );
 
         return $this->insertLogItem($loggable);

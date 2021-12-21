@@ -157,7 +157,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
                     $orderId = $shipment->getOrderId();
                     $order = $this->_orderRepository->get($orderId);
                 } catch (Exception $e) {
-                    $this->_logHelper->logExportShipmentOrderNotFoundError($shipmentTrack, $e->getMessage());
+                    $this->_logHelper->logExportShipmentOrderNotFoundError($shipment, $e->getMessage());
                     continue;
                 }
 
