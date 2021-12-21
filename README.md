@@ -9,6 +9,8 @@
 
 Use this plugin to connect your Magento 2 webshop with EffectConnect Marketplaces. For more information about EffectConnect, go to the [EffectConnect website](https://www.effectconnect.com "EffectConnect Website").
 
+**Important: before installing this plugin please contact the EffectConnect sales department via +31(0)852088432 and/or sales@effectconnect.com so we can provide you with a new EffectConnect account.**
+
 ## Table of Contents
   * [Installation](#installation)
     * *[Composer](#composer)*
