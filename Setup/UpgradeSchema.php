@@ -35,6 +35,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addExportedFieldToOrderLines($setup, $installer, $connection);
         }
 
+        if (version_compare($context->getVersion(), "1.0.41", "<")) {
+            $this->increaseEcOrderLineIdLength($setup, $installer, $connection);
+        }
+
         $installer->endSetup();
     }
 
@@ -150,6 +154,31 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'unsigned' => true,
                     'default'  => 0,
                     'comment'  => 'Whether the order line is ready for export.',
+                ]
+            );
+        }
+    }
+
+    /**
+     * Increase varchar length of ec_marketplaces_order_lines.ec_order_line_id from 64 to 128.
+     *
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     * @return void
+     */
+    protected function increaseEcOrderLineIdLength(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_order_lines');
+        if ($connection->tableColumnExists($tableName, 'ec_order_line_id')) {
+            $connection->modifyColumn(
+                $tableName,
+                'ec_order_line_id',
+                [
+                    'type'     => Table::TYPE_TEXT,
+                    'length'   => 128,
+                    'nullable' => false,
+                    'comment'  => 'EffectConnect Order Line ID',
                 ]
             );
         }
