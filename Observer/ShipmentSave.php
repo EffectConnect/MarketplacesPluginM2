@@ -72,25 +72,27 @@ class ShipmentSave implements ObserverInterface
                 // For each shipment item, find the corresponding EffectConnect order line.
                 foreach ($shipment->getAllItems() as $shipmentItem)
                 {
-                    $quoteItemId  = $shipmentItem->getOrderItem()->getQuoteItemId();
-                    $ecOrderLines = $this->_orderLineRepository->getListByQuoteItemId($quoteItemId)->getItems();
+                    $quoteItemId = intval($shipmentItem->getOrderItem()->getQuoteItemId());
+                    if ($quoteItemId > 0) {
+                        $ecOrderLines = $this->_orderLineRepository->getListByQuoteItemId($quoteItemId)->getItems();
 
-                    // Assign as many EC order lines as there are items in the shipment.
-                    $qtyShipped   = intval($shipmentItem->getQty());
-                    $qtyAssigned  = 0;
-                    foreach ($ecOrderLines as $ecOrderLine)
-                    {
-                        // Only assign order lines that haven't been assigned to a shipment yet.
-                        if (intval($ecOrderLine->getShipmentId()) === 0 && $qtyAssigned < $qtyShipped) {
-                            $ecOrderLine->setShipmentId($shipmentId);
+                        // Assign as many EC order lines as there are items in the shipment.
+                        $qtyShipped   = intval($shipmentItem->getQty());
+                        $qtyAssigned  = 0;
+                        foreach ($ecOrderLines as $ecOrderLine)
+                        {
+                            // Only assign order lines that haven't been assigned to a shipment yet.
+                            if (intval($ecOrderLine->getShipmentId()) === 0 && $qtyAssigned < $qtyShipped) {
+                                $ecOrderLine->setShipmentId($shipmentId);
 
-                            // In case shipment_export_settings/event is tet to 'shipment, then we this order line may be exported (track_id is not leading anymore)
-                            if (strval($this->_settingsHelper->getShipmentExportEvent()) === strval(ShipmentEventEnum::SHIPMENT())) {
-                                $ecOrderLine->setExport(1);
+                                // In case shipment_export_settings/event is tet to 'shipment, then we this order line may be exported (track_id is not leading anymore)
+                                if (strval($this->_settingsHelper->getShipmentExportEvent()) === strval(ShipmentEventEnum::SHIPMENT())) {
+                                    $ecOrderLine->setExport(1);
+                                }
+
+                                $this->_orderLineRepository->save($ecOrderLine);
+                                $qtyAssigned++;
                             }
-
-                            $this->_orderLineRepository->save($ecOrderLine);
-                            $qtyAssigned++;
                         }
                     }
                 }
