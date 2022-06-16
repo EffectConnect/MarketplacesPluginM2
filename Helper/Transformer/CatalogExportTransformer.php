@@ -1382,10 +1382,20 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     $attributesOutput[] = $valueArray;
                 }
             } else {
-                $valuesArray            = $this->getSequentialAttributeValueArray($value);
+                $valueArray             = $this->getSequentialAttributeValueArray($value);
 
-                foreach ($valuesArray as $valueArray) {
-                    $attributesOutput[] = $valueArray;
+                if (count($valueArray) > 0) {
+                    $attributesOutput[]         = [
+                        'code'                  => [
+                            '_cdata'            => $code
+                        ],
+                        'names'                 => [
+                            'name'              => $titleArray
+                        ],
+                        'values'                => [
+                            'value'             => $valueArray
+                        ]
+                    ];
                 }
             }
         } else {
