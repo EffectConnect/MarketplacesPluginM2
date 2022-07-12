@@ -5,7 +5,7 @@ namespace EffectConnect\Marketplaces\Model\Config\Source;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Framework\DataObject;
-use Zend\Filter\Word\UnderscoreToSeparator;
+use Zend_Filter_Word_SeparatorToSeparator as UnderscoreToSeparator;
 
 /**
  * Class Attribute

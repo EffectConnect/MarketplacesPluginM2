@@ -6,7 +6,7 @@ use EffectConnect\Marketplaces\Exception\SettingNotDefinedException;
 use EffectConnect\Marketplaces\Interfaces\SettingPathsInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
-use Zend\Filter\Word\CamelCaseToUnderscore;
+use Zend_Filter_Word_CamelCaseToUnderscore as CamelCaseToUnderscore;
 
 /**
  * This helper class helps obtaining settings from the store configuration.

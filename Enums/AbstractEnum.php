@@ -3,7 +3,7 @@
 namespace EffectConnect\Marketplaces\Enums;
 
 use MyCLabs\Enum\Enum;
-use Zend\Filter\Word\UnderscoreToSeparator;
+use Zend_Filter_Word_SeparatorToSeparator as UnderscoreToSeparator;
 
 /**
  * Abstract class LogCode
