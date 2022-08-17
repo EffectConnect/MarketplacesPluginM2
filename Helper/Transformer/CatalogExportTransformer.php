@@ -40,9 +40,9 @@ use Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Throwable;
-use Zend\Filter\Word\SeparatorToCamelCase;
-use Zend\Filter\Word\UnderscoreToSeparator;
-use Zend\Validator\Barcode;
+use Zend_Filter_Word_SeparatorToCamelCase;
+use Zend_Filter_Word_UnderscoreToSeparator;
+use Zend_Validate_Barcode;
 
 /**
  * The CatalogExportTransformer obtains the catalog from a certain website in the Magento 2 installation.
@@ -1076,7 +1076,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             }
         }
 
-        $valid                      = (new Barcode('EAN13'))->isValid($ean);
+        $valid                      = (new Zend_Validate_Barcode('EAN13'))->isValid($ean);
 
         if (!$valid) {
             throw new CatalogExportEanNotValidException(__('Product with ID %1 does not have a valid EAN (%2) and will therefor not be included in the catalog export.', $product->getId(), $ean));
@@ -1456,7 +1456,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      */
     protected function getTranslatedAttributeTitle(string $code, int $storeViewId, $attribute) : string
     {
-        return $attribute->getStoreLabel($storeViewId) ?: ucwords((new UnderscoreToSeparator)->filter($code));
+        return $attribute->getStoreLabel($storeViewId) ?: ucwords((new Zend_Filter_Word_UnderscoreToSeparator)->filter($code));
     }
 
     /**
@@ -1485,11 +1485,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         if (is_array($value)) {
             return array_map(function ($value) {
-                return strtolower((new SeparatorToCamelCase())->filter($value));
+                return strtolower((new Zend_Filter_Word_SeparatorToCamelCase())->filter($value));
             }, $value);
         }
 
-        return strtolower((new SeparatorToCamelCase())->filter($value));
+        return strtolower((new Zend_Filter_Word_SeparatorToCamelCase())->filter($value));
     }
 
     /**
@@ -1560,7 +1560,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
                 $valueArray                 =  [
                     'code'                  => [
-                        '_cdata'            => strtolower((new SeparatorToCamelCase())->filter($key)),
+                        '_cdata'            => strtolower((new Zend_Filter_Word_SeparatorToCamelCase())->filter($key)),
                     ],
                     'names'                 => [
                         'name'              => []
@@ -1568,7 +1568,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     'values'                => [
                         'value'             => [
                             'code'          => [
-                                '_cdata'    => strtolower((new SeparatorToCamelCase())->filter($stringValue)),
+                                '_cdata'    => strtolower((new Zend_Filter_Word_SeparatorToCamelCase())->filter($stringValue)),
                             ],
                             'names'         => [
                                 'name'      => []
@@ -1579,7 +1579,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
                 foreach ($this->_storeViewMapping as $language => $storeViewId) {
                     $valueArray['names']['name'][]                     = [
-                        '_cdata'            => ucwords((new UnderscoreToSeparator())->filter(strval($key))),
+                        '_cdata'            => ucwords((new Zend_Filter_Word_UnderscoreToSeparator())->filter(strval($key))),
                         '_attributes'       => [
                             'language'      => strval($language)
                         ]
@@ -1620,7 +1620,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
                 $valueArray             =  [
                     'code'              => [
-                        '_cdata'        => strtolower((new SeparatorToCamelCase())->filter($itemValue))
+                        '_cdata'        => strtolower((new Zend_Filter_Word_SeparatorToCamelCase())->filter($itemValue))
                     ],
                     'names'             => [
                         'name'          => []

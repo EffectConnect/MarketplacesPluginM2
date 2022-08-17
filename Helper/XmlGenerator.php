@@ -61,7 +61,7 @@ class XmlGenerator
         array $array,
         $rootElement                                = '',
         $replaceSpacesByUnderScoresInKeyNames       = true,
-        $xmlEncoding                                = null,
+        $xmlEncoding                                = '',
         $xmlVersion                                 = '1.0',
         $domProperties                              = []
     ) {
