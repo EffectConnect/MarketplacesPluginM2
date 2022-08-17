@@ -56,7 +56,7 @@ class TrackingExportDataObject implements Iterator, Countable
         return $orderLine;
     }
 
-    public function current()
+    public function current(): array
     {
         if ($this->valid()) {
             return $this->data[$this->position];
@@ -64,27 +64,27 @@ class TrackingExportDataObject implements Iterator, Countable
         return [];
     }
 
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->data[$this->position]);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->data);
     }
