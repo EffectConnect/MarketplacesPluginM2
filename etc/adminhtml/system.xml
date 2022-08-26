@@ -93,10 +93,18 @@
                     <comment>Select the attribute that is used for obtaining the product's delivery time when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\OptionalSelectableAttribute</source_model>
                 </field>
+                <field id="use_catalog_sales_rule_price" translate="label comment" type="select" sortOrder="85" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Price determination</label>
+                    <comment>Use 'Default Magento price determination' to export prices as they appear in the catalog (takes special prices and catalog sales rules into account). The original price will be exported as original price attribute. Extra settings will appear below when choosing 'Advanced price determination'.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\PriceDetermination</source_model>
+                </field>
                 <field id="attribute_price" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Price attribute</label>
                     <comment>Select the attribute that is used for obtaining the product's price when exporting the catalog to EffectConnect Marketplaces.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\DecimalAttribute</source_model>
+                    <depends>
+                        <field id="use_catalog_sales_rule_price">0</field>
+                    </depends>
                 </field>
                 <field id="price_fallback" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Price fallback</label>
@@ -104,12 +112,16 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="attribute_price" negative="1">price</field>
+                        <field id="use_catalog_sales_rule_price">0</field>
                     </depends>
                 </field>
                 <field id="use_special_price" translate="label comment" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Use special price</label>
                     <comment>Select whether the default Magento 2 special price attribute should be used when exporting the catalog to EffectConnect Marketplaces. The original price will just as well be exported, but in that case as original price attribute.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="use_catalog_sales_rule_price">0</field>
+                    </depends>
                 </field>
             </group>
             <group id="offer_export_settings" translate="label comment" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">

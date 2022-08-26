@@ -38,6 +38,7 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
 use Throwable;
 use Zend_Filter_Word_SeparatorToCamelCase;
@@ -153,6 +154,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      */
     protected $_defaultAttributes;
 
+    /**
+     * @var Emulation
+     */
+    protected $_appEmulation;
 
     /**
      * Constructs the CatalogExportTransformer helper class.
@@ -173,6 +178,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Status $productStatus
      * @param Visibility $productVisibility
      * @param Config $productMediaConfig
+     * @param Emulation $appEmulation
      */
     public function __construct(
         Context $context,
@@ -190,7 +196,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory,
         Status $productStatus,
         Visibility $productVisibility,
-        Config $productMediaConfig
+        Config $productMediaConfig,
+        Emulation $appEmulation
     ) {
         parent::__construct($context);
         $this->_productRepository               = $productRepository;
@@ -208,10 +215,16 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $this->_productStatus                   = $productStatus;
         $this->_productVisibility               = $productVisibility;
         $this->_productMediaConfig              = $productMediaConfig;
+        $this->_appEmulation                    = $appEmulation;
         $this->_storeViewMapping                = [];
         $this->_defaultAttributes               = [];
     }
 
+//    public function test(Connection $connection, ProductInterface $product)
+//    {
+//        $this->_connection = $connection;
+//        return $this->getProductPrice($product);
+//    }
 
     /**
      * Get the catalog, transformed to the EffectConnect Marketplaces SDK expected format as an array.
@@ -685,8 +698,13 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $exportProductsWhenEanInvalid   = boolval($this->_settingsHelper->getCatalogExportExportProductsWhenEanInvalid(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
         $identifier                     = $this->getProductIdentifier($productOption);
         $cost                           = $this->getProductCost($productOption);
+
+        // Emulate correct scope (needed for catalog price rules to work).
+        $this->_appEmulation->startEnvironmentEmulation($this->_connection->getBaseStoreviewId());
         $price                          = $this->getProductPrice($productOption);
         $priceOriginal                  = $this->getProductPriceOriginal($productOption);
+        $this->_appEmulation->stopEnvironmentEmulation();
+
         $stock                          = $this->getProductStock($productOption);
         $titles                         = $this->getProductTitles($productOption);
         $urls                           = $this->getProductUrls($productOption);
@@ -841,12 +859,18 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $priceFallback                  = boolval($this->_settingsHelper
             ->getCatalogExportPriceFallback(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
 
-        $price = $this->getProductAttribute($product, $priceAttributeCode, static::VALUE_TYPE_FLOAT);
+        $useCatalogPriceRules           = boolval($this->_settingsHelper
+            ->getCatalogExportUseCatalogSalesRulePrice(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
 
-        if ($useSpecialPrice) {
-            $this->_defaultAttributes[] = 'special_price';
-            $specialPrice               = $this->getProductAttribute($product, 'special_price', static::VALUE_TYPE_FLOAT);
-            $price                      = $specialPrice ?? $price;
+        if ($useCatalogPriceRules) {
+            $price = $product->getPriceInfo()->getPrice('final_price')->getValue();
+        } else {
+            $price = $this->getProductAttribute($product, $priceAttributeCode, static::VALUE_TYPE_FLOAT);
+            if ($useSpecialPrice) {
+                $this->_defaultAttributes[] = 'special_price';
+                $specialPrice               = $this->getProductAttribute($product, 'special_price', static::VALUE_TYPE_FLOAT);
+                $price                      = $specialPrice ?? $price;
+            }
         }
 
         if ($priceFallback && empty($price)) {
@@ -868,21 +892,36 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $useSpecialPrice    = boolval($this->_settingsHelper
             ->getCatalogExportUseSpecialPrice(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
 
-        if (!$useSpecialPrice) {
-            return null;
+        $useCatalogPriceRules = boolval($this->_settingsHelper
+            ->getCatalogExportUseCatalogSalesRulePrice(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+
+        if ($useCatalogPriceRules) {
+            $regularPrice = $product->getPriceInfo()->getPrice('regular_price')->getValue();
+            $finalPrice = $product->getPriceInfo()->getPrice('final_price')->getValue();
+            if ($finalPrice === $regularPrice) {
+                return null;
+            }
+        } else {
+            if (!$useSpecialPrice) {
+                return null;
+            }
+
+            if (empty($this->getProductAttribute($product, 'special_price', static::VALUE_TYPE_FLOAT))) {
+                return null;
+            }
         }
 
-        if (empty($this->getProductAttribute($product, 'special_price', static::VALUE_TYPE_FLOAT))) {
-            return null;
-        }
-
-        $priceFallback      = boolval($this->_settingsHelper
+        $priceFallback        = boolval($this->_settingsHelper
             ->getCatalogExportPriceFallback(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
 
-        $priceAttributeCode = $this->_settingsHelper
+        $priceAttributeCode   = $this->_settingsHelper
             ->getCatalogExportPriceAttribute(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId()));
 
-        $price              = $this->getProductAttribute($product, $priceAttributeCode, static::VALUE_TYPE_FLOAT);
+        if ($useCatalogPriceRules) {
+            $price = $product->getPriceInfo()->getPrice('regular_price')->getValue();
+        } else {
+            $price = $this->getProductAttribute($product, $priceAttributeCode, static::VALUE_TYPE_FLOAT);
+        }
 
         if ($priceFallback && empty($price)) {
             $price          = $this->getProductAttribute($product, 'price', static::VALUE_TYPE_FLOAT);

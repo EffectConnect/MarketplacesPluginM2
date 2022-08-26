@@ -146,8 +146,13 @@ class OffersExportTransformer extends CatalogExportTransformer
     {
         $identifier     = $this->getProductIdentifier($productOption);
         $cost           = $this->getProductCost($productOption);
+
+        // Emulate correct scope (needed for catalog price rules to work).
+        $this->_appEmulation->startEnvironmentEmulation($this->_connection->getBaseStoreviewId());
         $price          = $this->getProductPrice($productOption);
         $priceOriginal  = $this->getProductPriceOriginal($productOption);
+        $this->_appEmulation->stopEnvironmentEmulation();
+
         $stock          = $this->getProductStock($productOption);
         $deliveryTime   = $this->getProductDeliveryTime($productOption);
 
