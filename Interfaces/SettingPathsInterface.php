@@ -46,6 +46,9 @@ interface SettingPathsInterface
     /** Get the delivery time attribute for products, used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_DELIVERY_TIME_ATTRIBUTE            = 'catalog_export_settings/attribute_delivery_time';
 
+    /** Get whether the catalog sale rule price should be used when exporting the catalog. */
+    const SETTING_CATALOG_EXPORT_USE_CATALOG_SALES_RULE_PRICE       = 'catalog_export_settings/use_catalog_sales_rule_price';
+
     /** Get the price attribute for products, used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_PRICE_ATTRIBUTE                    = 'catalog_export_settings/attribute_price';
 

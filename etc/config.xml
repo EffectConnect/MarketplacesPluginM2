@@ -18,6 +18,7 @@
                 <add_leading_zero_to_ean>0</add_leading_zero_to_ean>
                 <attribute_cost>cost</attribute_cost>
                 <attribute_delivery_time>delivery_time</attribute_delivery_time>
+                <use_catalog_sales_rule_price>0</use_catalog_sales_rule_price>
                 <attribute_price>price</attribute_price>
                 <price_fallback>1</price_fallback>
                 <use_special_price>1</use_special_price>

@@ -180,7 +180,7 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
                 ->addFilter(
                     'website_id',
                     $websiteIds,
-                    'eq'
+                    'in'
                 )->create();
 
             $connections            = $this->_connectionRepository
