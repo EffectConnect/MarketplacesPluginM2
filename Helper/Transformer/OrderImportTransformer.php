@@ -979,7 +979,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     {
         try
         {
-            $shipmentMethod             = $this->_channelMapping->getShippingMethodIncludingConfiguration($this->_storeId);
+            $shipmentMethod             = $this->_channelMapping->getShippingMethodIncludingConfiguration($this->_storeId, $order->getDate());
             $paymentMethod              = $this->_channelMapping->getPaymentMethodIncludingConfiguration($this->_storeId);
             $currencyInformation        = $quote->getCurrencyInformation();
 

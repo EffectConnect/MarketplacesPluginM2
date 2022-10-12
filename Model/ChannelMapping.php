@@ -2,11 +2,14 @@
 
 namespace EffectConnect\Marketplaces\Model;
 
+use DateTime;
+use Exception;
 use EffectConnect\Marketplaces\Enums\ExternalFulfilment;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 /**
  * Class ChannelMapping
@@ -44,6 +47,11 @@ class ChannelMapping extends AbstractModel
     protected $_settingsHelper;
 
     /**
+     * @var TimezoneInterface
+     */
+    protected $_timezone;
+
+    /**
      * ChannelMapping constructor.
      * @param Context $context
      * @param Registry $registry
@@ -52,11 +60,13 @@ class ChannelMapping extends AbstractModel
     public function __construct(
         Context $context,
         Registry $registry,
-        SettingsHelper $settingsHelper
+        SettingsHelper $settingsHelper,
+        TimezoneInterface $timezone
     ) {
         $this->_init(ResourceModel\ChannelMapping::class);
         parent::__construct($context, $registry);
         $this->_settingsHelper = $settingsHelper;
+        $this->_timezone = $timezone;
     }
 
     /**
@@ -167,9 +177,10 @@ class ChannelMapping extends AbstractModel
 
     /**
      * @param int $storeviewId
+     * @param DateTime $orderDate
      * @return string
      */
-    public function getShippingMethodIncludingConfiguration(int $storeviewId = 0) : string
+    public function getShippingMethodIncludingConfiguration(int $storeviewId, DateTime $orderDate) : string
     {
         // Use default configuration settings for ShippingMethod in case:
         // - the currently loaded channel mapping data is empty;
@@ -183,11 +194,35 @@ class ChannelMapping extends AbstractModel
             }
 
             // Get default setting.
-            return $this->_settingsHelper->getOrderImportShippingMethod(SettingsHelper::SCOPE_STORE, $storeviewId);
+            $defaultShippingMethod = $this->_settingsHelper->getOrderImportShippingMethod(SettingsHelper::SCOPE_STORE, $storeviewId);
+        } else {
+            // Just return currently loaded channel mapping's shipping method.
+            $defaultShippingMethod = $this->getShippingMethod();
         }
 
-        // Just return currently loaded data.
-        return $this->getShippingMethod();
+        // Get shipping method mapping setting.
+        $shippingMethodMappings = $this->_settingsHelper->getOrderImportShippingMethodMapping(SettingsHelper::SCOPE_STORE, $storeviewId);
+        $shippingMethodMapping = '';
+
+        try {
+            $orderDateInMagentoTimezone = $this->_timezone->date($orderDate);
+
+            // First mapping that meets the order date is used.
+            foreach ($shippingMethodMappings as $mapping) {
+                $weekday        = intval($mapping['weekday'] ?? -1);
+                $startTime      = strval($mapping['start_time'] ?? '');
+                $endTime        = strval($mapping['end_time'] ?? '');
+                $meetsWeekday   = $weekday === intval($orderDateInMagentoTimezone->format('w'));
+                $meetsStartTime = empty($startTime) || $orderDateInMagentoTimezone->format('H:i') >= $startTime;
+                $meetsEndTime   = empty($endTime) || $orderDateInMagentoTimezone->format('H:i') <= $endTime;
+                if ($meetsWeekday && $meetsStartTime && $meetsEndTime) {
+                    $shippingMethodMapping = $mapping['shipping_method_id'] ?? '';
+                    break;
+                }
+            }
+        } catch (Exception $e) {}
+
+        return !empty($shippingMethodMapping) && !$this->getIgnoreShippingMethodMapping() ? $shippingMethodMapping : $defaultShippingMethod;
     }
 
     /**

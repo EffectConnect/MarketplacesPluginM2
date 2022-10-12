@@ -4,7 +4,9 @@ namespace EffectConnect\Marketplaces\Helper;
 
 use EffectConnect\Marketplaces\Exception\SettingNotDefinedException;
 use EffectConnect\Marketplaces\Interfaces\SettingPathsInterface;
+use EffectConnect\Marketplaces\Model\Config\Backend\ShippingMethodMapping;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Zend_Filter_Word_CamelCaseToUnderscore;
 
@@ -19,7 +21,22 @@ class SettingsHelper extends AbstractHelper implements ScopeInterface, SettingPa
     /**
      * The path prefix for the EffectConnect Marketplaces module.
      */
-    const MODULE_PATH   = "effectconnect_marketplaces/";
+    const MODULE_PATH = "effectconnect_marketplaces/";
+
+    /**
+     * @var ShippingMethodMapping
+     */
+    protected $shippingMethodMapping;
+
+    /**
+     * @param Context $context
+     * @param ShippingMethodMapping $shippingMethodMapping
+     */
+    public function __construct(Context $context, ShippingMethodMapping $shippingMethodMapping)
+    {
+        parent::__construct($context);
+        $this->shippingMethodMapping = $shippingMethodMapping;
+    }
 
     /**
      * Get a setting for a certain scope and scope entity.
@@ -32,6 +49,20 @@ class SettingsHelper extends AbstractHelper implements ScopeInterface, SettingPa
     public function get(string $path, string $scope = self::SCOPE_STORE, int $scopeId = 0)
     {
         return $this->scopeConfig->getValue(self::MODULE_PATH . $path, $scope, $scopeId);
+    }
+
+    /**
+     * @param string $scope
+     * @param int $scopeId
+     * @return array
+     */
+    public function getOrderImportShippingMethodMapping(string $scope = self::SCOPE_STORE, int $scopeId = 0): array
+    {
+        $stringValue = $this->get(static::SETTING_ORDER_IMPORT_SHIPPING_METHOD_MAPPING, $scope, $scopeId);
+        $this->shippingMethodMapping->setValue($stringValue);
+        $this->shippingMethodMapping->afterLoad();
+        $arrayValue = $this->shippingMethodMapping->getValue();
+        return is_array($arrayValue) ? $arrayValue : [];
     }
 
     /**

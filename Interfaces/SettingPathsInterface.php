@@ -117,7 +117,10 @@ interface SettingPathsInterface
     /** Default shipping method for imported orders. */
     const SETTING_ORDER_IMPORT_SHIPPING_METHOD                      = 'order_import_settings/shipping_method';
 
-    /** Default shipping method for imported orders. */
+    /** Shipping method mapping that can override the default shipping method for specific time slots. */
+    const SETTING_ORDER_IMPORT_SHIPPING_METHOD_MAPPING              = 'order_import_settings/shipping_method_mapping';
+
+    /** Default order status for imported orders. */
     const SETTING_ORDER_IMPORT_ORDER_STATUS                         = 'order_import_settings/order_status';
 
     /** Create customer for imported orders. */

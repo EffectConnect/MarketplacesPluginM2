@@ -59,12 +59,13 @@ class Save extends ChannelMapping
                     'storeview_id_external' => $formData['external_fulfilment'] == ExternalFulfilment::INTERNAL_ORDERS() ? null : $formData['storeview_id_external'],
                     'external_fulfilment'   => $formData['external_fulfilment'],
                     'customer_create'       => $formData['customer_create'],
-                    'customer_group_id'     => (trim($formData['customer_group_id']) == '' ? null : $formData['customer_group_id']),
-                    'customer_id'           => (trim($formData['customer_id']) == '' ? null : $formData['customer_id']),
+                    'customer_group_id'     => (trim(strval($formData['customer_group_id'])) == '' ? null : $formData['customer_group_id']),
+                    'customer_id'           => (trim(strval($formData['customer_id'])) == '' ? null : $formData['customer_id']),
                     'send_emails'           => $formData['send_emails'],
                     'discount_code'         => $formData['discount_code'],
-                    'payment_method'        => (trim($formData['payment_method']) == '' ? null : $formData['payment_method']),
-                    'shipping_method'       => (trim($formData['shipping_method']) == '' ? null : $formData['shipping_method']),
+                    'payment_method'        => (trim(strval($formData['payment_method'])) == '' ? null : $formData['payment_method']),
+                    'shipping_method'       => (trim(strval($formData['shipping_method'])) == '' ? null : $formData['shipping_method']),
+                    'ignore_shipping_method_mapping' => intval($formData['ignore_shipping_method_mapping'] ?? 0),
                 ];
                 $channelMapping->addData($channelMappingData);
 

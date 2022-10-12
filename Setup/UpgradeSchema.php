@@ -39,6 +39,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->increaseEcOrderLineIdLength($setup, $installer, $connection);
         }
 
+        if (version_compare($context->getVersion(), "1.0.46", "<")) {
+            $this->addChannelMappingShippingMethodPriority($setup, $installer, $connection);
+        }
+
         $installer->endSetup();
     }
 
@@ -179,6 +183,31 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'length'   => 128,
                     'nullable' => false,
                     'comment'  => 'EffectConnect Order Line ID',
+                ]
+            );
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     * @return void
+     */
+    protected function addChannelMappingShippingMethodPriority(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_channel_mapping');
+        if ($connection->isTableExists($tableName) == true)
+        {
+            $connection->addColumn(
+                $tableName,
+                'ignore_shipping_method_mapping',
+                [
+                    'type'     => Table::TYPE_SMALLINT,
+                    'nullable' => false,
+                    'unsigned' => true,
+                    'default'  => 0,
+                    'comment'  => 'Whether to ignore the shipping method mapping',
                 ]
             );
         }
