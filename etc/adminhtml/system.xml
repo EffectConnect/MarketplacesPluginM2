@@ -270,6 +270,12 @@
                     <comment>Select the shipping method for imported orders.</comment>
                     <source_model>EffectConnect\Marketplaces\Model\Config\Source\ShippingMethods</source_model>
                 </field>
+                <field id="shipping_method_mapping" translate="label comment" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Shipping method mapping</label>
+                    <comment>Make exceptions to the default shipping method for specific time periods. First mapping rule has priority.</comment>
+                    <frontend_model>EffectConnect\Marketplaces\Block\Adminhtml\Form\Field\ShippingMethodMapping</frontend_model>
+                    <backend_model>EffectConnect\Marketplaces\Model\Config\Backend\ShippingMethodMapping</backend_model>
+                </field>
                 <field id="order_status" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Order status</label>
                     <comment>Select the order status for imported orders. Leave empty to use the status given by EffectConnect.</comment>

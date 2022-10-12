@@ -350,6 +350,20 @@
                     <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalShippingMethods</item>
                 </argument>
             </field>
+            <field name="ignore_shipping_method_mapping">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Ignore shipping method mapping</item>
+                        <item name="notice" xsi:type="string" translate="true">Use this to choose the priority of the above shipping method over the shipping method mapping in de default plugin configuration. 'Yes' = the above shipping method has priority. 'No' = the shipping method mapping has priority.</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">number</item>
+                        <item name="formElement" xsi:type="string">select</item>
+                        <item name="source" xsi:type="string">channelmapping</item>
+                        <item name="default" xsi:type="number">0</item>
+                    </item>
+                    <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Yesno</item>
+                </argument>
+            </field>
         </fieldset>
     </fieldset>
 </form>
