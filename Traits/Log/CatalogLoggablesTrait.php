@@ -256,6 +256,66 @@ trait CatalogLoggablesTrait
     }
 
     /**
+     * @param int $connectionId
+     * @param int $productId
+     * @return bool
+     */
+    public function logCatalogExportBundleExportDisabled(int $connectionId, int $productId) : bool
+    {
+        $loggable = new Loggable(
+            LogType::NOTICE(),
+            LogCode::CATALOG_EXPORT_BUNDLE_EXPORT_DISABLED(),
+            Process::EXPORT_CATALOG(),
+            $connectionId
+        );
+
+        $loggable->setFormattedMessage(
+            'Product %s can not be included in the catalog export because the bundle export is disabled in the settings (connection %s).',
+            [
+                $productId,
+                $connectionId
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::PRODUCT(),
+            $productId
+        );
+
+        return $this->insertLogItem($loggable);
+    }
+
+    /**
+     * @param int $connectionId
+     * @param int $productId
+     * @return bool
+     */
+    public function logCatalogExportUnsupportedBundle(int $connectionId, int $productId, string $message) : bool
+    {
+        $loggable = new Loggable(
+            LogType::NOTICE(),
+            LogCode::CATALOG_EXPORT_UNSUPPORTED_BUNDLE(),
+            Process::EXPORT_CATALOG(),
+            $connectionId
+        );
+
+        $loggable->setFormattedMessage(
+            'Unsupported bundle product %s can not be included in the catalog export. Message: %s.',
+            [
+                $productId,
+                $message
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::PRODUCT(),
+            $productId
+        );
+
+        return $this->insertLogItem($loggable);
+    }
+
+    /**
      * Log when an EAN is not valid.
      *
      * @param int $connectionId

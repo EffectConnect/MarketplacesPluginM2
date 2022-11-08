@@ -58,6 +58,9 @@ interface SettingPathsInterface
     /** Get whether the special price attribute should be used when exporting the catalog. */
     const SETTING_CATALOG_EXPORT_USE_SPECIAL_PRICE                  = 'catalog_export_settings/use_special_price';
 
+    /** Whether bundle products should be exported. */
+    const SETTING_CATALOG_EXPORT_EXPORT_BUNDLES                     = 'catalog_export_settings/export_bundles';
+
 
     /** Get the catalog export schedule, used when exporting the catalog. */
     const SETTING_OFFER_EXPORT_SCHEDULE                             = 'offer_export_settings/schedule';

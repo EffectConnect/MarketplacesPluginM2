@@ -19,6 +19,7 @@ use EffectConnect\Marketplaces\Exception\OrderImportCreateQuoteFailedException;
 use EffectConnect\Marketplaces\Exception\OrderImportFailedException;
 use EffectConnect\Marketplaces\Exception\OrderImportRegionIdRequiredException;
 use EffectConnect\Marketplaces\Exception\OrderImportSubmitQuoteFailedException;
+use EffectConnect\Marketplaces\Helper\BundleHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
 use EffectConnect\Marketplaces\Helper\RegionHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
@@ -34,12 +35,14 @@ use EffectConnect\PHPSdk\Core\Model\Response\ShippingAddress as EffectConnectShi
 use Exception;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Data as TaxHelper;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\Product as ProductModel;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
+use Magento\Framework\DataObject;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\AddressInterface as QuoteAddressInterface;
 use Magento\Customer\Api\Data\AddressInterface;
@@ -870,9 +873,30 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                     }
                 }
 
-                // Number of products in EC order line is always 1 - Magento will automatically merge order lines in case a product was ordered multiple times.
-                $quoteItem = $quote->addProduct($product);
+                // For bundle products we have to set the bundle option IDs (will only work in case there is only one option for each selection,
+                // because at the moment we don't have any info about the chosen option from the customer - those are not exported in the catalog export).
+                $request = null;
+                if ($product->getTypeId() === Type::TYPE_BUNDLE) {
+                    $request = new DataObject([
+                        'product'       => $productId,
+                        'bundle_option' => BundleHelper::getBundleOptions($product),
+                    ]);
+                }
 
+                // Number of products in EC order line is always 1 - Magento will automatically merge order lines in case a product was ordered multiple times.
+                $quoteItem = $quote->addProduct($product, $request);
+            }
+            catch (Exception $e)
+            {
+                throw new OrderImportAddProductsToQuoteFailedException(__('Order import failed when adding product (id: %1) to quote with message [%2].', $product->getId(), $e->getMessage()));
+            }
+
+            // $quoteItem can return a string that contains a message in case the product could not be added.
+            if (!($quoteItem instanceof QuoteItemModel)) {
+                throw new OrderImportAddProductsToQuoteFailedException(__('Order import failed when adding product (id: %1) to quote with message [%2].', $product->getId(), $quoteItem));
+            }
+
+            try {
                 // Set custom price.
                 $quoteItem->setCustomPrice($destinationAmount);
                 $quoteItem->setOriginalCustomPrice($destinationAmount);
@@ -883,11 +907,6 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             catch (Exception $e)
             {
                 throw new OrderImportAddProductsToQuoteFailedException(__('Order import failed when adding product (id: %1) to quote with message [%2].', $product->getId(), $e->getMessage()));
-            }
-
-            // $quoteItem can return a string that contains a message in case the product could not be added.
-            if (!($quoteItem instanceof QuoteItemModel)) {
-                throw new OrderImportAddProductsToQuoteFailedException(__('Order import failed when adding product (id: %1) to quote with message [%2].', $product->getId(), $quoteItem));
             }
 
             // Save match between EC order lines and Magento order lines (needed later when shipping order lines).
@@ -1085,12 +1104,16 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             // We can use this for determining which items within the order have been shipped.
             foreach ($quote->getAllItems() as $quoteItem)
             {
-                foreach ($quoteItem->getEcLineIds() as $ecLineId)
-                {
-                    $orderLine = $this->_orderLineRepository->create();
-                    $orderLine->setQuoteItemId($quoteItem->getId());
-                    $orderLine->setEcOrderLineId($ecLineId);
-                    $this->_orderLineRepository->save($orderLine);
+                // For bundle products Magento might generate multiple quote items if we added just one product (for each item in the bundle).
+                // So not all quote items might have EffectConnect order line IDs.
+                if (is_array($quoteItem->getEcLineIds())) {
+                    foreach ($quoteItem->getEcLineIds() as $ecLineId)
+                    {
+                        $orderLine = $this->_orderLineRepository->create();
+                        $orderLine->setQuoteItemId($quoteItem->getId());
+                        $orderLine->setEcOrderLineId($ecLineId);
+                        $this->_orderLineRepository->save($orderLine);
+                    }
                 }
             }
 

@@ -6,6 +6,8 @@ use EffectConnect\Marketplaces\Enums\LogCode;
 use EffectConnect\Marketplaces\Exception\CatalogExportEanNotValidException;
 use EffectConnect\Marketplaces\Exception\CatalogExportObligatedAttributeIsNullException;
 use EffectConnect\Marketplaces\Exception\CatalogExportProductHasNoSkuException;
+use EffectConnect\Marketplaces\Exception\UnsupportedBundleException;
+use EffectConnect\Marketplaces\Helper\BundleHelper;
 use EffectConnect\Marketplaces\Helper\InventoryHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
@@ -431,6 +433,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             return false;
         }
 
+        //die('saveXmlSegmented');
+
         return $fileLocation;
     }
 
@@ -768,6 +772,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      */
     protected function checkProductShouldBeExported(ProductInterface $product) : bool
     {
+        $exportBundles = boolval($this->_settingsHelper->getCatalogExportExportBundles(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
         switch(true) {
             case is_null($product->getStatus()) || !in_array($product->getStatus(), $this->_productStatus->getVisibleStatusIds()):
                 $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_NOT_ENABLED(), [
@@ -775,7 +780,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     intval($product->getId())
                 ]);
                 return false;
-            case is_null($product->getTypeId()) || ($product->getTypeId() !== Configurable::TYPE_CODE && $product->getTypeId() !== Type::TYPE_SIMPLE):
+            case is_null($product->getTypeId()) || ($product->getTypeId() !== Configurable::TYPE_CODE && $product->getTypeId() !== Type::TYPE_SIMPLE && $product->getTypeId() !== Type::TYPE_BUNDLE):
                 $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_TYPE_NOT_SUPPORTED(), [
                     intval($this->_connection->getEntityId()),
                     intval($product->getId()),
@@ -788,6 +793,24 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     intval($product->getId())
                 ]);
                 return false;
+            case $product->getTypeId() === Type::TYPE_BUNDLE && !$exportBundles:
+                $this->writeToLog(LogCode::CATALOG_EXPORT_BUNDLE_EXPORT_DISABLED(), [
+                    intval($this->_connection->getEntityId()),
+                    intval($product->getId())
+                ]);
+                return false;
+            case $product->getTypeId() === Type::TYPE_BUNDLE && $exportBundles:
+                try {
+                    BundleHelper::getBundleOptions($product);
+                    return true;
+                } catch (UnsupportedBundleException $e) {
+                    $this->writeToLog(LogCode::CATALOG_EXPORT_UNSUPPORTED_BUNDLE(), [
+                        intval($this->_connection->getEntityId()),
+                        intval($product->getId()),
+                        $e->getMessage()
+                    ]);
+                    return false;
+                }
             default:
                 return true;
         }
@@ -2105,6 +2128,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 return $this->_logHelper->logCatalogExportProductNotVisible(...$parameters);
             case LogCode::CATALOG_EXPORT_PRODUCT_TYPE_NOT_SUPPORTED():
                 return $this->_logHelper->logCatalogExportProductTypeNotSupported(...$parameters);
+            case LogCode::CATALOG_EXPORT_BUNDLE_EXPORT_DISABLED():
+                return $this->_logHelper->logCatalogExportBundleExportDisabled(...$parameters);
+            case LogCode::CATALOG_EXPORT_UNSUPPORTED_BUNDLE():
+                return $this->_logHelper->logCatalogExportUnsupportedBundle(...$parameters);
             case LogCode::CATALOG_EXPORT_MAXIMUM_IMAGES_EXCEEDED():
                 return $this->_logHelper->logCatalogExportMaximumImagesExceeded(...$parameters);
             case LogCode::CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED():
