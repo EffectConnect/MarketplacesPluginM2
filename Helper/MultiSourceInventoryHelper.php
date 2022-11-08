@@ -7,7 +7,9 @@ use EffectConnect\Marketplaces\Enums\QuantityType;
 use EffectConnect\Marketplaces\Enums\SalableSourceType;
 use EffectConnect\Marketplaces\Exception\CatalogExportProductHasNoSkuException;
 use Exception;
+use Magento\Bundle\Api\ProductLinkManagementInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -77,15 +79,17 @@ class MultiSourceInventoryHelper extends TraditionalInventoryHelper
      * @param StockStateInterface $stockState
      * @param SettingsHelper $settingsHelper
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param ProductLinkManagementInterface $productLinkManagement
      */
     public function __construct(
         Context $context,
         ProductRepository $productRepository,
         StockStateInterface $stockState,
         SettingsHelper $settingsHelper,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        ProductLinkManagementInterface $productLinkManagement
     ) {
-        parent::__construct($context, $productRepository, $stockState);
+        parent::__construct($context, $productRepository, $stockState, $productLinkManagement);
 
         $objectManager                  = ObjectManager::getInstance();
 
@@ -111,6 +115,10 @@ class MultiSourceInventoryHelper extends TraditionalInventoryHelper
      */
     public function getProductStockQuantity(ProductInterface $product, int $websiteId): float
     {
+        if ($product->getTypeId() === Type::TYPE_BUNDLE) {
+            return $this->getBundleStockQuantity($product, $websiteId);
+        }
+
         $stock                          = 0;
 
         if ($this->traditionalActive($websiteId)) {

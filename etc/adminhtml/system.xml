@@ -123,6 +123,11 @@
                         <field id="use_catalog_sales_rule_price">0</field>
                     </depends>
                 </field>
+                <field id="export_bundles" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Export bundle products</label>
+                    <comment>Select whether to export bundle products. Bundle products with multiple choice options are not supported as well as bundles with setting 'Ship Bundle Items' not set to 'Together'. Bundles will appear in EffectConnect as normal products without any bundle item info.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="offer_export_settings" translate="label comment" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Offer Export</label>

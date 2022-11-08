@@ -21,6 +21,8 @@ namespace EffectConnect\Marketplaces\Enums;
  * @method static LogCode CATALOG_EXPORT_PRODUCT_NOT_ENABLED()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_NOT_VISIBLE()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_TYPE_NOT_SUPPORTED()
+ * @method static LogCode CATALOG_EXPORT_BUNDLE_EXPORT_DISABLED()
+ * @method static LogCode CATALOG_EXPORT_UNSUPPORTED_BUNDLE()
  * @method static LogCode CATALOG_EXPORT_MAXIMUM_IMAGES_EXCEEDED()
  * @method static LogCode CATALOG_EXPORT_NO_STOREVIEW_MAPPING_DEFINED()
  * @method static LogCode CATALOG_EXPORT_PRODUCT_HAS_NO_SKU()
@@ -137,6 +139,16 @@ class LogCode extends AbstractEnum
      * The product type is not supported, the product will not be exported.
      */
     const CATALOG_EXPORT_PRODUCT_TYPE_NOT_SUPPORTED             = 'catalog_export_product_type_not_supported';
+
+    /**
+     * The bundle export is disabled, the product will not be exported.
+     */
+    const CATALOG_EXPORT_BUNDLE_EXPORT_DISABLED                 = 'catalog_export_bundle_export_disabled';
+
+    /**
+     * Currently only bundle products with exactly one option for each bundle item are supported, otherwise the product will not be exported.
+     */
+    const CATALOG_EXPORT_UNSUPPORTED_BUNDLE                     = 'catalog_export_unsupported_bundle';
 
     /**
      * Product exceeds maximum amount of images.
