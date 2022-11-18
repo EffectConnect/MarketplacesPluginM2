@@ -433,8 +433,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             return false;
         }
 
-        //die('saveXmlSegmented');
-
         return $fileLocation;
     }
 
@@ -1129,7 +1127,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $ean                        = $this->getProductAttribute($product, $attributeCode, static::VALUE_TYPE_STRING, 13);
 
         // Added leading zero in case EAN consists of 12 characters?
-        if (strlen($ean) === 12)
+        if (!is_null($ean) && strlen($ean) === 12)
         {
             $addLeadingZero = boolval($this->_settingsHelper->getCatalogExportAddLeadingZeroToEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
             if ($addLeadingZero === true)
@@ -1226,7 +1224,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             try {
                 $this->setValueToArray($data, 'url', $baseUrl . $file, true, '');
                 $this->setValueToArray($data, 'size', $size);
-                if (strlen($md5) <= 32) {
+                if (!is_null($md5) && strlen($md5) <= 32) {
                     $this->setValueToArray($data, 'md5checksum', $md5, false, null, false);
                 }
                 $this->setValueToArray($data, 'order', intval($item->getPosition()), true, 0);
