@@ -79,6 +79,7 @@ class TraditionalInventoryHelper extends BaseInventoryHelper
 
     /**
      * In case of bundles the stock is determined by getting the lowest stock of the individual items in the bundle.
+     * If there are multiple identical products in the bundle, the stock of that product is divided by the count.
      *
      * @param ProductInterface $product
      * @param int $websiteId
@@ -86,21 +87,25 @@ class TraditionalInventoryHelper extends BaseInventoryHelper
      */
     protected function getBundleStockQuantity(ProductInterface $product, int $websiteId) : float
     {
-        $minimumStock = null;
-        $sku = $product->getSku();
+        $sku        = $product->getSku();
+        $stocks     = [];
+        $quantities = [];
         try {
             $children = $this->_productLinkManagement->getChildren($sku);
             foreach ($children as $child) {
                 $childProduct = $this->_productRepository->getById($child->getEntityId());
                 $stock = $this->getProductStockQuantity($childProduct, $websiteId);
-                if ($minimumStock === null || $stock < $minimumStock) {
-                    $minimumStock = $stock;
+                if (isset($quantities[$child->getEntityId()])) {
+                    $quantities[$child->getEntityId()] += $child->getQty();
+                } else {
+                    $quantities[$child->getEntityId()] = $child->getQty();
                 }
+                $stocks[$child->getEntityId()] = floor($stock / $quantities[$child->getEntityId()]);
             }
         } catch (Throwable $e) {
             return 0;
         }
 
-        return floatval($minimumStock);
+        return count($stocks) > 0 ? floatval(min($stocks)) : 0;
     }
 }
