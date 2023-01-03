@@ -682,7 +682,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             $sourceCurrency         = $this->_currencyFactory->create()->load($sourceCurrencyCode);
             $destinationCurrency    = $this->_storeManager->getStore($this->_storeId)->getCurrentCurrency();
 
-            $conversionRate         = $sourceCurrency->getRate($destinationCurrency);
+            $conversionRate         = $sourceCurrency->getAnyRate($destinationCurrency);
 
             $quote->setCurrencyInformation([
                 'source'        => $sourceCurrency,
