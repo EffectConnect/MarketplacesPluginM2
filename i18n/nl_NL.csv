@@ -287,7 +287,7 @@
 "Order import failed when fetching customer to assign the order to. Message: %1.","Order import mislukt bij het ophalen van de klant voor toewijzing aan order. Foutmelding: %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding customer to quote.","Order import mislukt bij het toevoegen van de klant aan de quote.","module","EffectConnect_Marketplaces"
 "Order import failed when assigning customer to quote. Message: %1.","Order import mislukt bij het toekennen van de klant aan de quote. Foutmelding: %1.","module","EffectConnect_Marketplaces"
-"NOTE: some prices were adjusted to be able to import the import to Magento.","LET OP: sommige prijzen zijn aangepast om de order te kunnen importeren in Magento.","module","EffectConnect_Marketplaces"
+"NOTE: some prices were adjusted to be able to import the order to Magento.","LET OP: sommige prijzen zijn aangepast om de order te kunnen importeren in Magento.","module","EffectConnect_Marketplaces"
 "Order import failed when trying to match product by sku %1.","Order import mislukt bij het matchen van het product op sku %1.","module","EffectConnect_Marketplaces"
 "Order import failed when trying to load product by id %1.","Order import mislukt bij het loaden van product met id %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding product (id: %1) to quote.","Order import mislukt bij het toevoegen van product (id: %1) aan quote.","module","EffectConnect_Marketplaces"

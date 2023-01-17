@@ -825,7 +825,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $recalculatedPricesByProductId = $this->recalculateDuplicateProductsWithDifferentPrices($orderLines);
         if ($recalculatedPricesByProductId) {
             // Add comment to order.
-            $this->_orderComments[] = __('NOTE: some prices were adjusted to be able to import the import to Magento.');
+            $this->_orderComments[] = __('NOTE: some prices were adjusted to be able to import the order to Magento.');
         }
 
         // Add each order line to the quote.
@@ -910,7 +910,12 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             }
 
             // Save match between EC order lines and Magento order lines (needed later when shipping order lines).
-            $quoteItem = $this->addOrderLineIdToQuoteItem($quoteItem, $orderLine);
+            $this->addOrderLineIdToQuoteItem($quoteItem, $orderLine);
+
+            // Update cart in database after adding a product to make sure the cart items have an ID (and parent ID in case of a bundle).
+            // This is used internally by Magento (Magento\Quote\Model\Quote\Item->addQty()) to determine the qty of a bundle parent and child item.
+            // The parent item should contain the number of ordered bundles while the child item should not.
+            $this->_cartRepository->save($quote);
         }
 
         return $quote;
