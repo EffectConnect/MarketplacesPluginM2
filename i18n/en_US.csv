@@ -287,7 +287,7 @@
 "Order import failed when fetching customer to assign the order to. Message: %1.","Order import failed when fetching customer to assign the order to. Message: %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding customer to quote.","Order import failed when adding customer to quote.","module","EffectConnect_Marketplaces"
 "Order import failed when assigning customer to quote. Message: %1.","Order import failed when assigning customer to quote. Message: %1.","module","EffectConnect_Marketplaces"
-"NOTE: some prices were adjusted to be able to import the import to Magento.","NOTE: some prices were adjusted to be able to import the import to Magento.","module","EffectConnect_Marketplaces"
+"NOTE: some prices were adjusted to be able to import the order to Magento.","NOTE: some prices were adjusted to be able to import the order to Magento.","module","EffectConnect_Marketplaces"
 "Order import failed when trying to match product by sku %1.","Order import failed when trying to match product by sku %1.","module","EffectConnect_Marketplaces"
 "Order import failed when trying to load product by id %1.","Order import failed when trying to load product by id %1.","module","EffectConnect_Marketplaces"
 "Order import failed when adding product (id: %1) to quote.","Order import failed when adding product (id: %1) to quote.","module","EffectConnect_Marketplaces"
