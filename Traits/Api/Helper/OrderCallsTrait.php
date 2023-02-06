@@ -50,6 +50,8 @@ trait OrderCallsTrait
 
             if ($orders->getCount() > 0)
             {
+                $skippedOrders = [];
+
                 /* @var EffectConnectOrder $effectConnectOrder */
                 foreach ($orders->getOrders() as $effectConnectOrder)
                 {
@@ -91,6 +93,11 @@ trait OrderCallsTrait
                                 );
                             }
                         }
+                        else
+                        {
+                            // Order was skipped for a reason (add to list of skipped orders to assign the skipped tag in bulk afterwards)
+                            $skippedOrders[] = $orderIdentifiers->getEffectConnectNumber();
+                        }
                     }
                     catch (OrderImportFailedException $e)
                     {
@@ -107,6 +114,23 @@ trait OrderCallsTrait
                                 FilterTag::ORDER_IMPORT_FAILED_TAG()
                             );
                         }
+                    }
+                }
+
+                if (count($skippedOrders) > 0)
+                {
+                    try
+                    {
+                        // Make a call to EC to identify that the order import was skipped.
+                        $apiWrapper->updateOrdersAddTag($skippedOrders, FilterTag::ORDER_IMPORT_SKIPPED_TAG());
+                    }
+                    catch (ApiCallFailedException $e)
+                    {
+                        $logHelper->logOrderImportAddTagFailed(
+                            intval($connection->getEntityId()),
+                            implode(',', $skippedOrders),
+                            FilterTag::ORDER_IMPORT_SKIPPED_TAG()
+                        );
                     }
                 }
             }
@@ -130,7 +154,7 @@ trait OrderCallsTrait
      */
     protected function orderListReadByType(ApiWrapper $apiWrapper, string $type) : OrderListReadResponseContainer
     {
-        $excludeTags = [FilterTag::ORDER_IMPORT_SUCCEEDED_TAG(), FilterTag::ORDER_IMPORT_FAILED_TAG()];
+        $excludeTags = [FilterTag::ORDER_IMPORT_SUCCEEDED_TAG(), FilterTag::ORDER_IMPORT_FAILED_TAG(), FilterTag::ORDER_IMPORT_SKIPPED_TAG()];
 
         switch ($type) {
             case $this->orderListReadTypePaid:

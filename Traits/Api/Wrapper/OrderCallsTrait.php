@@ -203,6 +203,46 @@ trait OrderCallsTrait
     }
 
     /**
+     * @param array $effectConnectNumbers
+     * @param string $tag
+     * @return ResponseContainerInterface
+     * @throws ApiCallFailedException
+     */
+    public function updateOrdersAddTag(array $effectConnectNumbers, string $tag)
+    {
+        try
+        {
+            /* @var OrderCall $orderCall */
+            $core      = $this->getSdkCore();
+            $orderCall = $core->OrderCall();
+
+            $orderUpdate = new OrderUpdateRequest();
+            foreach ($effectConnectNumbers as $effectConnectNumber) {
+                $orderAddTag = new OrderUpdate();
+                $orderAddTag
+                    ->setOrderIdentifierType(OrderUpdate::TYPE_EFFECTCONNECT_NUMBER)
+                    ->setOrderIdentifier($effectConnectNumber)
+                    ->addTag($tag);
+                $orderUpdate->addOrderUpdate($orderAddTag);
+            }
+        }
+        catch (Exception $e)
+        {
+            throw new ApiCallFailedException(__('Adding tags to EffectConnect orders %1 failed with messages [%2].', implode(',', $effectConnectNumbers), $e->getMessage()));
+        }
+
+        $apiCall = $orderCall->update($orderUpdate);
+
+        if (!is_null($this->_timeout)) {
+            $apiCall->setTimeout($this->_timeout);
+        }
+
+        $apiCall->call();
+
+        return $this->getResult($apiCall);
+    }
+
+    /**
      * @param TrackingExportDataObject $trackingExportDataObject
      * @return OrderUpdated
      * @throws ApiCallFailedException

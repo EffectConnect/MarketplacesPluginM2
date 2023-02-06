@@ -9,6 +9,7 @@ use MyCLabs\Enum\Enum;
  * @package EffectConnect\Marketplaces\Enums\Api
  * @method static FilterTag ORDER_IMPORT_FAILED_TAG()
  * @method static FilterTag ORDER_IMPORT_SUCCEEDED_TAG()
+ * @method static FilterTag ORDER_IMPORT_SKIPPED_TAG()
  * @method static FilterTag EXTERNAL_FULFILMENT_TAG()
  */
 class FilterTag extends Enum
@@ -22,6 +23,11 @@ class FilterTag extends Enum
      * Order import succeeded tag.
      */
     const ORDER_IMPORT_SUCCEEDED_TAG = 'order_import_succeeded';
+
+    /**
+     * Order import skipped tag.
+     */
+    const ORDER_IMPORT_SKIPPED_TAG = 'order_import_skipped';
 
     /**
      * External fulfilment tag.
