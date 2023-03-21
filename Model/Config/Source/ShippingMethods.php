@@ -19,6 +19,14 @@ class ShippingMethods implements OptionSourceInterface
     const EFFECTCONNECT_SHIPPING_CODE = 'effectconnect_marketplaces_carrier';
 
     /**
+     * Alternative carrier methods codes.
+     *
+     * For example the default Magento way of fetching shipping methods is '{carrier_code}_{method_code}'.
+     * For PostNL this is incorrect, because it will return 'tig_postnl_tig_postnl' while it should be 'tig_postnl_regular'.
+     */
+    const CARRIER_REPLACEMENTS = ['tig_postnl_tig_postnl' => 'tig_postnl_regular'];
+
+    /**
      * @var ScopeConfigInterface
      */
     protected $_scopeConfig;
@@ -64,8 +72,10 @@ class ShippingMethods implements OptionSourceInterface
             );
             $methods[$carrierCode] = ['label' => $carrierTitle, 'value' => []];
             foreach ($carrierMethods as $methodCode => $methodTitle) {
+                $value                 = $carrierCode . '_' . $methodCode;
+                $valueAfterReplacement = self::CARRIER_REPLACEMENTS[$value] ?? $value;
                 $methods[$carrierCode]['value'][] = [
-                    'value' => $carrierCode . '_' . $methodCode,
+                    'value' => $valueAfterReplacement,
                     'label' => $methodTitle,
                 ];
             }
