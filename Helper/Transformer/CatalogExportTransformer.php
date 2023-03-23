@@ -455,12 +455,18 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             return;
         }
 
-        if (!$this->checkProductShouldBeExported($product)) {
+        // Use correct scope for the product.
+        // In case a specific store should be exported, we need the product data of that specific store.
+        $scopedProduct = $this->getScopedProduct($product);
+        if (is_null($scopedProduct)) {
             return;
         }
 
-        $transformed    = $this->transformProduct($product);
+        if (!$this->checkProductShouldBeExported($scopedProduct)) {
+            return;
+        }
 
+        $transformed    = $this->transformProduct($scopedProduct);
         if (is_null($transformed)) {
             return;
         }
@@ -493,7 +499,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         if (!$success) {
             $this->writeToLog(LogCode::CATALOG_EXPORT_FILE_CREATION_FAILED(), [
                 intval($connection->getEntityId()),
-                intval($product['identifier']) ?? 0
+                intval($scopedProduct['identifier']) ?? 0
             ]);
             return;
         }
@@ -572,12 +578,18 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     continue;
                 }
 
-                if (!$this->checkProductShouldBeExported($product)) {
+                // Use correct scope for the product.
+                // In case a specific store should be exported, we need the product data of that specific store.
+                $scopedProduct = $this->getScopedProduct($product);
+                if (is_null($scopedProduct)) {
                     continue;
                 }
 
-                $transformed                = $this->transformProduct($product);
+                if (!$this->checkProductShouldBeExported($scopedProduct)) {
+                    continue;
+                }
 
+                $transformed                = $this->transformProduct($scopedProduct);
                 if (!is_null($transformed)) {
                     $transformedProducts[]  = $transformed;
                 }
@@ -635,24 +647,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      */
     protected function transformProduct(ProductInterface $product)
     {
-        try {
-            $product = $this->_productRepository->getById($product->getId(), false, $this->_connection->getBaseStoreviewId());
-        } catch (NoSuchEntityException $e) {
-            $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_NOT_FOUND(), [
-                intval($this->_connection->getEntityId()),
-                intval($product->getId())
-            ]);
-            return null;
-        }
-
-        if (!($product instanceof ProductInterface)) {
-            $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_NOT_FOUND(), [
-                intval($this->_connection->getEntityId()),
-                intval($product->getId())
-            ]);
-            return null;
-        }
-
         $identifier     = $this->getProductIdentifier($product);
         $brand          = $this->getProductBrand($product);
         $categories     = $this->getProductCategories($product);
@@ -2148,5 +2142,34 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     protected function checkForDuplicateEans()
     {
         return boolval($this->_settingsHelper->getCatalogExportExportEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+    }
+
+    /**
+     * Returns product in a specific storeview scoped.
+     *
+     * @param ProductInterface $product
+     * @return ProductInterface|null
+     */
+    protected function getScopedProduct(ProductInterface $product)
+    {
+        try {
+            $scopedProduct = $this->_productRepository->getById($product->getId(), false, $this->_connection->getBaseStoreviewId());
+        } catch (NoSuchEntityException $e) {
+            $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_NOT_FOUND(), [
+                intval($this->_connection->getEntityId()),
+                intval($product->getId())
+            ]);
+            return null;
+        }
+
+        if (!($scopedProduct instanceof ProductInterface)) {
+            $this->writeToLog(LogCode::CATALOG_EXPORT_PRODUCT_NOT_FOUND(), [
+                intval($this->_connection->getEntityId()),
+                intval($product->getId())
+            ]);
+            return null;
+        }
+
+        return $scopedProduct;
     }
 }
