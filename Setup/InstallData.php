@@ -10,7 +10,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Zend_Validate_Exception;
 
 /**
  * Class InstallData
@@ -58,7 +57,6 @@ class InstallData implements InstallDataInterface
     /**
      * @param EavSetup $eavSetup
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      */
     public function createDeliveryTimeAttribute(EavSetup $eavSetup)
     {
@@ -106,7 +104,6 @@ class InstallData implements InstallDataInterface
     /**
      * @param EavSetup $eavSetup
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      */
     public function createEanAttribute(EavSetup $eavSetup)
     {

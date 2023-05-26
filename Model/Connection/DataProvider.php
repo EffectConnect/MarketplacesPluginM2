@@ -45,6 +45,11 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
     protected $_pool;
 
     /**
+     * @var array
+     */
+    protected $loadedData;
+
+    /**
      * DataProvider constructor.
      * @param string $name
      * @param string $primaryFieldName

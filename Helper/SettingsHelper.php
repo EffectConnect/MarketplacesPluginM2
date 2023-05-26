@@ -5,10 +5,10 @@ namespace EffectConnect\Marketplaces\Helper;
 use EffectConnect\Marketplaces\Exception\SettingNotDefinedException;
 use EffectConnect\Marketplaces\Interfaces\SettingPathsInterface;
 use EffectConnect\Marketplaces\Model\Config\Backend\ShippingMethodMapping;
+use Laminas\Filter\Word\CamelCaseToUnderscore;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
-use Zend_Filter_Word_CamelCaseToUnderscore;
 
 /**
  * This helper class helps obtaining settings from the store configuration.
@@ -108,6 +108,6 @@ class SettingsHelper extends AbstractHelper implements ScopeInterface, SettingPa
      */
     protected function callNameToConstant(string $callName) : string
     {
-        return 'SETTING_' . strtoupper((new Zend_Filter_Word_CamelCaseToUnderscore())->filter(ltrim($callName, 'get')));
+        return 'SETTING_' . strtoupper((new CamelCaseToUnderscore())->filter(ltrim($callName, 'get')));
     }
 }

@@ -14,7 +14,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Zend_Validate_Exception;
 
 /**
  * Class UpgradeData
@@ -31,6 +30,11 @@ class UpgradeData implements UpgradeDataInterface
      * EAN attribute code
      */
     const ATTRIBUTE_EAN             = 'ean';
+
+    /**
+     * @var EavSetupFactory
+     */
+    protected $_eavSetupFactory;
 
     /**
      * UpgradeData constructor.
@@ -73,7 +77,6 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * @param EavSetup $eavSetup
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      */
     public function createDeliveryTimeAttribute(EavSetup $eavSetup)
     {
@@ -121,7 +124,6 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * @param EavSetup $eavSetup
      * @throws LocalizedException
-     * @throws Zend_Validate_Exception
      */
     public function createEanAttribute(EavSetup $eavSetup)
     {
