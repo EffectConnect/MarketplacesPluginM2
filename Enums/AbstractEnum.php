@@ -2,8 +2,8 @@
 
 namespace EffectConnect\Marketplaces\Enums;
 
+use Laminas\Filter\Word\UnderscoreToSeparator;
 use MyCLabs\Enum\Enum;
-use Zend_Filter_Word_UnderscoreToSeparator;
 
 /**
  * Abstract class LogCode
@@ -18,7 +18,7 @@ abstract class AbstractEnum extends Enum
      */
     public function getLabel() : string
     {
-        return __(ucwords((new Zend_Filter_Word_UnderscoreToSeparator())->filter($this->getValue())));
+        return __(ucwords((new UnderscoreToSeparator())->filter($this->getValue())));
     }
 
     /**

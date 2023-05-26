@@ -2,10 +2,10 @@
 
 namespace EffectConnect\Marketplaces\Model\Config\Source;
 
+use Laminas\Filter\Word\UnderscoreToSeparator;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\DataObject;
-use Zend_Filter_Word_UnderscoreToSeparator;
 
 /**
  * Class Attribute
@@ -40,7 +40,7 @@ class Attribute implements OptionSourceInterface
             $label  = $attribute->getFrontendLabel();
 
             /* Needed when no label is defined */
-            $codeLabel = ucwords((new Zend_Filter_Word_UnderscoreToSeparator())->filter($code));
+            $codeLabel = ucwords((new UnderscoreToSeparator())->filter($code));
 
             return [
                 'value' => $code,
