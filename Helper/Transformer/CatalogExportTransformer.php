@@ -30,6 +30,7 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\Media\Config;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
+use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Catalog\Ui\DataProvider\Product\Form\Modifier\Images;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -162,6 +163,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     protected $_appEmulation;
 
     /**
+     * @var ProductResourceModel
+     */
+    protected $_productResourceModel;
+
+    /**
      * Constructs the CatalogExportTransformer helper class.
      *
      * @param Context $context
@@ -181,6 +187,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Visibility $productVisibility
      * @param Config $productMediaConfig
      * @param Emulation $appEmulation
+     * @param ProductResourceModel $productResourceModel
      */
     public function __construct(
         Context $context,
@@ -199,7 +206,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         Status $productStatus,
         Visibility $productVisibility,
         Config $productMediaConfig,
-        Emulation $appEmulation
+        Emulation $appEmulation,
+        ProductResourceModel $productResourceModel
     ) {
         parent::__construct($context);
         $this->_productRepository               = $productRepository;
@@ -218,6 +226,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $this->_productVisibility               = $productVisibility;
         $this->_productMediaConfig              = $productMediaConfig;
         $this->_appEmulation                    = $appEmulation;
+        $this->_productResourceModel            = $productResourceModel;
         $this->_storeViewMapping                = [];
         $this->_defaultAttributes               = [];
     }
@@ -1453,7 +1462,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 }
             }
         } else {
-            $valueArray                 = $this->getTranslatedAttributeValue($value, $attribute);
+            $valueArray                 = $this->getTranslatedAttributeValue($value, $attribute, $product);
 
             if (count($valueArray) > 0) {
                 $attributesOutput[]         = [
@@ -1531,11 +1540,12 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      *
      * @param $rawValue
      * @param Attribute $attribute
+     * @param ProductInterface $product
      * @return string|array
      */
-    protected function getAttributeValueCode($rawValue, $attribute)
+    protected function getAttributeValueCode($rawValue, $attribute, ProductInterface $product)
     {
-        $value = $this->getAttributeValueTranslation($rawValue, 0, $attribute);
+        $value = $this->getAttributeValueTranslation($rawValue, 0, $attribute, false, $product);
 
         if (is_array($value)) {
             return array_map(function ($value) {
@@ -1551,15 +1561,16 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      *
      * @param mixed $rawValue
      * @param Attribute $attribute
+     * @param ProductInterface $product
      * @return array
      */
-    protected function getTranslatedAttributeValue($rawValue, $attribute) : array
+    protected function getTranslatedAttributeValue($rawValue, $attribute, ProductInterface $product) : array
     {
-        $valueCode                  = $this->getAttributeValueCode($rawValue, $attribute);
+        $valueCode                  = $this->getAttributeValueCode($rawValue, $attribute, $product);
 
         if (is_array($valueCode)) {
             $codeArray              = $valueCode;
-            $translatedArray        = $this->getAttributeValueTranslationsArray($rawValue, $attribute);
+            $translatedArray        = $this->getAttributeValueTranslationsArray($rawValue, $attribute, $product);
             $values                 = [];
 
             for ($i = 0; $i < count($valueCode); $i++) {
@@ -1585,7 +1596,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 '_cdata'            => $valueCode
             ],
             'names'                 => [
-                'name'              => $this->getAttributeValueTranslations($rawValue, $attribute)
+                'name'              => $this->getAttributeValueTranslations($rawValue, $attribute, $product)
             ]
         ];
     }
@@ -1704,14 +1715,15 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      *
      * @param mixed $rawValue
      * @param Attribute $attribute
+     * @param ProductInterface $product
      * @return array
      */
-    protected function getAttributeValueTranslations($rawValue, $attribute) : array
+    protected function getAttributeValueTranslations($rawValue, $attribute, ProductInterface $product) : array
     {
         $translations           = [];
 
         foreach ($this->_storeViewMapping as $language => $storeViewId) {
-            $valueTitle         = $this->getAttributeValueTranslation($rawValue, $storeViewId, $attribute, true);
+            $valueTitle         = $this->getAttributeValueTranslation($rawValue, $storeViewId, $attribute, true, $product);
 
             $translations[]     = [
                 '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle)),
@@ -1729,14 +1741,15 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      *
      * @param mixed $rawValue
      * @param Attribute $attribute
+     * @param ProductInterface $product
      * @return array
      */
-    protected function getAttributeValueTranslationsArray($rawValue, $attribute) : array
+    protected function getAttributeValueTranslationsArray($rawValue, $attribute, ProductInterface $product) : array
     {
         $translations               = [];
 
         foreach ($this->_storeViewMapping as $language => $storeViewId) {
-            $valueTitleArray        = array_values($this->getAttributeValueTranslation($rawValue, $storeViewId, $attribute, false));
+            $valueTitleArray        = array_values($this->getAttributeValueTranslation($rawValue, $storeViewId, $attribute, false, $product));
 
             if (!is_array($valueTitleArray)) {
                 $valueTitleArray    = [$valueTitleArray];
@@ -1768,9 +1781,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param int $storeViewId
      * @param Attribute $attribute
      * @param boolean $forceString
+     * @param ProductInterface $product
      * @return string|array|null
      */
-    protected function getAttributeValueTranslation($rawValue, int $storeViewId, $attribute, bool $forceString = false)
+    protected function getAttributeValueTranslation($rawValue, int $storeViewId, $attribute, bool $forceString, ProductInterface $product)
     {
         try {
             $attributeSource        = $attribute->getSource();
@@ -1794,6 +1808,16 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             $attributeValueText     = null;
         }
 
+        // In case current attribute does not have options, get the raw value (in correct store view) instead.
+        if ($attributeValueText === false) {
+            try {
+                $attributeValue = $this->_productResourceModel->getAttributeRawValue($product->getId(), $attribute->getAttributeCode(), $storeViewId);
+                if (is_scalar($attributeValue)) {
+                    $attributeValueText = $attributeValue;
+                }
+            } catch (Throwable $e) {}
+        }
+
         if ($attributeValueText instanceof Phrase) {
             $attributeValueText     = $attributeValueText->getText();
         }
@@ -1806,7 +1830,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         return $attributeValue ?? null;
     }
-
 
     /**
      * Get the category tree items for a certain product.
