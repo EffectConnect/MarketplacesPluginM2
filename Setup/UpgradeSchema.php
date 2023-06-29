@@ -43,6 +43,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addChannelMappingShippingMethodPriority($setup, $installer, $connection);
         }
 
+        if (version_compare($context->getVersion(), "1.0.57", "<")) {
+            $this->addChannelMappingStatusExternal($setup, $installer, $connection);
+        }
+
         $installer->endSetup();
     }
 
@@ -97,6 +101,41 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'storeview_id_external',
                 $installer->getTable('store'),
                 'store_id',
+                Table::ACTION_SET_NULL
+            );
+        }
+    }
+
+    /**
+     * Add status_external to ec_marketplaces_channel_mapping.
+     *
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     */
+    protected function addChannelMappingStatusExternal(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_channel_mapping');
+        if ($connection->isTableExists($tableName) == true)
+        {
+            $connection->addColumn(
+                $tableName,
+                'status_external',
+                [
+                    'type'     => Table::TYPE_TEXT,
+                    'length'   => 32,
+                    'nullable' => true,
+                    'default'  => null,
+                    'comment'  => 'Order status for external orders (foreign key to: sales_order_status.status).',
+                ]
+            );
+
+            $connection->addForeignKey(
+                $installer->getFkName('ec_marketplaces_channel_mapping', 'status_external', 'sales_order_status', 'status'),
+                $tableName,
+                'status_external',
+                $installer->getTable('sales_order_status'),
+                'status',
                 Table::ACTION_SET_NULL
             );
         }

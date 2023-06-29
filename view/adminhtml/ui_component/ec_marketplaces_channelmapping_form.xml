@@ -129,6 +129,10 @@
                                         <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external</item>
                                         <item name="callback" xsi:type="string">hide</item>
                                     </item>
+                                    <item name="2" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.status_external</item>
+                                        <item name="callback" xsi:type="string">hide</item>
+                                    </item>
                                 </item>
                             </item>
                             <item name="1" xsi:type="array">
@@ -142,6 +146,10 @@
                                         <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external</item>
                                         <item name="callback" xsi:type="string">show</item>
                                     </item>
+                                    <item name="2" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.status_external</item>
+                                        <item name="callback" xsi:type="string">show</item>
+                                    </item>
                                 </item>
                             </item>
                             <item name="2" xsi:type="array">
@@ -153,6 +161,10 @@
                                     </item>
                                     <item name="1" xsi:type="array">
                                         <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.storeview_id_external</item>
+                                        <item name="callback" xsi:type="string">show</item>
+                                    </item>
+                                    <item name="2" xsi:type="array">
+                                        <item name="target" xsi:type="string">ec_marketplaces_channelmapping_form.ec_marketplaces_channelmapping_form.channelmapping.status_external</item>
                                         <item name="callback" xsi:type="string">show</item>
                                     </item>
                                 </item>
@@ -199,6 +211,18 @@
                     </item>
                 </item>
                 <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\ChannelMappingStoreViews</item>
+            </argument>
+        </field>
+        <field name="status_external">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Order status for externally fulfilled orders</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">channelmapping</item>
+                </item>
+                <item name="options" xsi:type="object">EffectConnect\Marketplaces\Model\Config\Source\OptionalOrderStatus</item>
             </argument>
         </field>
         <field name="discount_code">

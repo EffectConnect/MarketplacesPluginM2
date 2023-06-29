@@ -1344,6 +1344,16 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     {
         // Order status was set in admin?
         $orderStatus = $this->_settingsHelper->getOrderImportOrderStatus(SettingsHelper::SCOPE_STORE, $this->_storeId);
+
+        // Different state for externally fulfilled orders?
+        if ($this->orderHasExternalFulfilmentTag()) {
+            $orderStatusForExternalFulfilment = $this->_channelMapping->getStatusExternal();
+            if ($orderStatusForExternalFulfilment && $orderStatusForExternalFulfilment !== $orderStatus) {
+                $orderStatus = $orderStatusForExternalFulfilment;
+                $this->_orderComments[] = __('NOTE: externally fulfilled order imported with status %1 according to channel mapping rule %2.', $orderStatus, $this->_channelMapping->getId());
+            }
+        }
+
         if ($orderStatus) {
             return $orderStatus;
         }
