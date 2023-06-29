@@ -57,6 +57,7 @@ class Save extends ChannelMapping
                     'channel_id'            => $formData['channel_id'],
                     'storeview_id_internal' => $formData['external_fulfilment'] == ExternalFulfilment::EXTERNAL_ORDERS() ? null : $formData['storeview_id_internal'],
                     'storeview_id_external' => $formData['external_fulfilment'] == ExternalFulfilment::INTERNAL_ORDERS() ? null : $formData['storeview_id_external'],
+                    'status_external'       => $formData['external_fulfilment'] == ExternalFulfilment::INTERNAL_ORDERS() ? null : $formData['status_external'],
                     'external_fulfilment'   => $formData['external_fulfilment'],
                     'customer_create'       => $formData['customer_create'],
                     'customer_group_id'     => (trim(strval($formData['customer_group_id'])) == '' ? null : $formData['customer_group_id']),
