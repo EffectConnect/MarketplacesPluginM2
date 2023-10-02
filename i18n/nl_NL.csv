@@ -336,7 +336,7 @@
 "The create product api call failed for the following reasons: %1","Create product api call mislukt met de volgende foutmeldingen: %1","module","EffectConnect_Marketplaces"
 "The create product api call failed for an unknown reason.","Create product api call mislukt met onbekende reden.","module","EffectConnect_Marketplaces"
 "The update product api call failed for the following reasons: %1","Update product api call mislukt met de volgende foutmeldingen: %1","module","EffectConnect_Marketplaces"
-"The update product api call failed for an unknown reason.","Update product api call mislukt met onbekende reden.","module","EffectConnect_Marketplaces"
+"The update product api call failed for an unknown reason: %1","Update product api call mislukt met onbekende reden: %1","module","EffectConnect_Marketplaces"
 "Adding tag to EffectConnect failed after importing an order.","Toevoegen tag aan EffectConnect Marketplaces mislukt bij het importeren van order.","module","EffectConnect_Marketplaces"
 "Order update to EffectConnect failed after importing an order.","Bijwerken order naar EffectConnect Marketplaces mislukt bij het importeren van order.","module","EffectConnect_Marketplaces"
 "Order import failed when fetching store ID from order.","Order import mislukt bij het ophalen van store ID vanuit order.","module","EffectConnect_Marketplaces"

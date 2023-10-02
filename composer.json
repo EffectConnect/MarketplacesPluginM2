@@ -3,7 +3,7 @@
     "description": "EffectConnect Marketplaces Magento 2 plugin",
     "type": "magento2-module",
     "license": "proprietary",
-    "version": "1.0.57",
+    "version": "1.0.58",
     "authors": [
         {
             "name": "Koek&Peer",
@@ -27,7 +27,8 @@
         "magento/framework": "^102.0||^103.0",
         "effectconnect/php-sdk": "^3.2.8",
         "myclabs/php-enum": "^1.7",
-        "dragonmantank/cron-expression": "^3.0"
+        "dragonmantank/cron-expression": "^3.0",
+        "laminas/laminas-filter": "^2.17"
     },
     "autoload": {
         "files": [

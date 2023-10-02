@@ -336,7 +336,7 @@
 "The create product api call failed for the following reasons: %1","The create product api call failed for the following reasons: %1","module","EffectConnect_Marketplaces"
 "The create product api call failed for an unknown reason.","The create product api call failed for an unknown reason.","module","EffectConnect_Marketplaces"
 "The update product api call failed for the following reasons: %1","The update product api call failed for the following reasons: %1","module","EffectConnect_Marketplaces"
-"The update product api call failed for an unknown reason.","The update product api call failed for an unknown reason.","module","EffectConnect_Marketplaces"
+"The update product api call failed for an unknown reason: %1","The update product api call failed for an unknown reason: %1","module","EffectConnect_Marketplaces"
 "Adding tag to EffectConnect failed after importing an order.","Adding tag to EffectConnect failed after importing an order.","module","EffectConnect_Marketplaces"
 "Order update to EffectConnect failed after importing an order.","Order update to EffectConnect failed after importing an order.","module","EffectConnect_Marketplaces"
 "Order import failed when fetching store ID from order.","Order import failed when fetching store ID from order.","module","EffectConnect_Marketplaces"

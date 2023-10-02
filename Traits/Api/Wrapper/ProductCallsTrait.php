@@ -118,7 +118,7 @@ trait ProductCallsTrait
 
         switch ($result) {
             case Response::STATUS_FAILURE:
-                throw new ApiCallFailedException(__('The update product api call failed for an unknown reason.') . ' ' . ($apiCall->getRawResponse() ?? ''));
+                throw new ApiCallFailedException(__('The update product api call failed for an unknown reason: %1', $apiCall->getRawResponse() ?? ''));
             case Response::STATUS_WARNING:
             case Response::STATUS_SUCCESS:
             default:
