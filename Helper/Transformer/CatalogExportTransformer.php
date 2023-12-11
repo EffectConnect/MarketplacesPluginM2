@@ -1726,8 +1726,12 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         foreach ($this->_storeViewMapping as $language => $storeViewId) {
             $valueTitle         = $this->getAttributeValueTranslation($rawValue, $storeViewId, $attribute, true, $product);
 
+            if ($valueTitle !== '0' && $valueTitle !== 0) {
+                $valueTitle = is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle));
+            }
+
             $translations[]     = [
-                '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle)),
+                '_cdata'        => $valueTitle,
                 '_attributes'   => [
                     'language'  => strval($language)
                 ]
