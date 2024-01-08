@@ -173,8 +173,7 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
                 }
 
                 // Save that we are exporting this tracking code to prevent other cronjobs to process the same item.
-                // Bad luck if the export fails, we will not try to do this again.
-                $orderLineToExport->setTrackExportedAt(date('Y-m-d H:i:s', time()));
+                $orderLineToExport->setTrackExportStartedAt(date('Y-m-d H:i:s', time()));
                 try {
                     $this->_orderLineRepository->save($orderLineToExport);
                 } catch (CouldNotSaveException $e) {
@@ -209,11 +208,44 @@ class TrackingExportQueueHandler implements QueueHandlerInterface
                 $connectionApi = $this->_apiHelper->getConnectionApi($connectionId);
             } catch (Exception $e) {
                 $this->_logHelper->logExportShipmentConnectionError($connectionId, $e->getMessage());
+                $this->finishExport($trackingExportDataObject, false);
                 continue;
             }
 
             // Export the shipments info to EffectConnect.
-            $connectionApi->exportShipments($trackingExportDataObject);
+            $result = $connectionApi->exportShipments($trackingExportDataObject);
+            $this->finishExport($trackingExportDataObject, $result);
+        }
+    }
+
+    /**
+     * @param TrackingExportDataObject $trackingExportDataObject
+     * @param bool $result
+     * @return void
+     */
+    protected function finishExport(TrackingExportDataObject $trackingExportDataObject, bool $result)
+    {
+        // For each order line update the result.
+        $trackingExportDataObject->rewind();
+        while ($trackingExportDataObject->valid())
+        {
+            $orderLineToExport = $trackingExportDataObject->getCurrentOrderLine();
+            if ($result) {
+                // Save that we have exported the tracking codes to make sure they are not exported again.
+                $orderLineToExport->setTrackExportedAt(date('Y-m-d H:i:s', time()));
+            } else {
+                // Reset that we have started to export the tracking codes to make sure there are exported in the next run.
+                $orderLineToExport->setTrackExportStartedAt(null);
+            }
+
+            try {
+                $this->_orderLineRepository->save($orderLineToExport);
+            } catch (CouldNotSaveException $e) {
+                $this->_logHelper->logExportShipmentOrderLineSaveError($orderLineToExport, $e->getMessage());
+                continue;
+            }
+
+            $trackingExportDataObject->next();
         }
     }
 }
