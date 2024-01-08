@@ -16,6 +16,7 @@ use Magento\Framework\Model\AbstractModel;
  * @method OrderLine setShipmentId(string|null $string)
  * @method OrderLine setTrackId(string|null $string)
  * @method OrderLine setTrackExportedAt(string|null $string)
+ * @method OrderLine setTrackExportStartedAt(string|null $string)
  * @package EffectConnect\Marketplaces\Model
  */
 class OrderLine extends AbstractModel

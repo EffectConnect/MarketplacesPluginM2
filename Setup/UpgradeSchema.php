@@ -47,6 +47,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addChannelMappingStatusExternal($setup, $installer, $connection);
         }
 
+        if (version_compare($context->getVersion(), "1.0.61", "<")) {
+            $this->addTrackExportedAtFieldToOrderLines($setup, $installer, $connection);
+        }
+
         $installer->endSetup();
     }
 
@@ -247,6 +251,30 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'unsigned' => true,
                     'default'  => 0,
                     'comment'  => 'Whether to ignore the shipping method mapping',
+                ]
+            );
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     * @return void
+     */
+    protected function addTrackExportedAtFieldToOrderLines(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        $tableName = $setup->getTable('ec_marketplaces_order_lines');
+        if ($connection->isTableExists($tableName) == true)
+        {
+            $connection->addColumn(
+                $tableName,
+                'track_export_started_at',
+                [
+                    'type'     => Table::TYPE_TIMESTAMP,
+                    'nullable' => true,
+                    'default'  => null,
+                    'comment'  => 'Time the tracking code export to EffectConnect was started',
                 ]
             );
         }

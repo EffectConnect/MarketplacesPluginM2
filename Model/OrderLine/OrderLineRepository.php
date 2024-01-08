@@ -205,6 +205,11 @@ class OrderLineRepository implements OrderLineRepositoryInterface
                 '',
                 'null'
             )
+            ->addFilter(
+                'track_export_started_at',
+                '',
+                'null'
+            )
             ->setPageSize(100)
             ->setCurrentPage(1)
             ->create();
