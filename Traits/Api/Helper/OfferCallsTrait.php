@@ -2,6 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Traits\Api\Helper;
 
+use EffectConnect\Marketplaces\Exception\CatalogExportNoProductsToExportException;
 use EffectConnect\Marketplaces\Objects\ConnectionApi;
 use Exception;
 use EffectConnect\Marketplaces\Objects\Api;
@@ -32,6 +33,9 @@ trait OfferCallsTrait
 
         try {
             $xmlFileLocation    = $transformerHelper->getSegmentedOffersXmlFile($connection);
+        } catch (CatalogExportNoProductsToExportException $e) {
+            $logHelper->logOffersExportEnded(intval($connection->getEntityId()), true, ['exception' => $e->getMessage()]);
+            return true; // No fail exception
         } catch (Exception $e) {
             $logHelper->logOffersExportEnded(intval($connection->getEntityId()), false, ['exception' => $e->getMessage()]);
             return false;
@@ -71,6 +75,9 @@ trait OfferCallsTrait
 
         try {
             $xmlFileLocation    = $transformerHelper->getSegmentedOffersXmlFile($connection, [$product]);
+        } catch (CatalogExportNoProductsToExportException $e) {
+            $logHelper->logOffersExportEnded(intval($connection->getEntityId()), true, ['exception' => $e->getMessage()]);
+            return true; // No fail exception
         } catch (Exception $e) {
             $logHelper->logOffersExportProductFailed(intval($connection->getEntityId()), $productId, ['exception' => $e->getMessage()]);
             return false;
@@ -108,7 +115,10 @@ trait OfferCallsTrait
         $transformerHelper      = $apiHelper->getTransformerHelper();
 
         try {
-            $xmlFileLocation    = $transformerHelper->getSegmentedOffersXmlFile($connection, $products);
+            $xmlFileLocation    = $transformerHelper->getSegmentedOffersXmlFile($connection, $products, 'queued-offers');
+        } catch (CatalogExportNoProductsToExportException $e) {
+            $logHelper->logOffersExportEnded(intval($connection->getEntityId()), true, ['exception' => $e->getMessage()]);
+            return true; // No fail exception
         } catch (Exception $e) {
             $logHelper->logOffersExportConnectionFailed(intval($connection->getEntityId()), ['exception' => $e->getMessage()]);
             return false;

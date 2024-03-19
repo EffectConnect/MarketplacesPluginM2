@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Helper\Transformer;
 
 use EffectConnect\Marketplaces\Enums\LogCode;
 use EffectConnect\Marketplaces\Exception\CatalogExportEanNotValidException;
+use EffectConnect\Marketplaces\Exception\CatalogExportNoProductsToExportException;
 use EffectConnect\Marketplaces\Exception\CatalogExportObligatedAttributeIsNullException;
 use EffectConnect\Marketplaces\Exception\CatalogExportProductHasNoSkuException;
 use EffectConnect\Marketplaces\Exception\UnsupportedBundleException;
@@ -363,6 +364,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param string $exportFileName
      * @param ProductInterface[] $catalog
      * @return bool|string
+     * @throws CatalogExportNoProductsToExportException
      */
     public function saveXmlSegmented(Connection $connection, string $exportFileName = 'catalog', array $catalog = null)
     {
@@ -409,6 +411,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             return false;
         }
 
+        $anyProductExported = false;
         if (is_null($catalog)) {
             $lastPage       = true;
             $currentPage    = 1;
@@ -420,7 +423,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 /** @var ProductInterface $product */
                 foreach ($catalog as $product) {
                     if ($product instanceof ProductInterface) {
-                        $this->saveProductXml($product, $connection, $transaction, $eans, $optionIds);
+                        if ($this->saveProductXml($product, $connection, $transaction, $eans, $optionIds)) {
+                            $anyProductExported = true;
+                        }
                     }
                 }
 
@@ -430,7 +435,9 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             /** @var ProductInterface $product */
             foreach ($catalog as $product) {
                 if ($product instanceof ProductInterface) {
-                    $this->saveProductXml($product, $connection, $transaction, $eans, $optionIds);
+                    if ($this->saveProductXml($product, $connection, $transaction, $eans, $optionIds)) {
+                        $anyProductExported = true;
+                    }
                 }
             }
         }
@@ -443,6 +450,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             return false;
         }
 
+        if (!$anyProductExported) {
+            throw new CatalogExportNoProductsToExportException(__('No products to export.'));
+        }
+
         return $fileLocation;
     }
 
@@ -453,7 +464,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Connection $connection
      * @param XmlGenerator $transaction
      * @param array $eans
-     * @return void
+     * @param array $optionIds
+     * @return bool
      */
     protected function saveProductXml(ProductInterface $product, Connection $connection, XmlGenerator &$transaction, array &$eans, array &$optionIds)
     {
@@ -462,23 +474,23 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         if (!empty($parentIds)) {
             // Skip simple products if they are linked to a configurable product.
             // When the configurable product is transformed, the simple products are added with it.
-            return;
+            return false;
         }
 
         // Use correct scope for the product.
         // In case a specific store should be exported, we need the product data of that specific store.
         $scopedProduct = $this->getScopedProduct($product);
         if (is_null($scopedProduct)) {
-            return;
+            return false;
         }
 
         if (!$this->checkProductShouldBeExported($scopedProduct)) {
-            return;
+            return false;
         }
 
         $transformed    = $this->transformProduct($scopedProduct);
         if (is_null($transformed)) {
-            return;
+            return false;
         }
 
         if ($this->checkForDuplicateEans() === true) {
@@ -493,26 +505,24 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 isset($transformed['identifier']['_cdata']) ? intval($transformed['identifier']['_cdata']) : 0
             ]);
 
-            return;
+            return false;
         }
 
         $success = false;
-
         try {
             if ($transaction->appendToMageStorageFile($transformed, 'product')) {
                 $success = true;
             }
-        } catch (DOMException $e) {
-            $success = false;
-        }
+        } catch (DOMException $e) {}
 
         if (!$success) {
             $this->writeToLog(LogCode::CATALOG_EXPORT_FILE_CREATION_FAILED(), [
                 intval($connection->getEntityId()),
                 intval($scopedProduct['identifier']) ?? 0
             ]);
-            return;
         }
+
+        return $success;
     }
 
     protected function removeDuplicateOptions(array &$transformed, string $property, array &$alreadyUsed, LogCode $logCodeWhenDuplicate)
@@ -886,6 +896,10 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
 
         $useCatalogPriceRules           = boolval($this->_settingsHelper
             ->getCatalogExportUseCatalogSalesRulePrice(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
+
+// In case we would like to support dynamic pricing bundles, the following might be implemented
+//        if ($product->getTypeId() === Type::TYPE_BUNDLE && intval($product->getPriceType()) === Price::PRICE_TYPE_DYNAMIC) {
+//            $price = $product->getPriceInfo()->getPrice('final_price')->getValue();
 
         if ($useCatalogPriceRules) {
             $price = $product->getPriceInfo()->getPrice('final_price')->getValue();
