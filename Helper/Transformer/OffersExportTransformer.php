@@ -3,8 +3,10 @@
 namespace EffectConnect\Marketplaces\Helper\Transformer;
 
 use EffectConnect\Marketplaces\Enums\LogCode;
+use EffectConnect\Marketplaces\Exception\CatalogExportNoProductsToExportException;
 use EffectConnect\Marketplaces\Exception\CatalogExportObligatedAttributeIsNullException;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
+use EffectConnect\Marketplaces\Helper\XmlGenerator;
 use EffectConnect\Marketplaces\Model\Connection;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\SearchCriteriaBuilderFactory;
@@ -80,6 +82,7 @@ class OffersExportTransformer extends CatalogExportTransformer
      * @param string $exportFileName
      * @param ProductInterface[] $catalog
      * @return bool|string
+     * @throws CatalogExportNoProductsToExportException
      */
     public function saveXmlSegmented(Connection $connection, string $exportFileName = 'offers', array $catalog = null)
     {

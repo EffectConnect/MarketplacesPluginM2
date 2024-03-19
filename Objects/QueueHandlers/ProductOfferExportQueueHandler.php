@@ -15,6 +15,7 @@ use EffectConnect\PHPSdk\Core\Exception\InvalidKeyException;
 use Exception;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilderFactory;
 use Magento\Framework\Exception\CouldNotSaveException;
@@ -61,6 +62,11 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
     protected $_logHelper;
 
     /**
+     * @var Configurable
+     */
+    protected $_configurableType;
+
+    /**
      * ShipmentExport constructor.
      *
      * @param ApiHelper $apiHelper
@@ -70,6 +76,8 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
      * @param SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory
      * @param SettingsHelper $settingsHelper
      * @param LogHelper $logHelper
+     * @param Configurable $configurableType
+
      */
     public function __construct(
         ApiHelper $apiHelper,
@@ -78,7 +86,8 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
         ProductRepository $productRepository,
         SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory,
         SettingsHelper $settingsHelper,
-        LogHelper $logHelper
+        LogHelper $logHelper,
+        Configurable $configurableType
     ) {
         $this->_apiHelper                               = $apiHelper;
         $this->_connectionRepository                    = $connectionRepository;
@@ -87,6 +96,7 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
         $this->_searchCriteriaBuilderFactory            = $searchCriteriaBuilderFactory;
         $this->_settingsHelper                          = $settingsHelper;
         $this->_logHelper                               = $logHelper;
+        $this->_configurableType                        = $configurableType;
     }
 
     /**
@@ -101,13 +111,17 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
             return;
         }
 
-        if ($this->_productOfferExportQueueItemRepository->isNonExecutedProductPresent($productId)) {
+        // In case of a configurable product, the parent product ID is queued instead of the given product ID,
+        // because the exporter does not allow to export children as standalone product.
+        $parentIds        = $this->_configurableType->getParentIdsByChild($productId);
+        $productIdToQueue = count($parentIds) === 1 ? reset($parentIds) : $productId;
+
+        if ($this->_productOfferExportQueueItemRepository->isNonExecutedProductPresent($productIdToQueue)) {
             return;
         }
 
         $productOfferExportQueueItem = $this->_productOfferExportQueueItemRepository->create();
-
-        $productOfferExportQueueItem->setCatalogProductEntityId($productId);
+        $productOfferExportQueueItem->setCatalogProductEntityId($productIdToQueue);
 
         try {
             $this->_productOfferExportQueueItemRepository->save($productOfferExportQueueItem);

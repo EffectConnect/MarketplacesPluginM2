@@ -5,6 +5,7 @@ namespace EffectConnect\Marketplaces\Helper;
 use DOMException;
 use EffectConnect\Marketplaces\Exception\CatalogExportGeneratingCatalogXmlFailedException;
 use EffectConnect\Marketplaces\Exception\CatalogExportGeneratingCatalogXmlFileFailedException;
+use EffectConnect\Marketplaces\Exception\CatalogExportNoProductsToExportException;
 use EffectConnect\Marketplaces\Exception\LogExportGeneratingLogXmlFileFailedException;
 use EffectConnect\Marketplaces\Exception\OffersExportGeneratingCatalogXmlFileFailedException;
 use EffectConnect\Marketplaces\Exception\OrderImportFailedException;
@@ -123,6 +124,7 @@ class TransformerHelper extends AbstractHelper
      * @param Connection $connection
      * @return string
      * @throws CatalogExportGeneratingCatalogXmlFileFailedException
+     * @throws CatalogExportNoProductsToExportException
      */
     public function getSegmentedCatalogXmlFile(Connection $connection) : string
     {
@@ -190,13 +192,15 @@ class TransformerHelper extends AbstractHelper
      *
      * @param Connection $connection
      * @param ProductInterface[] $catalog
+     * @param string $exportFileName
      * @return string
      * @throws OffersExportGeneratingCatalogXmlFileFailedException
+     * @throws CatalogExportNoProductsToExportException
      */
-    public function getSegmentedOffersXmlFile(Connection $connection, array $catalog = null) : string
+    public function getSegmentedOffersXmlFile(Connection $connection, array $catalog = null, string $exportFileName = 'offers') : string
     {
         $fileLocation = $this->_offersExportTransformer
-            ->saveXmlSegmented($connection, 'offers', $catalog);
+            ->saveXmlSegmented($connection, $exportFileName, $catalog);
 
         if ($fileLocation === false) {
             throw new OffersExportGeneratingCatalogXmlFileFailedException(__('Generating the offers XML file for website %1 failed.', intval($connection->getWebsiteId())));

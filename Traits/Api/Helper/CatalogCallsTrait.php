@@ -2,6 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Traits\Api\Helper;
 
+use EffectConnect\Marketplaces\Exception\CatalogExportNoProductsToExportException;
 use EffectConnect\Marketplaces\Objects\ConnectionApi;
 use Exception;
 use EffectConnect\Marketplaces\Objects\Api;
@@ -31,6 +32,9 @@ trait CatalogCallsTrait
 
         try {
             $xmlFileLocation    = $transformerHelper->getSegmentedCatalogXmlFile($connection);
+        } catch (CatalogExportNoProductsToExportException $e) {
+            $logHelper->logCatalogExportEnded(intval($connection->getEntityId()), true, ['exception' => $e->getMessage()]);
+            return true; // No fail exception
         } catch (Exception $e) {
             $logHelper->logCatalogExportEnded(intval($connection->getEntityId()), false, ['exception' => $e->getMessage()]);
             return false;
