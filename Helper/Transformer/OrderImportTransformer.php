@@ -40,6 +40,8 @@ use Magento\Catalog\Model\ProductFactory;
 use Magento\Catalog\Model\Product as ProductModel;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResourceModel;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\RegionInterface;
+use Magento\Customer\Api\Data\RegionInterfaceFactory;
 use Magento\Directory\Model\Currency;
 use Magento\Directory\Model\CurrencyFactory;
 use Magento\Framework\DataObject;
@@ -284,6 +286,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     protected $_orderComments = [];
 
     /**
+     * @var RegionInterfaceFactory
+     */
+    protected $_regionInterfaceFactory;
+
+    /**
      * OrderImportTransformer constructor.
      * @param Context $context
      * @param OrderRepositoryInterface $orderRepository
@@ -317,6 +324,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param TaxCalculationInterface $taxCalculationInterface
      * @param Registry $registry
      * @param RegionHelper $regionHelper
+     * @param RegionInterfaceFactory $regionInterfaceFactory
      */
     public function __construct(
         Context $context,
@@ -350,7 +358,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         TaxHelper $taxHelper,
         TaxCalculationInterface $taxCalculationInterface,
         Registry $registry,
-        RegionHelper $regionHelper
+        RegionHelper $regionHelper,
+        RegionInterfaceFactory $regionInterfaceFactory
     ) {
         parent::__construct($context);
         $this->_orderRepository          = $orderRepository;
@@ -384,6 +393,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $this->_taxCalculation           = $taxCalculationInterface;
         $this->_registry                 = $registry;
         $this->_regionHelper             = $regionHelper;
+        $this->_regionInterfaceFactory   = $regionInterfaceFactory;
     }
 
     /**
@@ -1433,7 +1443,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 $billingAddress = $this->_addressInterfaceFactory->create();
                 $this->_dataObjectHelper->populateWithArray(
                     $billingAddress,
-                    $this->convertECAddressToArray($this->_effectConnectOrder->getBillingAddress()),
+                    $this->convertECAddressToArray($this->_effectConnectOrder->getBillingAddress(), true),
                     AddressInterface::class
                 );
                 $billingAddress
@@ -1457,7 +1467,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 $shippingAddress = $this->_addressInterfaceFactory->create();
                 $this->_dataObjectHelper->populateWithArray(
                     $shippingAddress,
-                    $this->convertECAddressToArray($this->_effectConnectOrder->getShippingAddress()),
+                    $this->convertECAddressToArray($this->_effectConnectOrder->getShippingAddress(), true),
                     AddressInterface::class
                 );
                 $shippingAddress
@@ -1481,12 +1491,13 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
 
     /**
      * @param EffectConnectBillingAddress|EffectConnectShippingAddress $address
+     * @param bool $useRegionObject
      * @return array
      * @throws NoSuchEntityException
      * @throws LocalizedException
      * @throws OrderImportRegionIdRequiredException
      */
-    protected function convertECAddressToArray($address) : array
+    protected function convertECAddressToArray($address, bool $useRegionObject = false) : array
     {
         // Process gender.
         $gender = null;
@@ -1558,6 +1569,13 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             throw new OrderImportRegionIdRequiredException(__('Region %1 was not found in the list of regions for country %2 (and region is a required field).', $address->getState(), $address->getCountry()));
         }
 
+        /** @var RegionInterface $region */
+        $region = $this->_regionInterfaceFactory->create();
+        if ($regionId > 0) {
+            $region->setRegionId($regionId);
+        }
+        $region->setRegion($address->getState());
+
         return [
             'gender'     => $gender,
             'firstname'  => $address->getFirstName(),
@@ -1569,7 +1587,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             'email'      => $address->getEmail(),
             'telephone'  => $address->getPhone(),
             'country_id' => $address->getCountry(),
-            'region'     => $address->getState(),
+            'region'     => $useRegionObject ? $region : $region->getRegion(), // String in case of quote address and RegionInterface in case of customer address
             'region_id'  => $regionId
         ];
     }
