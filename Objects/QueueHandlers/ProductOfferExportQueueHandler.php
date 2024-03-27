@@ -113,22 +113,23 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
 
         // In case of a configurable product, the parent product ID is queued instead of the given product ID,
         // because the exporter does not allow to export children as standalone product.
-        $parentIds        = $this->_configurableType->getParentIdsByChild($productId);
-        $productIdToQueue = count($parentIds) === 1 ? reset($parentIds) : $productId;
+        $parentIds         = $this->_configurableType->getParentIdsByChild($productId);
+        $productIdsToQueue = count($parentIds) > 0 ? $parentIds : [$productId];
 
-        if ($this->_productOfferExportQueueItemRepository->isNonExecutedProductPresent($productIdToQueue)) {
-            return;
-        }
+        foreach ($productIdsToQueue as $productIdToQueue) {
+            if ($this->_productOfferExportQueueItemRepository->isNonExecutedProductPresent($productIdToQueue)) {
+                continue;
+            }
 
-        $productOfferExportQueueItem = $this->_productOfferExportQueueItemRepository->create();
-        $productOfferExportQueueItem->setCatalogProductEntityId($productIdToQueue);
-
-        try {
-            $this->_productOfferExportQueueItemRepository->save($productOfferExportQueueItem);
-        } catch (CouldNotSaveException $e) {
-            return;
-        } catch (Exception $e) {
-            return;
+            $productOfferExportQueueItem = $this->_productOfferExportQueueItemRepository->create();
+            $productOfferExportQueueItem->setCatalogProductEntityId($productIdToQueue);
+            try {
+                $this->_productOfferExportQueueItemRepository->save($productOfferExportQueueItem);
+            } catch (CouldNotSaveException $e) {
+                continue;
+            } catch (Exception $e) {
+                continue;
+            }
         }
     }
 
