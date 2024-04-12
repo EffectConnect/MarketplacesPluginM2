@@ -5,12 +5,13 @@ namespace EffectConnect\Marketplaces\Observer;
 use EffectConnect\Marketplaces\Objects\QueueHandlers\ProductOfferExportQueueHandler;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Sales\Model\Order\Item;
 
 /**
- * Class OfferExport
+ * Class OfferExportAfterOrderItemCancel
  * @package EffectConnect\Marketplaces\Observer
  */
-class OfferExport implements ObserverInterface
+class OfferExportAfterOrderItemSave implements ObserverInterface
 {
     /**
      * @var ProductOfferExportQueueHandler
@@ -31,7 +32,10 @@ class OfferExport implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $product = $observer->getEvent()->getProduct();
-        $this->_productOfferExportQueueHandler->schedule(intval($product->getId()));
+        /** @var Item $item */
+        $item = $observer->getEvent()->getItem();
+        if ($item instanceof Item) {
+            $this->_productOfferExportQueueHandler->schedule(intval($item->getProductId()));
+        }
     }
 }
