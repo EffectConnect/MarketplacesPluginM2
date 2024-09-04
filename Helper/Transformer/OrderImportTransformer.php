@@ -291,6 +291,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     protected $_regionInterfaceFactory;
 
     /**
+    * @var BundleHelper
+    */
+    protected $_bundleHelper;
+
+    /**
      * OrderImportTransformer constructor.
      * @param Context $context
      * @param OrderRepositoryInterface $orderRepository
@@ -325,6 +330,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param Registry $registry
      * @param RegionHelper $regionHelper
      * @param RegionInterfaceFactory $regionInterfaceFactory
+     * @param BundleHelper $bundleHelper
      */
     public function __construct(
         Context $context,
@@ -359,7 +365,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         TaxCalculationInterface $taxCalculationInterface,
         Registry $registry,
         RegionHelper $regionHelper,
-        RegionInterfaceFactory $regionInterfaceFactory
+        RegionInterfaceFactory $regionInterfaceFactory,
+        BundleHelper $bundleHelper
     ) {
         parent::__construct($context);
         $this->_orderRepository          = $orderRepository;
@@ -394,6 +401,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $this->_registry                 = $registry;
         $this->_regionHelper             = $regionHelper;
         $this->_regionInterfaceFactory   = $regionInterfaceFactory;
+        $this->_bundleHelper             = $bundleHelper;
     }
 
     /**
@@ -889,7 +897,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 if ($product->getTypeId() === Type::TYPE_BUNDLE) {
                     $request = new DataObject([
                         'product'       => $productId,
-                        'bundle_option' => BundleHelper::getBundleOptions($product),
+                        'bundle_option' => $this->_bundleHelper->getBundleOptions($product),
                     ]);
                 }
 

@@ -169,6 +169,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     protected $_productResourceModel;
 
     /**
+    * @var BundleHelper
+    */
+    protected $_bundleHelper;
+
+    /**
      * Constructs the CatalogExportTransformer helper class.
      *
      * @param Context $context
@@ -189,6 +194,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Config $productMediaConfig
      * @param Emulation $appEmulation
      * @param ProductResourceModel $productResourceModel
+     * @param BundleHelper $bundleHelper
      */
     public function __construct(
         Context $context,
@@ -208,7 +214,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         Visibility $productVisibility,
         Config $productMediaConfig,
         Emulation $appEmulation,
-        ProductResourceModel $productResourceModel
+        ProductResourceModel $productResourceModel,
+        BundleHelper $bundleHelper
     ) {
         parent::__construct($context);
         $this->_productRepository               = $productRepository;
@@ -228,6 +235,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $this->_productMediaConfig              = $productMediaConfig;
         $this->_appEmulation                    = $appEmulation;
         $this->_productResourceModel            = $productResourceModel;
+        $this->_bundleHelper                    = $bundleHelper;
         $this->_storeViewMapping                = [];
         $this->_defaultAttributes               = [];
     }
@@ -813,7 +821,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 return false;
             case $product->getTypeId() === Type::TYPE_BUNDLE && $exportBundles:
                 try {
-                    BundleHelper::getBundleOptions($product);
+                    $this->_bundleHelper->getBundleOptions($product);
                     return true;
                 } catch (UnsupportedBundleException $e) {
                     $this->writeToLog(LogCode::CATALOG_EXPORT_UNSUPPORTED_BUNDLE(), [
