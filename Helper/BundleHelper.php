@@ -19,7 +19,7 @@ class BundleHelper
      * @return array
      * @throws UnsupportedBundleException
      */
-    public static function getBundleOptions(ProductModel $product): array
+    public function getBundleOptions(ProductModel $product): array
     {
         if (intval($product->getShipmentType()) !== AbstractType::SHIPMENT_TOGETHER) {
             throw new UnsupportedBundleException(__('Only bundles with setting \'Ship Bundle Items\' set to \'Together\' are supported.'));
