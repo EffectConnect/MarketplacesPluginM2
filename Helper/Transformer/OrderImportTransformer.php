@@ -296,6 +296,13 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     protected $_bundleHelper;
 
     /**
+     * Locally cache used shipment method (used for logging).
+     *
+     * @var string
+     */
+    protected $_shipmentMethod = '';
+
+    /**
      * OrderImportTransformer constructor.
      * @param Context $context
      * @param OrderRepositoryInterface $orderRepository
@@ -1021,7 +1028,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     {
         try
         {
-            $shipmentMethod             = $this->_channelMapping->getShippingMethodIncludingConfiguration($this->_storeId, $order->getDate());
+            $this->_shipmentMethod      = $this->_channelMapping->getShippingMethodIncludingConfiguration($this->_storeId, $order->getDate());
             $paymentMethod              = $this->_channelMapping->getPaymentMethodIncludingConfiguration($this->_storeId);
             $currencyInformation        = $quote->getCurrencyInformation();
 
@@ -1064,7 +1071,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             $quote->setFees($fees);
 
             $quote->getShippingAddress()
-                ->setShippingMethod($shipmentMethod)
+                ->setShippingMethod($this->_shipmentMethod)
                 ->setCollectShippingRates(true)
                 ->setPaymentMethod($paymentMethod);
 
@@ -1161,7 +1168,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         }
         catch (Exception $e)
         {
-            throw new OrderImportSubmitQuoteFailedException(__('Order import failed when submitting quote: %1.', $e->getMessage()));
+            throw new OrderImportSubmitQuoteFailedException(__('Order import failed when submitting quote: %1. Shipment method: %2.', $e->getMessage(), $this->_shipmentMethod));
         }
 
         return $order;
@@ -1202,6 +1209,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $order->setEcMarketplacesIdentificationNumber($orderIdentifiers->getEffectConnectNumber());
         $order->setEcMarketplacesChannelNumber($orderIdentifiers->getChannelNumber());
         $order->setEcMarketplacesConnectionId($this->_connection->getEntityId());
+        $channelInfo = $this->_effectConnectOrder->getChannelInfo();
+        $order->setEcMarketplacesChannelId($channelInfo->getId());
+        $order->setEcMarketplacesChannelName($channelInfo->getTitle());
+        $order->setEcMarketplacesChannelType($channelInfo->getType());
+        $order->setEcMarketplacesChannelSubtype($channelInfo->getSubtype());
         return $order;
     }
 

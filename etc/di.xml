@@ -87,6 +87,10 @@
                 <item name="ec_marketplaces_identification_number" xsi:type="string">sales_order.ec_marketplaces_identification_number</item>
                 <item name="ec_marketplaces_channel_number" xsi:type="string">sales_order.ec_marketplaces_channel_number</item>
                 <item name="ec_marketplaces_connection_id" xsi:type="string">sales_order.ec_marketplaces_connection_id</item>
+                <item name="ec_marketplaces_channel_id" xsi:type="string">sales_order.ec_marketplaces_channel_id</item>
+                <item name="ec_marketplaces_channel_name" xsi:type="string">sales_order.ec_marketplaces_channel_name</item>
+                <item name="ec_marketplaces_channel_type" xsi:type="string">sales_order.ec_marketplaces_channel_type</item>
+                <item name="ec_marketplaces_channel_subtype" xsi:type="string">sales_order.ec_marketplaces_channel_subtype</item>
             </argument>
         </arguments>
     </virtualType>
