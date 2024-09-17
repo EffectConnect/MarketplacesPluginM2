@@ -21,6 +21,46 @@
                 </item>
             </argument>
         </column>
+        <column name="ec_marketplaces_channel_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="fieldAction" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">EffectConnect Marketplaces Channel ID</item>
+                    <item name="filter" xsi:type="string">text</item>
+                </item>
+            </argument>
+        </column>
+        <column name="ec_marketplaces_channel_name">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="fieldAction" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">EffectConnect Marketplaces Channel Name</item>
+                    <item name="filter" xsi:type="string">text</item>
+                </item>
+            </argument>
+        </column>
+        <column name="ec_marketplaces_channel_type">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="fieldAction" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">EffectConnect Marketplaces Channel Type</item>
+                    <item name="filter" xsi:type="string">text</item>
+                </item>
+            </argument>
+        </column>
+        <column name="ec_marketplaces_channel_subtype">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="fieldAction" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">EffectConnect Marketplaces Channel Subtype</item>
+                    <item name="filter" xsi:type="string">text</item>
+                </item>
+            </argument>
+        </column>
         <column name="connection" class="EffectConnect\Marketplaces\Ui\Component\Listing\Columns\SalesOrder\Connection">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">

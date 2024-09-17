@@ -51,6 +51,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->addTrackExportedAtFieldToOrderLines($setup, $installer, $connection);
         }
 
+        if (version_compare($context->getVersion(), "1.0.67", "<")) {
+            $this->addChannelInfoToOrder($setup, $installer, $connection);
+        }
+
         $installer->endSetup();
     }
 
@@ -278,5 +282,98 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
         }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param SchemaSetupInterface $installer
+     * @param AdapterInterface $connection
+     * @return void
+     */
+    protected function addChannelInfoToOrder(SchemaSetupInterface $setup, SchemaSetupInterface $installer, AdapterInterface $connection)
+    {
+        if (!$installer->tableExists('sales_order') || !$installer->tableExists('sales_order_grid')) {
+            return;
+        }
+
+        // Add channel ID
+        $connection->addColumn(
+            $installer->getTable('sales_order'),
+            'ec_marketplaces_channel_id',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 8,
+                'comment' => 'EffectConnect Marketplaces Channel ID'
+            ]
+        );
+        $connection->addColumn(
+            $installer->getTable('sales_order_grid'),
+            'ec_marketplaces_channel_id',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 8,
+                'comment' => 'EffectConnect Marketplaces Channel ID'
+            ]
+        );
+
+        // Add channel name
+        $connection->addColumn(
+            $installer->getTable('sales_order'),
+            'ec_marketplaces_channel_name',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 255,
+                'comment' => 'EffectConnect Marketplaces Channel Name'
+            ]
+        );
+        $connection->addColumn(
+            $installer->getTable('sales_order_grid'),
+            'ec_marketplaces_channel_name',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 255,
+                'comment' => 'EffectConnect Marketplaces Channel Name'
+            ]
+        );
+
+        // Add channel type
+        $connection->addColumn(
+            $installer->getTable('sales_order'),
+            'ec_marketplaces_channel_type',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 64,
+                'comment' => 'EffectConnect Marketplaces Channel Type'
+            ]
+        );
+        $connection->addColumn(
+            $installer->getTable('sales_order_grid'),
+            'ec_marketplaces_channel_type',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 64,
+                'comment' => 'EffectConnect Marketplaces Channel Type'
+            ]
+        );
+
+        // Add channel subtype
+        $connection->addColumn(
+            $installer->getTable('sales_order'),
+            'ec_marketplaces_channel_subtype',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 64,
+                'comment' => 'EffectConnect Marketplaces Channel Subtype'
+            ]
+        );
+        $connection->addColumn(
+            $installer->getTable('sales_order_grid'),
+            'ec_marketplaces_channel_subtype',
+            [
+                'type'    => Table::TYPE_TEXT,
+                'length'  => 64,
+                'comment' => 'EffectConnect Marketplaces Channel Subtype'
+            ]
+        );
     }
 }
