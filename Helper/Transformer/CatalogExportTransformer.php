@@ -1300,7 +1300,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             $this->getProductAttributeData($attributes['attribute'], $productOption, $code, $attribute);
         }
 
-        $this->getIdentifiersAttributeData($attributes['attribute'], $product, $productOption);
+        $this->getFixedAttributeData($attributes['attribute'], $product, $productOption);
 
         return !empty($attributes) ? $attributes : null;
     }
@@ -1508,14 +1508,15 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     }
 
     /**
-     * Add the product option identifier and product identifier to the attributes output in the EffectConnect Marketplaces SDK expected format.
+     * Add the fixed attribute data (such as parent product url, product option identifier and product identifier)
+     * to the attributes output in the EffectConnect Marketplaces SDK expected format.
      *
      * @param array $attributesOutput
      * @param ProductInterface $product
      * @param ProductInterface $productOption
      * @return void
      */
-    protected function getIdentifiersAttributeData(array &$attributesOutput, ProductInterface $product, ProductInterface $productOption)
+    protected function getFixedAttributeData(array &$attributesOutput, ProductInterface $product, ProductInterface $productOption)
     {
         // Product identifier
         $productId = $this->getProductIdentifier($product);
@@ -1583,6 +1584,56 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 'value'          => [
                     'code'       => [
                         '_cdata' => $optionId
+                    ],
+                    'names'      => [
+                        'name'   => $values
+                    ],
+                ]
+            ]
+        ];
+
+        // Parent product URL
+        $valueCode = '';
+        $names     = [];
+        $values    = [];
+        foreach ($this->_storeViewMapping as $language => $storeViewId) {
+            $url = '';
+            try {
+                $productByLanguage = $this->_productRepository->getById($product->getId(), false, $storeViewId);
+                if ($productByLanguage instanceof ProductInterface) {
+                    $url = strval($product->getProductUrl());
+                }
+            } catch (NoSuchEntityException $e) {}
+            if (empty($url)) {
+                return; // Parent url is missing in any language? Then don't export URL at all.
+            }
+            if (empty($valueCode)) {
+                $valueCode = $url; // Take first URL as value code.
+            }
+            $names[] = [
+                '_cdata'       => 'Magento product url',
+                '_attributes'  => [
+                    'language' => strval($language)
+                ]
+            ];
+            $values[] = [
+                '_cdata'       => $url,
+                '_attributes'  => [
+                    'language' => strval($language)
+                ]
+            ];
+        }
+        $attributesOutput[] = [
+            'code'               => [
+                '_cdata'         => 'ec_magento_product_url'
+            ],
+            'names'              => [
+                'name'           => $names
+            ],
+            'values'             => [
+                'value'          => [
+                    'code'       => [
+                        '_cdata' => $valueCode
                     ],
                     'names'      => [
                         'name'   => $values
