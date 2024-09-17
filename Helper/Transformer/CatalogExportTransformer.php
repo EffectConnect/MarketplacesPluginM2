@@ -713,10 +713,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     /**
      * Transform a certain product option to the EffectConnect Marketplaces SDK expected format.
      *
+     * @param ProductInterface $product
      * @param ProductInterface $productOption
      * @return array|null
      */
-    protected function transformProductOption(ProductInterface $productOption)
+    protected function transformProductOption(ProductInterface $product, ProductInterface $productOption)
     {
         $exportEan                      = boolval($this->_settingsHelper->getCatalogExportExportEan(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
         $exportProductsWhenEanInvalid   = boolval($this->_settingsHelper->getCatalogExportExportProductsWhenEanInvalid(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
@@ -736,7 +737,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $sku                            = $this->getProductSku($productOption);
         $deliveryTime                   = $this->getProductDeliveryTime($productOption);
         $images                         = $this->getProductImages($productOption);
-        $attributes                     = $this->getProductAttributes($productOption);
+        $attributes                     = $this->getProductAttributes($product, $productOption);
         $transformed                    = [];
 
         if ($exportEan)
@@ -1282,21 +1283,24 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * Get all other product's attributes in all mapped languages in the EffectConnect Marketplaces SDK expected format.
      *
      * @param ProductInterface $product
+     * @param ProductInterface $productOption
      * @return array|null
      */
-    protected function getProductAttributes(ProductInterface $product)
+    protected function getProductAttributes(ProductInterface $product, ProductInterface $productOption)
     {
         $attributes     = [
             'attribute' => []
         ];
 
-        foreach ($product->getAttributes() as $code => $attribute) {
+        foreach ($productOption->getAttributes() as $code => $attribute) {
             if (is_null($code) || empty($code)) {
                 continue;
             }
 
-            $this->getProductAttributeData($attributes['attribute'], $product, $code, $attribute);
+            $this->getProductAttributeData($attributes['attribute'], $productOption, $code, $attribute);
         }
+
+        $this->getIdentifiersAttributeData($attributes['attribute'], $product, $productOption);
 
         return !empty($attributes) ? $attributes : null;
     }
@@ -1358,7 +1362,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         ];
 
         foreach ($productOptions as $productOption) {
-            $option = $this->transformProductOption($productOption);
+            $option = $this->transformProductOption($product, $productOption);
 
             if (!is_null($option)) {
                 $transformed['option'][] = $option;
@@ -1501,6 +1505,91 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                 ];
             }
         }
+    }
+
+    /**
+     * Add the product option identifier and product identifier to the attributes output in the EffectConnect Marketplaces SDK expected format.
+     *
+     * @param array $attributesOutput
+     * @param ProductInterface $product
+     * @param ProductInterface $productOption
+     * @return void
+     */
+    protected function getIdentifiersAttributeData(array &$attributesOutput, ProductInterface $product, ProductInterface $productOption)
+    {
+        // Product identifier
+        $productId = $this->getProductIdentifier($product);
+        $names     = [];
+        $values    = [];
+        foreach ($this->_storeViewMapping as $language => $storeViewId) {
+            $names[] = [
+                '_cdata'       => 'Magento product identifier',
+                '_attributes'  => [
+                    'language' => strval($language)
+                ]
+            ];
+            $values[] = [
+                '_cdata'       => $productId,
+                '_attributes'  => [
+                    'language' => strval($language)
+                ]
+            ];
+        }
+        $attributesOutput[] = [
+            'code'               => [
+                '_cdata'         => 'ec_magento_product_identifier'
+            ],
+            'names'              => [
+                'name'           => $names
+            ],
+            'values'             => [
+                'value'          => [
+                    'code'       => [
+                        '_cdata' => $productId
+                    ],
+                    'names'      => [
+                        'name'   => $values
+                    ],
+                ]
+            ]
+        ];
+
+        // Product option identifier
+        $optionId = $this->getProductIdentifier($productOption);
+        $names    = [];
+        $values   = [];
+        foreach ($this->_storeViewMapping as $language => $storeViewId) {
+            $names[] = [
+                '_cdata'       => 'Magento product option identifier',
+                '_attributes'  => [
+                    'language' => strval($language)
+                ]
+            ];
+            $values[] = [
+                '_cdata'       => $optionId,
+                '_attributes'  => [
+                    'language' => strval($language)
+                ]
+            ];
+        }
+        $attributesOutput[] = [
+            'code'               => [
+                '_cdata'         => 'ec_magento_product_option_identifier'
+            ],
+            'names'              => [
+                'name'           => $names
+            ],
+            'values'             => [
+                'value'          => [
+                    'code'       => [
+                        '_cdata' => $optionId
+                    ],
+                    'names'      => [
+                        'name'   => $values
+                    ],
+                ]
+            ]
+        ];
     }
 
     /**
