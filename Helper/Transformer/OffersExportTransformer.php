@@ -142,10 +142,11 @@ class OffersExportTransformer extends CatalogExportTransformer
     /**
      * Transform a certain product option to a offer in the EffectConnect Marketplaces SDK expected format.
      *
+     * @param ProductInterface $product
      * @param ProductInterface $productOption
      * @return array|null
      */
-    protected function transformProductOption(ProductInterface $productOption)
+    protected function transformProductOption(ProductInterface $product, ProductInterface $productOption)
     {
         $identifier     = $this->getProductIdentifier($productOption);
         $cost           = $this->getProductCost($productOption);
