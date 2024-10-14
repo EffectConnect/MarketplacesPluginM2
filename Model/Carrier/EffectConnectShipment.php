@@ -2,6 +2,7 @@
 
 namespace EffectConnect\Marketplaces\Model\Carrier;
 
+use EffectConnect\Marketplaces\Helper\Transformer\OrderImportTransformer;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -80,7 +81,7 @@ class EffectConnectShipment extends AbstractCarrier implements CarrierInterface
 
         /** @var Item $item */
         foreach ($request->getAllItems() as $item) {
-            if ($item->getQuote()->getData('ec_order') === true) {
+            if (OrderImportTransformer::hasQuoteId($item->getQuote()->getId())) {
                 $quote      = $item->getQuote();
                 $fees       = $quote->getFees() ?? [];
                 $ecOrder    = true;

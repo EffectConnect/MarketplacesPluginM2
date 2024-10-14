@@ -92,6 +92,11 @@ use Magento\Tax\Model\Config as TaxModelConfig;
 class OrderImportTransformer extends AbstractHelper implements ValueType
 {
     /**
+     * @var array
+     */
+    protected static $quoteIds = [];
+
+    /**
      * @var OrderRepositoryInterface
      */
     protected $_orderRepository;
@@ -673,7 +678,6 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         {
             /* @var QuoteModel $quote */
             $quote = $this->_quoteFactory->create();
-            $quote->setEcOrder(true);
             $quote->setStoreId($this->_storeId);
 
             // Reserve order increment id and save the quote.
@@ -683,6 +687,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
 
             // Save the quote.
             $this->_cartRepository->save($quote);
+            $this->addQuoteId($quote->getId());
         }
         catch (Exception $e)
         {
@@ -690,6 +695,32 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         }
 
         return $quote;
+    }
+
+    /**
+     * @param int $quoteId
+     * @return void
+     */
+    public static function addQuoteId(int $quoteId)
+    {
+        self::$quoteIds[$quoteId] = true;
+    }
+
+    /**
+     * @param int $quoteId
+     * @return bool
+     */
+    public static function hasQuoteId(int $quoteId): bool
+    {
+        return array_key_exists($quoteId, self::getQuoteIds());
+    }
+
+    /**
+     * @return array
+     */
+    public static function getQuoteIds(): array
+    {
+        return self::$quoteIds;
     }
 
     /**

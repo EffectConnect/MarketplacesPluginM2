@@ -20,6 +20,11 @@ class OptionalShippingMethods extends ShippingMethods
         foreach ($options as &$option) {
             if (is_array($option['value'])) {
                 $option['value'] = array_values($option['value']);
+                foreach ($option['value'] as &$value) {
+                    if (empty($value['label'])) {
+                        $value['label'] = $option['label'];
+                    }
+                }
             }
         }
 
