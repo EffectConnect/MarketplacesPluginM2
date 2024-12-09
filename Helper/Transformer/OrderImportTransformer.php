@@ -1575,14 +1575,16 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $streetLinesCount = $this->_addressHelper->getStreetLines($this->_storeId);
         switch ($streetLinesCount) {
             case 1:
-                $streetLine = implode(' ', array_filter(
-                        [
-                            $addressStreet,
-                            $addressHouseNumberCombined,
-                            $addressNote
-                        ]
+                $streetLine = [
+                    implode(' ', array_filter(
+                            [
+                                $addressStreet,
+                                $addressHouseNumberCombined,
+                                $addressNote
+                            ]
+                        )
                     )
-                );
+                ];
                 break;
             case 2:
                 $streetLine = [
