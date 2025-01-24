@@ -172,7 +172,7 @@ class ProductOfferExportQueueItemRepository implements ProductOfferExportQueueIt
     {
         $sortOrder      = $this->_sortOrderBuilder
             ->setField('created_at')
-            ->setDescendingDirection()
+            ->setAscendingDirection()
             ->create();
 
         $searchCriteria = $this->_searchCriteriaBuilder
