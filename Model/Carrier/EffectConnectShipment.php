@@ -83,7 +83,7 @@ class EffectConnectShipment extends AbstractCarrier implements CarrierInterface
         foreach ($request->getAllItems() as $item) {
             if ($item->getQuote()->getId() !== null && OrderImportTransformer::hasQuoteId($item->getQuote()->getId())) {
                 $quote      = $item->getQuote();
-                $fees       = $quote->getFees() ?? [];
+                $fees       = OrderImportTransformer::getFees($item->getQuote()->getId());
                 $ecOrder    = true;
                 break;
             }
