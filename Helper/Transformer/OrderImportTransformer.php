@@ -97,6 +97,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     protected static $quoteIds = [];
 
     /**
+     * @var array
+     */
+    protected static $fees = [];
+
+    /**
      * @var OrderRepositoryInterface
      */
     protected $_orderRepository;
@@ -637,7 +642,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             $order = $this->addStatusToOrder($order);
             $order = $this->addEffectConnectNumbersToOrder($order);
             $order = $this->addCurrencyConversionRateToComment($order, $quote->getCurrencyInformation());
-            $order = $this->addFeesToComment($order, $quote->getFees());
+            $order = $this->addFeesToComment($order, self::getFees($quote->getId()));
             $order = $this->addCommentsToOrder($order);
             $order = $this->addInvoiceToOrder($order);
 
@@ -701,7 +706,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param int $quoteId
      * @return void
      */
-    public static function addQuoteId(int $quoteId)
+    public function addQuoteId(int $quoteId)
     {
         self::$quoteIds[$quoteId] = true;
     }
@@ -721,6 +726,25 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     public static function getQuoteIds(): array
     {
         return self::$quoteIds;
+    }
+
+    /**
+     * @param int $quoteId
+     * @param array $fees
+     * @return void
+     */
+    public function addFees(int $quoteId, array $fees)
+    {
+        self::$fees[$quoteId] = $fees;
+    }
+
+    /**
+     * @param int $quoteId
+     * @return array
+     */
+    public static function getFees(int $quoteId): array
+    {
+        return self::$fees[$quoteId] ?? [];
     }
 
     /**
@@ -1099,7 +1123,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 $fees[FeeType::SHIPPING()->getValue()] = 0;
             }
 
-            $quote->setFees($fees);
+            $this->addFees($quote->getId(), $fees);
 
             $quote->getShippingAddress()
                 ->setShippingMethod($this->_shipmentMethod)
