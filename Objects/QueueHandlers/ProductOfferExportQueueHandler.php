@@ -121,6 +121,13 @@ class ProductOfferExportQueueHandler implements QueueHandlerInterface
                 continue;
             }
 
+            // It's possible that products enter this observer that were already deleted from catalog, but references still exists in orders
+            try {
+                $this->_productRepository->getById($productId);
+            } catch (Exception $e) {
+                continue;
+            }
+
             $productOfferExportQueueItem = $this->_productOfferExportQueueItemRepository->create();
             $productOfferExportQueueItem->setCatalogProductEntityId($productIdToQueue);
             try {
