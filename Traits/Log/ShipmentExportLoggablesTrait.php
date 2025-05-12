@@ -218,4 +218,95 @@ trait ShipmentExportLoggablesTrait
 
         return $this->insertLogItem($loggable);
     }
+
+    /**
+     * @param int $shipmentId
+     * @param string $errorMessage
+     * @return bool
+     */
+    public function logSaveShipmentFailedByShipmentId(int $shipmentId, string $errorMessage) : bool
+    {
+        $loggable = new Loggable(
+            LogType::ERROR(),
+            LogCode::SHIPMENT_EXPORT_FAILED(),
+            Process::EXPORT_ORDER_SHIPMENT(),
+            null
+        );
+
+        $loggable->setFormattedMessage(
+            'Shipment save to database failed with message [%s].',
+            [
+                $errorMessage
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::SHIPMENT(),
+            $shipmentId
+        );
+
+        return $this->insertLogItem($loggable);
+    }
+
+    /**
+     * @param ShipmentInterface $shipment
+     * @param string $errorMessage
+     * @return bool
+     */
+    public function logSaveShipmentSkipped(ShipmentInterface $shipment, string $errorMessage) : bool
+    {
+        $loggable = new Loggable(
+            LogType::WARNING(),
+            LogCode::SHIPMENT_EXPORT_SKIPPED(),
+            Process::EXPORT_ORDER_SHIPMENT(),
+            null
+        );
+
+        $loggable->setFormattedMessage(
+            'Shipment save to database skipped with message [%s].',
+            [
+                $errorMessage
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::SHIPMENT(),
+            $shipment->getEntityId()
+        );
+
+        $loggable->setPayload(json_encode([
+            'shipment' => $shipment->getData()
+        ]));
+
+        return $this->insertLogItem($loggable);
+    }
+
+    /**
+     * @param int $shipmentId
+     * @param string $errorMessage
+     * @return bool
+     */
+    public function logSaveShipmentSkippedByShipmentId(int $shipmentId, string $errorMessage) : bool
+    {
+        $loggable = new Loggable(
+            LogType::WARNING(),
+            LogCode::SHIPMENT_EXPORT_SKIPPED(),
+            Process::EXPORT_ORDER_SHIPMENT(),
+            null
+        );
+
+        $loggable->setFormattedMessage(
+            'Shipment save to database skipped with message [%s].',
+            [
+                $errorMessage
+            ]
+        );
+
+        $loggable->setSubject(
+            LogSubjectType::SHIPMENT(),
+            $shipmentId
+        );
+
+        return $this->insertLogItem($loggable);
+    }
 }
