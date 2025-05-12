@@ -57,6 +57,7 @@ namespace EffectConnect\Marketplaces\Enums;
  * @method static LogCode CHANNEL_IMPORT_EXECUTED()
  * @method static LogCode SHIPMENT_EXPORT_SUCCEEDED()
  * @method static LogCode SHIPMENT_EXPORT_FAILED()
+ * @method static LogCode SHIPMENT_EXPORT_SKIPPED()
  */
 class LogCode extends AbstractEnum
 {
@@ -320,4 +321,9 @@ class LogCode extends AbstractEnum
      * The shipment export to EffectConnect has failed.
      */
     const SHIPMENT_EXPORT_FAILED                                = 'shipment_export_failed';
+
+    /**
+     * The shipment export to EffectConnect has been skipped.
+     */
+    const SHIPMENT_EXPORT_SKIPPED                               = 'shipment_export_skipped';
 }

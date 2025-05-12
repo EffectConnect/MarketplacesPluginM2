@@ -477,3 +477,4 @@
 "Only bundles with setting 'Ship Bundle Items' set to 'Together' are supported.","Only bundles with setting 'Ship Bundle Items' set to 'Together' are supported.","module","EffectConnect_Marketplaces"
 "NOTE: externally fulfilled order imported with status %1 according to channel mapping rule %2.","NOTE: externally fulfilled order imported with status %1 according to channel mapping rule %2.","module","EffectConnect_Marketplaces"
 "Order status for externally fulfilled orders","Order status for externally fulfilled orders","module","EffectConnect_Marketplaces"
+"EffectConnect does not accept shipments for orders older than 30 days","EffectConnect does not accept shipments for orders older than 30 days","module","EffectConnect_Marketplaces"
