@@ -1976,7 +1976,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         }
 
         // In case current attribute does not have options, get the raw value (in correct store view) instead.
-        if ($attributeValueText === false || $attributeValueText === []) {
+        if ($attributeValueText === false || $attributeValueText === [] || $attributeValueText === null) {
             try {
                 $attributeValue = $this->_productResourceModel->getAttributeRawValue($product->getId(), $attribute->getAttributeCode(), $storeViewId);
                 if (is_scalar($attributeValue)) {
