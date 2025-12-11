@@ -80,6 +80,7 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
+use Magento\Tax\Model\Calculation;
 use Magento\Tax\Model\Config as TaxModelConfig;
 
 /**
@@ -306,6 +307,11 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     protected $_bundleHelper;
 
     /**
+     * @var Calculation
+     */
+    protected $_calculation;
+
+    /**
      * Locally cache used shipment method (used for logging).
      *
      * @var string
@@ -348,6 +354,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param RegionHelper $regionHelper
      * @param RegionInterfaceFactory $regionInterfaceFactory
      * @param BundleHelper $bundleHelper
+     * @param Calculation $calculation
      */
     public function __construct(
         Context $context,
@@ -383,7 +390,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         Registry $registry,
         RegionHelper $regionHelper,
         RegionInterfaceFactory $regionInterfaceFactory,
-        BundleHelper $bundleHelper
+        BundleHelper $bundleHelper,
+        Calculation $calculation
     ) {
         parent::__construct($context);
         $this->_orderRepository          = $orderRepository;
@@ -419,6 +427,7 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $this->_regionHelper             = $regionHelper;
         $this->_regionInterfaceFactory   = $regionInterfaceFactory;
         $this->_bundleHelper             = $bundleHelper;
+        $this->_calculation              = $calculation;
     }
 
     /**
@@ -548,9 +557,13 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
 
         try
         {
-            $quote = $this->addProductsToQuote($quote, $this->_effectConnectOrder->getLines());
+            // Add billing address to quote.
+            $quote = $this->addBillingAddressToQuote($quote);
+
+            // Add billing address to quote.
+            $quote = $this->addShippingAddressToQuote($quote);
         }
-        catch(OrderImportAddProductsToQuoteFailedException $e)
+        catch(OrderImportAddAddressToQuoteFailedException $e)
         {
             $this->_logHelper->logOrderImportFailed(
                 $this->_connection->getEntityId(),
@@ -562,13 +575,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
 
         try
         {
-            // Add billing address to quote.
-            $quote = $this->addBillingAddressToQuote($quote);
-
-            // Add billing address to quote.
-            $quote = $this->addShippingAddressToQuote($quote);
+            $quote = $this->addProductsToQuote($quote, $this->_effectConnectOrder->getLines());
         }
-        catch(OrderImportAddAddressToQuoteFailedException $e)
+        catch(OrderImportAddProductsToQuoteFailedException $e)
         {
             $this->_logHelper->logOrderImportFailed(
                 $this->_connection->getEntityId(),
@@ -908,6 +917,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             $this->_orderComments[] = __('NOTE: some prices were adjusted to be able to import the order to Magento.');
         }
 
+        // Get address request object for calculation of taxes
+        $addressRequestObject = $this->_calculation->getRateRequest($quote->getShippingAddress(), $quote->getBillingAddress(), null, $this->_storeId, null);
+
         // Add each order line to the quote.
         foreach ($orderLines as $orderLine)
         {
@@ -947,7 +959,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
                 $catalogPricesIncludesTax = $this->scopeConfig->getValue(TaxModelConfig::CONFIG_XML_PATH_PRICE_INCLUDES_TAX, ScopeInterface::SCOPE_STORE, $this->_storeId);
                 if (!$catalogPricesIncludesTax) {
                     $taxClassId = $product->getTaxClassId();
-                    $taxRate = $this->_taxCalculation->getCalculatedRate(intval($taxClassId));
+                    $addressRequestObject->setProductClassId($taxClassId);
+                    $taxRate = $this->_calculation->getRate($addressRequestObject);
                     if ($taxRate > 0) {
                         $destinationAmount = $destinationAmount / (100 + $taxRate) * 100;
                     }
