@@ -69,6 +69,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     const MAXIMUM_IMAGES_AMOUNT = 10;
 
     /**
+     * The maximum length of an attribute value (API accepts 64000, but added extra margin for UTF-8 MB4 (like smileys) that take up extra space).
+     */
+    const MAXIMUM_ATTRIBUTE_VALUE_LENGTH = 60000;
+
+    /**
      * @var ProductRepository
      */
     protected $_productRepository;
@@ -1893,7 +1898,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
             }
 
             $translations[]     = [
-                '_cdata'        => $valueTitle,
+                '_cdata'        => $this->truncateValue(strval($valueTitle)),
                 '_attributes'   => [
                     'language'  => strval($language)
                 ]
@@ -1927,8 +1932,12 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
                     $translations[$index]       = [];
                 }
 
+                if ($valueTitle !== '0' && $valueTitle !== 0) {
+                    $valueTitle = is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle));
+                }
+
                 $translations[$index][]         = [
-                    '_cdata'        => is_bool($valueTitle) ? ($valueTitle ? 'true' : 'false') : (empty(trim(strval($valueTitle))) ? '-' : strval($valueTitle)),
+                    '_cdata'        => $this->truncateValue(strval($valueTitle)),
                     '_attributes'   => [
                         'language'  => strval($language)
                     ]
@@ -2361,5 +2370,14 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         }
 
         return $scopedProduct;
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function truncateValue(string $value)
+    {
+        return substr($value, 0, self::MAXIMUM_ATTRIBUTE_VALUE_LENGTH);
     }
 }
