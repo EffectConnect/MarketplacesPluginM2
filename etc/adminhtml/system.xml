@@ -309,6 +309,11 @@
                     <comment>Whether or not to send an email to the customer for each imported order.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="tax_shifted_customer_tax_class_id" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Customer tax class for reverse charge orders</label>
+                    <comment>Select the customer tax class that should be used for reverse charge orders.</comment>
+                    <source_model>EffectConnect\Marketplaces\Model\Config\Source\CustomerTaxClassOptional</source_model>
+                </field>
             </group>
             <group id="shipment_export_settings" translate="label comment" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Shipment Export</label>

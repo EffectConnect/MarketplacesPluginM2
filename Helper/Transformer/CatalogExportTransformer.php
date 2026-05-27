@@ -9,6 +9,7 @@ use EffectConnect\Marketplaces\Exception\CatalogExportObligatedAttributeIsNullEx
 use EffectConnect\Marketplaces\Exception\CatalogExportProductHasNoSkuException;
 use EffectConnect\Marketplaces\Exception\UnsupportedBundleException;
 use EffectConnect\Marketplaces\Helper\BundleHelper;
+use EffectConnect\Marketplaces\Helper\FrontendStoreContextHelper;
 use EffectConnect\Marketplaces\Helper\InventoryHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
@@ -179,6 +180,11 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     protected $_bundleHelper;
 
     /**
+     * @var FrontendStoreContextHelper
+     */
+    protected $_frontendStoreContext;
+
+    /**
      * Constructs the CatalogExportTransformer helper class.
      *
      * @param Context $context
@@ -200,6 +206,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Emulation $appEmulation
      * @param ProductResourceModel $productResourceModel
      * @param BundleHelper $bundleHelper
+     * @param FrontendStoreContextHelper $frontendStoreContextHelper
      */
     public function __construct(
         Context $context,
@@ -220,7 +227,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         Config $productMediaConfig,
         Emulation $appEmulation,
         ProductResourceModel $productResourceModel,
-        BundleHelper $bundleHelper
+        BundleHelper $bundleHelper,
+        FrontendStoreContextHelper $frontendStoreContextHelper
     ) {
         parent::__construct($context);
         $this->_productRepository               = $productRepository;
@@ -241,6 +249,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $this->_appEmulation                    = $appEmulation;
         $this->_productResourceModel            = $productResourceModel;
         $this->_bundleHelper                    = $bundleHelper;
+        $this->_frontendStoreContext            = $frontendStoreContextHelper;
         $this->_storeViewMapping                = [];
         $this->_defaultAttributes               = [];
     }
@@ -728,13 +737,8 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $exportProductsWhenEanInvalid   = boolval($this->_settingsHelper->getCatalogExportExportProductsWhenEanInvalid(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
         $identifier                     = $this->getProductIdentifier($productOption);
         $cost                           = $this->getProductCost($productOption);
-
-        // Emulate correct scope (needed for catalog price rules to work).
-        $this->_appEmulation->startEnvironmentEmulation($this->_connection->getBaseStoreviewId());
         $price                          = $this->getProductPrice($productOption);
         $priceOriginal                  = $this->getProductPriceOriginal($productOption);
-        $this->_appEmulation->stopEnvironmentEmulation();
-
         $stock                          = $this->getProductStock($productOption);
         $titles                         = $this->getProductTitles($productOption);
         $urls                           = $this->getProductUrls($productOption);
@@ -1367,7 +1371,13 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         ];
 
         foreach ($productOptions as $productOption) {
-            $option = $this->transformProductOption($product, $productOption);
+            // Emulate correct scope (by store) when inserting order.
+            $option = $this->_frontendStoreContext->run(
+                $this->_connection->getBaseStoreviewId(),
+                function () use ($product, $productOption) {
+                    return $this->transformProductOption($product, $productOption);
+                }
+            );
 
             if (!is_null($option)) {
                 $transformed['option'][] = $option;

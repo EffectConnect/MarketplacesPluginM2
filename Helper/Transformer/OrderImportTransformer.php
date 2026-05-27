@@ -20,6 +20,7 @@ use EffectConnect\Marketplaces\Exception\OrderImportFailedException;
 use EffectConnect\Marketplaces\Exception\OrderImportRegionIdRequiredException;
 use EffectConnect\Marketplaces\Exception\OrderImportSubmitQuoteFailedException;
 use EffectConnect\Marketplaces\Helper\BundleHelper;
+use EffectConnect\Marketplaces\Helper\FrontendStoreContextHelper;
 use EffectConnect\Marketplaces\Helper\LogHelper;
 use EffectConnect\Marketplaces\Helper\RegionHelper;
 use EffectConnect\Marketplaces\Helper\SettingsHelper;
@@ -76,12 +77,13 @@ use Magento\Sales\Model\Order as OrderModel;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\ResourceModel\Order as OrderResourceModel;
 use Magento\Sales\Model\ResourceModel\Order\Status\Collection as OrderStatusCollection;
-use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Model\Calculation;
+use Magento\Tax\Model\ClassModel;
 use Magento\Tax\Model\Config as TaxModelConfig;
+use Magento\Tax\Model\ResourceModel\TaxClass\CollectionFactory as TaxClassCollectionFactory;
 
 /**
  * The OrderImportTransformer obtains orders from the EffectConnect Marketplaces SDK.
@@ -116,11 +118,6 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @var SearchCriteriaBuilder
      */
     protected $_searchCriteriaBuilder;
-
-    /**
-     * @var Emulation
-     */
-    protected $_appEmulation;
 
     /**
      * @var StoreManagerInterface
@@ -319,12 +316,21 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     protected $_shipmentMethod = '';
 
     /**
+     * @var FrontendStoreContextHelper
+     */
+    protected $_frontendStoreContext;
+
+    /**
+     * @var TaxClassCollectionFactory
+     */
+    private $_taxClassCollectionFactory;
+
+    /**
      * OrderImportTransformer constructor.
      * @param Context $context
      * @param OrderRepositoryInterface $orderRepository
      * @param ChannelMappingRepositoryInterface $channelMappingRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param Emulation $appEmulation
      * @param StoreManagerInterface $storeManager
      * @param QuoteFactory $quoteFactory
      * @param CustomerRepositoryInterface $customerRepository
@@ -355,13 +361,14 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
      * @param RegionInterfaceFactory $regionInterfaceFactory
      * @param BundleHelper $bundleHelper
      * @param Calculation $calculation
+     * @param FrontendStoreContextHelper $frontendStoreContextHelper
+     * @param TaxClassCollectionFactory $taxClassCollectionFactory
      */
     public function __construct(
         Context $context,
         OrderRepositoryInterface $orderRepository,
         ChannelMappingRepositoryInterface $channelMappingRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        Emulation $appEmulation,
         StoreManagerInterface $storeManager,
         QuoteFactory $quoteFactory,
         CustomerRepositoryInterface $customerRepository,
@@ -391,13 +398,14 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         RegionHelper $regionHelper,
         RegionInterfaceFactory $regionInterfaceFactory,
         BundleHelper $bundleHelper,
-        Calculation $calculation
+        Calculation $calculation,
+        FrontendStoreContextHelper $frontendStoreContextHelper,
+        TaxClassCollectionFactory $taxClassCollectionFactory
     ) {
         parent::__construct($context);
         $this->_orderRepository          = $orderRepository;
         $this->_channelMappingRepository = $channelMappingRepository;
         $this->_searchCriteriaBuilder    = $searchCriteriaBuilder;
-        $this->_appEmulation             = $appEmulation;
         $this->_storeManager             = $storeManager;
         $this->_quoteFactory             = $quoteFactory;
         $this->_customerRepository       = $customerRepository;
@@ -428,6 +436,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         $this->_regionInterfaceFactory   = $regionInterfaceFactory;
         $this->_bundleHelper             = $bundleHelper;
         $this->_calculation              = $calculation;
+        $this->_frontendStoreContext     = $frontendStoreContextHelper;
+        $this->_taxClassCollectionFactory = $taxClassCollectionFactory;
     }
 
     /**
@@ -465,8 +475,14 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             return false;
         }
 
-        // Transform EC order to Magento order and save it to Magento.
-        $result = $this->transformAndSaveOrder();
+        // Emulate correct scope (by store) when inserting order.
+        $result = $this->_frontendStoreContext->run(
+            $this->_storeId,
+            function () {
+                return $this->transformAndSaveOrder();
+            }
+        );
+
         if ($result === false) {
             throw new OrderImportFailedException(__('Order import failed.'));
         }
@@ -506,9 +522,6 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         {
             return false;
         }
-
-        // Emulate correct scope (by store) when inserting order.
-        $this->_appEmulation->startEnvironmentEmulation($this->_storeId);
 
         try
         {
@@ -667,9 +680,6 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             );
             return false;
         }
-
-        // End scope emulation.
-        $this->_appEmulation->stopEnvironmentEmulation();
 
         // Log successful import of order.
         $effectConnectOrderNumber = $this->_effectConnectOrder->getIdentifiers()->getEffectConnectNumber();
@@ -1183,6 +1193,58 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     }
 
     /**
+     * @param int $taxClassId
+     * @return string
+     */
+    private function getCustomerTaxClassName(int $taxClassId): string
+    {
+        $collection = $this->_taxClassCollectionFactory->create();
+        $collection->addFieldToFilter('class_id', $taxClassId);
+        $collection->addFieldToFilter(
+            'class_type',
+            ClassModel::TAX_CLASS_TYPE_CUSTOMER
+        );
+        $collection->setPageSize(1);
+        $taxClass = $collection->getFirstItem();
+        return (string) ($taxClass->getClassName() ?: $taxClassId);
+    }
+
+    /**
+     * @param QuoteModel $quote
+     * @return void
+     */
+    private function applyTaxShiftedContext(QuoteModel $quote): void
+    {
+        // Only for tax shifter orders
+        $isTaxShifted = boolval($this->_effectConnectOrder->getIsTaxShifted());
+        if (!$isTaxShifted) {
+            return;
+        }
+
+        // Only in case a custom tax class was selected in the settings
+        $taxClassId = intval($this->_settingsHelper->getOrderImportTaxShiftedCustomerTaxClassId(SettingsHelper::SCOPE_STORE, $this->_storeId) ?? 0);
+        if ($taxClassId === 0) {
+            return;
+        }
+
+        // Apply the custom tax class ID to the quote and the customer addresses
+        $quote->setCustomerTaxClassId($taxClassId);
+        if ($quote->getBillingAddress()) {
+            $quote->getBillingAddress()->setCustomerTaxClassId($taxClassId);
+        }
+        if ($quote->getShippingAddress()) {
+            $quote->getShippingAddress()->setCustomerTaxClassId($taxClassId);
+        }
+
+        // Add the name of the tax class that was used to the order comment
+        $taxClassName = $this->getCustomerTaxClassName($taxClassId);
+        $this->_orderComments[] = __(
+            'Applied customer tax class: %1',
+            $taxClassName
+        );
+    }
+
+    /**
      * @param QuoteModel $quote
      * @return OrderInterface
      * @throws OrderImportSubmitQuoteFailedException
@@ -1191,6 +1253,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
     {
         try
         {
+            // Apply (optional) custom customer tax class
+            $this->applyTaxShiftedContext($quote);
+
             // Set that we want to recalculate quote totals and do the actual recalculation.
             $quote->setTotalsCollectedFlag(false);
             $quote->collectTotals();
