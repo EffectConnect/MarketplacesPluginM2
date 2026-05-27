@@ -94,4 +94,15 @@
             </argument>
         </arguments>
     </virtualType>
+
+    <!-- Commands for use within bin/magento -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="ec_export_offers" xsi:type="object">EffectConnect\Marketplaces\Console\Command\ExportOffersCommand</item>
+                <item name="ec_export_catalog" xsi:type="object">EffectConnect\Marketplaces\Console\Command\ExportCatalogCommand</item>
+                <item name="ec_import_orders" xsi:type="object">EffectConnect\Marketplaces\Console\Command\ImportOrdersCommand</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

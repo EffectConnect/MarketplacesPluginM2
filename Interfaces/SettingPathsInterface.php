@@ -138,6 +138,9 @@ interface SettingPathsInterface
     /** Whether or not to send an email to the customer for each imported order. */
     const SETTING_ORDER_IMPORT_SEND_EMAILS                          = 'order_import_settings/send_emails';
 
+    /** Whether or not to skip tax calculations for orders with shifted tax. */
+    const SETTING_ORDER_IMPORT_TAX_SHIFTED_CUSTOMER_TAX_CLASS_ID    = 'order_import_settings/tax_shifted_customer_tax_class_id';
+
 
     /** Get the queue size of the order shipment export queue handler. */
     const SETTING_SHIPMENT_EXPORT_QUEUE_SIZE                        = 'shipment_export_settings/queue_size';
