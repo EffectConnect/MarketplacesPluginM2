@@ -475,14 +475,8 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             return false;
         }
 
-        // Emulate correct scope (by store) when inserting order.
-        $result = $this->_frontendStoreContext->run(
-            $this->_storeId,
-            function () {
-                return $this->transformAndSaveOrder();
-            }
-        );
-
+        // Transform EC order to Magento order and save it to Magento.
+        $result = $this->transformAndSaveOrder();
         if ($result === false) {
             throw new OrderImportFailedException(__('Order import failed.'));
         }
@@ -522,6 +516,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         {
             return false;
         }
+
+        // Emulate correct scope (by store) when inserting order.
+        $this->_frontendStoreContext->startEnvironmentEmulation($this->_storeId);
 
         try
         {
@@ -680,6 +677,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             );
             return false;
         }
+
+        // End scope emulation.
+        $this->_frontendStoreContext->stopEnvironmentEmulation();
 
         // Log successful import of order.
         $effectConnectOrderNumber = $this->_effectConnectOrder->getIdentifiers()->getEffectConnectNumber();

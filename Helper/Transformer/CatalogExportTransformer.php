@@ -46,7 +46,6 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Phrase;
 use Magento\Framework\UrlInterface;
-use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManagerInterface;
 use Throwable;
 
@@ -165,11 +164,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
     protected $_defaultAttributes;
 
     /**
-     * @var Emulation
-     */
-    protected $_appEmulation;
-
-    /**
      * @var ProductResourceModel
      */
     protected $_productResourceModel;
@@ -203,7 +197,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @param Status $productStatus
      * @param Visibility $productVisibility
      * @param Config $productMediaConfig
-     * @param Emulation $appEmulation
      * @param ProductResourceModel $productResourceModel
      * @param BundleHelper $bundleHelper
      * @param FrontendStoreContextHelper $frontendStoreContextHelper
@@ -225,7 +218,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         Status $productStatus,
         Visibility $productVisibility,
         Config $productMediaConfig,
-        Emulation $appEmulation,
         ProductResourceModel $productResourceModel,
         BundleHelper $bundleHelper,
         FrontendStoreContextHelper $frontendStoreContextHelper
@@ -246,7 +238,6 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $this->_productStatus                   = $productStatus;
         $this->_productVisibility               = $productVisibility;
         $this->_productMediaConfig              = $productMediaConfig;
-        $this->_appEmulation                    = $appEmulation;
         $this->_productResourceModel            = $productResourceModel;
         $this->_bundleHelper                    = $bundleHelper;
         $this->_frontendStoreContext            = $frontendStoreContextHelper;
@@ -737,8 +728,13 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         $exportProductsWhenEanInvalid   = boolval($this->_settingsHelper->getCatalogExportExportProductsWhenEanInvalid(SettingsHelper::SCOPE_WEBSITE, intval($this->_connection->getWebsiteId())));
         $identifier                     = $this->getProductIdentifier($productOption);
         $cost                           = $this->getProductCost($productOption);
+
+        // Emulate correct scope (needed for catalog price rules to work).
+        $this->_frontendStoreContext->startEnvironmentEmulation($this->_connection->getBaseStoreviewId());
         $price                          = $this->getProductPrice($productOption);
         $priceOriginal                  = $this->getProductPriceOriginal($productOption);
+        $this->_frontendStoreContext->stopEnvironmentEmulation();
+
         $stock                          = $this->getProductStock($productOption);
         $titles                         = $this->getProductTitles($productOption);
         $urls                           = $this->getProductUrls($productOption);
@@ -1371,14 +1367,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         ];
 
         foreach ($productOptions as $productOption) {
-            // Emulate correct scope (by store) when inserting order.
-            $option = $this->_frontendStoreContext->run(
-                $this->_connection->getBaseStoreviewId(),
-                function () use ($product, $productOption) {
-                    return $this->transformProductOption($product, $productOption);
-                }
-            );
-
+            $option = $this->transformProductOption($product, $productOption);
             if (!is_null($option)) {
                 $transformed['option'][] = $option;
             }

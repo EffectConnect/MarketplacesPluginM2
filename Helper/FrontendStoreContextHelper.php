@@ -45,28 +45,37 @@ class FrontendStoreContextHelper extends AbstractHelper
      * - specific store context (startEnvironmentEmulation)
      *
      * Example:
-     * $result = $this->frontendStoreContextHelper->run($storeId, function () {
+     * $result = $this->frontendStoreContextHelper->emulateAreaCode(function () {
      *     return $this->process();
      * });
      *
      * @template T
-     * @param int $storeId
      * @param callable(): T $callback
      * @return T
      * @throws Exception
      */
-    public function run(int $storeId, callable $callback)
+    public function emulateAreaCode(callable $callback)
     {
         return $this->appState->emulateAreaCode(
             Area::AREA_FRONTEND,
-            function () use ($storeId, $callback) {
-                $this->appEmulation->startEnvironmentEmulation($storeId);
-                try {
-                    return $callback();
-                } finally {
-                    $this->appEmulation->stopEnvironmentEmulation();
-                }
-            }
+            $callback
         );
+    }
+
+    /**
+     * @param int $storeId
+     * @return void
+     */
+    public function startEnvironmentEmulation(int $storeId)
+    {
+        $this->appEmulation->startEnvironmentEmulation($storeId);
+    }
+
+    /**
+     * @return void
+     */
+    public function stopEnvironmentEmulation()
+    {
+        $this->appEmulation->stopEnvironmentEmulation();
     }
 }
