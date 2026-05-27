@@ -1371,7 +1371,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
         ];
 
         foreach ($productOptions as $productOption) {
-            // Emulate correct scope (by store) when inserting order.
+            // Emulate correct scope (by store)
             $option = $this->_frontendStoreContext->run(
                 $this->_connection->getBaseStoreviewId(),
                 function () use ($product, $productOption) {
