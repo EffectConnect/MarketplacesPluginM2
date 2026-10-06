@@ -11,6 +11,7 @@ use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Request\DataPersistorInterface;
 
 /**
  * Class Connection
@@ -54,6 +55,11 @@ abstract class Connection extends Action
     protected $_logExportQueueHandler;
 
     /**
+     * @var DataPersistorInterface
+     */
+    protected $_dataPersistor;
+
+    /**
      * Connection constructor.
      * @param Context $context
      * @param PageFactory $resultPageFactory
@@ -63,6 +69,7 @@ abstract class Connection extends Action
      * @param ConnectionStoreviewRepositoryInterface $connectionStoreviewRepository
      * @param DirectCatalogExportQueueHandler $directCatalogExportQueueHandler
      * @param LogExportQueueHandler $logExportQueueHandler
+    * @param DataPersistorInterface $dataPersistor
      */
     public function __construct(
         Context $context,
@@ -72,7 +79,8 @@ abstract class Connection extends Action
         ConnectionRepositoryInterface $connectionRepository,
         ConnectionStoreviewRepositoryInterface $connectionStoreviewRepository,
         DirectCatalogExportQueueHandler $directCatalogExportQueueHandler,
-        LogExportQueueHandler $logExportQueueHandler
+        LogExportQueueHandler $logExportQueueHandler,
+        DataPersistorInterface $dataPersistor
     ) {
         parent::__construct($context);
         $this->_resultPageFactory               = $resultPageFactory;
@@ -82,5 +90,6 @@ abstract class Connection extends Action
         $this->_connectionStoreviewRepository   = $connectionStoreviewRepository;
         $this->_directCatalogExportQueueHandler = $directCatalogExportQueueHandler;
         $this->_logExportQueueHandler           = $logExportQueueHandler;
+        $this->_dataPersistor                   = $dataPersistor;
     }
 }

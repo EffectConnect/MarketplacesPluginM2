@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Controller\Adminhtml\Connection;
 
 use EffectConnect\Marketplaces\Controller\Adminhtml\Connection;
 use EffectConnect\Marketplaces\Exception\ConnectionSaveDuplicateLanguageException;
+use EffectConnect\Marketplaces\Exception\ConnectionSaveDuplicatePublicKeyException;
 use Exception;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
@@ -72,7 +73,8 @@ class Save extends Connection
                 $this->_connectionRepository->save($connection, $connectionStoreviews);
                 $this->messageManager->addSuccessMessage(__('The connection has been saved.'));
                 $resultRedirect->setPath('*/*/');
-            } catch (ConnectionSaveDuplicateLanguageException $e) {
+            } catch (ConnectionSaveDuplicateLanguageException|ConnectionSaveDuplicatePublicKeyException $e) {
+                $this->_dataPersistor->set('effectconnect_marketplaces_connection', $formData);
                 $this->messageManager->addErrorMessage(__('The connection could not been saved. Message: %1.', $e->getMessage()));
                 if (isset($formData['entity_id']) && intval($formData['entity_id']) > 0) {
                     $resultRedirect->setPath('*/*/edit', ['entity_id' => $formData['entity_id']]); // Stay on this edit page.
