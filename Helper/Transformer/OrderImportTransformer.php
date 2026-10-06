@@ -1746,10 +1746,10 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             'company'    => $address->getCompany(),
             'postcode'   => $address->getZipCode(),
             'email'      => $address->getEmail(),
-            'telephone'  => $address->getPhone(),
+            'telephone'  => $this->stripInvalidCharactersFromPhone($address->getPhone()),
             'country_id' => $address->getCountry(),
             'region'     => $useRegionObject ? $region : $region->getRegion(), // String in case of quote address and RegionInterface in case of customer address
-            'region_id'  => $regionId
+            'region_id'  => $regionId,
         ];
     }
 
@@ -1809,5 +1809,17 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
             }
         }
         return $orderHasExternalFulfilmentTag;
+    }
+
+    /**
+     * Prevent Magento message 'Invalid Phone Number. Please use 0-9, +, -, (, ), ., / and space.' by replacing invalid
+     * characters with a space.
+     *
+     * @param string $phone
+     * @return string
+     */
+    protected function stripInvalidCharactersFromPhone(string $phone): string
+    {
+        return preg_replace('/[^0-9+\-().\/ ]/', ' ', $phone);
     }
 }
