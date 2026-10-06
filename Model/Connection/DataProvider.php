@@ -5,6 +5,7 @@ namespace EffectConnect\Marketplaces\Model\Connection;
 use EffectConnect\Marketplaces\Api\ConnectionStoreviewRepositoryInterface;
 use EffectConnect\Marketplaces\Model\Connection;
 use EffectConnect\Marketplaces\Model\ResourceModel\Connection\Collection as ConnectionCollection;
+use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Ui\DataProvider\AbstractDataProvider;
 use Magento\Store\Model\System\Store;
@@ -40,6 +41,11 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
     protected $_request;
 
     /**
+     * @var DataPersistorInterface
+     */
+    protected $_dataPersistor;
+
+    /**
      * @var PoolInterface
      */
     protected $_pool;
@@ -55,6 +61,7 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
      * @param string $primaryFieldName
      * @param string $requestFieldName
      * @param RequestInterface $request
+    * @param DataPersistorInterface $dataPersistor
      * @param Store $store
      * @param ScopeConfigInterface $scopeConfig
      * @param ConnectionCollection $connectionCollection
@@ -68,6 +75,7 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
         $primaryFieldName,
         $requestFieldName,
         RequestInterface $request,
+        DataPersistorInterface $dataPersistor,
         Store $store,
         ScopeConfigInterface $scopeConfig,
         ConnectionCollection $connectionCollection,
@@ -80,6 +88,7 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
         $this->_store                         = $store;
         $this->_scopeConfig                   = $scopeConfig;
         $this->_request                       = $request;
+        $this->_dataPersistor                 = $dataPersistor;
         $this->_connectionStoreviewRepository = $connectionStoreviewRepository;
         $this->_pool                          = $pool;
         $this->collection                     = $connectionCollection; // Default Magento variable in parent class
@@ -110,6 +119,14 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
 
         // Also load mappable storeviews for 'add' form.
         $this->loadedData[null]['storeview_mapping'] = $this->getStoreviewMappingData();
+
+        $persistedData = $this->_dataPersistor->get('effectconnect_marketplaces_connection');
+        if (!empty($persistedData)) {
+            $connectionId = isset($persistedData['entity_id']) ? $persistedData['entity_id'] : null;
+            $currentData = isset($this->loadedData[$connectionId]) ? $this->loadedData[$connectionId] : [];
+            $this->loadedData[$connectionId] = array_replace($currentData, $persistedData);
+            $this->_dataPersistor->clear('effectconnect_marketplaces_connection');
+        }
 
         return $this->loadedData;
     }

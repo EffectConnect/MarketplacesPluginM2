@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Api;
 
 use EffectConnect\Marketplaces\Model\Connection;
 use EffectConnect\Marketplaces\Model\ConnectionStoreview;
+use EffectConnect\Marketplaces\Exception\ConnectionSaveDuplicatePublicKeyException;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use Magento\Framework\Api\SearchResultsInterface;
 use Magento\Framework\Exception\CouldNotDeleteException;
@@ -26,6 +27,7 @@ interface ConnectionRepositoryInterface
      * @param ConnectionStoreview[] $connectionStoreviews
      * @return Connection
      * @throws CouldNotSaveException
+     * @throws ConnectionSaveDuplicatePublicKeyException
      */
     public function save(Connection $connection, array $connectionStoreviews);
 

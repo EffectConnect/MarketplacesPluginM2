@@ -4,6 +4,7 @@ namespace EffectConnect\Marketplaces\Model\Connection;
 
 use EffectConnect\Marketplaces\Api\ConnectionRepositoryInterface;
 use EffectConnect\Marketplaces\Api\ConnectionStoreviewRepositoryInterface;
+use EffectConnect\Marketplaces\Exception\ConnectionSaveDuplicatePublicKeyException;
 use EffectConnect\Marketplaces\Model\Connection;
 use EffectConnect\Marketplaces\Model\ConnectionStoreview;
 use EffectConnect\Marketplaces\Model\ConnectionFactory as ConnectionFactory;
@@ -163,9 +164,22 @@ class ConnectionRepository implements ConnectionRepositoryInterface
      * @param ConnectionStoreview[] $connectionStoreviews
      * @return Connection
      * @throws CouldNotSaveException
+     * @throws ConnectionSaveDuplicatePublicKeyException
      */
     public function save(Connection $connection, array $connectionStoreviews) : Connection
     {
+        $publicKey = $connection->getData('public_key');
+        $matchingConnections = $this->_connectionCollectionFactory->create()
+            ->addFieldToFilter('public_key', $publicKey);
+        if ($connection->getId()) {
+            $matchingConnections->addFieldToFilter('entity_id', ['neq' => $connection->getId()]);
+        }
+        foreach ($matchingConnections->getItems() as $matchingConnection) {
+            if ($matchingConnection->getData('public_key') === $publicKey) {
+                throw new ConnectionSaveDuplicatePublicKeyException(__('A connection with this public key already exists.'));
+            }
+        }
+
         try
         {
             // Save connection

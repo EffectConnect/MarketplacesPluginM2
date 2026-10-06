@@ -482,3 +482,4 @@
 "NOTE: externally fulfilled order imported with status %1 according to channel mapping rule %2.","LET OP: order met external fulfilment geïmporteerd met status %1 n.a.v. channel mapping regel %2.","module","EffectConnect_Marketplaces"
 "Order status for externally fulfilled orders","Order status voor orders met external fulfilment","module","EffectConnect_Marketplaces"
 "EffectConnect does not accept shipments for orders older than 30 days","EffectConnect kan geen zendingen verwerken voor orders ouder dan 30 dagen","module","EffectConnect_Marketplaces"
+"A connection with this public key already exists.","Er bestaat al een connectie met deze publieke sleutel.","module","EffectConnect_Marketplaces"
