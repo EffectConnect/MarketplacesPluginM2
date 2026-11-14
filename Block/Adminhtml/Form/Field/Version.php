@@ -89,8 +89,6 @@ class Version extends Field
 
             $json                   = curl_exec($ch);
 
-            curl_close($ch);
-
             $data                   = $json !== false ? json_decode($json) : false;
             $this->_releaseData     = $data !== false ? $data : [];
         } catch (Exception $e) {

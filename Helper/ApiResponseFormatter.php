@@ -42,7 +42,9 @@ class ApiResponseFormatter
         $reflection = new ReflectionClass(get_class($object));
 
         foreach ($reflection->getProperties() as $property) {
-            $property->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $property->setAccessible(true);
+            }
 
             $value = $property->getValue($object);
             $name = $property->getName();

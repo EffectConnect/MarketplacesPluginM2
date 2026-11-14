@@ -109,7 +109,7 @@ class XmlGenerator
         array $array,
         $rootElement                                    = '',
         bool $replaceSpacesByUnderScoresInKeyNames      = true,
-        string $xmlEncoding                             = null,
+        ?string $xmlEncoding                            = null,
         string $xmlVersion                              = '1.0',
         array $domProperties                            = [],
         bool $withHeader                                = true
