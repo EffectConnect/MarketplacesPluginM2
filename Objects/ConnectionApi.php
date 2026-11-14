@@ -154,7 +154,7 @@ class ConnectionApi
      * @param ProductInterface $product
      * @return bool
      */
-    public function exportOffer(ProductInterface $product = null) : bool
+    public function exportOffer(?ProductInterface $product = null) : bool
     {
         return $this->exportProductOffersProcedure($this, $product);
     }
@@ -165,7 +165,7 @@ class ConnectionApi
      * @param ProductInterface[] $products
      * @return bool
      */
-    public function exportSpecificOffers(array $products = null) : bool
+    public function exportSpecificOffers(?array $products = null) : bool
     {
         return $this->exportProductsOffersProcedure($this, $products);
     }

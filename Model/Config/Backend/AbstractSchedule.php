@@ -65,8 +65,8 @@ class AbstractSchedule extends Value
         TypeListInterface $cacheTypeList,
         ValueFactory $valueFactory,
         $runModelPath = '',
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     )
     {

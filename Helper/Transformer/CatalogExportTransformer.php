@@ -379,7 +379,7 @@ class CatalogExportTransformer extends AbstractHelper implements ValueType
      * @return bool|string
      * @throws CatalogExportNoProductsToExportException
      */
-    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'catalog', array $catalog = null)
+    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'catalog', ?array $catalog = null)
     {
         $this->_connection  = $connection;
 

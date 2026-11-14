@@ -27,7 +27,7 @@ class TrackingExportDataObject implements Iterator, Countable
      * @param OrderLine $orderLine
      * @param ShipmentTrackInterface|null $shipmentTrack
      */
-    public function addTrackingExportData(OrderLine $orderLine, ShipmentTrackInterface $shipmentTrack = null)
+    public function addTrackingExportData(OrderLine $orderLine, ?ShipmentTrackInterface $shipmentTrack = null)
     {
         $this->data[] = [$shipmentTrack, $orderLine];
     }
