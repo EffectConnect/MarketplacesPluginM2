@@ -143,7 +143,7 @@ class ConnectionStoreviewRepository implements ConnectionStoreviewRepositoryInte
     public function deleteById(int $connectionStoreviewId) : bool
     {
         $connectionStoreviewModel = $this->getById($connectionStoreviewId);
-        $this->delete($connectionStoreviewModel);
+        return $this->delete($connectionStoreviewModel);
     }
 
     /**
@@ -173,7 +173,7 @@ class ConnectionStoreviewRepository implements ConnectionStoreviewRepositoryInte
      * @param SearchCriteriaInterface|null $searchCriteria
      * @return SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
+    public function getList(?SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
     {
         if (is_null($searchCriteria)) {
             $searchCriteria = $this->_searchCriteriaBuilder->create();

@@ -30,6 +30,7 @@ class ValidationHelper extends AbstractHelper
         $xml = new DOMDocument();
         $xml->load($xmlFileLocation);
 
+        $errors = [];
         if (!$xml->schemaValidate($xsdFileLocation)) {
             $errors = $this->getErrors();
         }

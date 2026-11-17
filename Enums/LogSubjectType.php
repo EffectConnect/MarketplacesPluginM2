@@ -49,6 +49,8 @@ class LogSubjectType extends AbstractEnum
             case static::CONNECTION:
                 return 'ec_marketplaces/connection/edit';
         }
+
+        throw new \TypeError(__METHOD__ . ": Return value must be of type string, none returned");
     }
 
     /**
@@ -68,6 +70,8 @@ class LogSubjectType extends AbstractEnum
             case static::CONNECTION:
                 return 'entity_id';
         }
+
+        throw new \TypeError(__METHOD__ . ": Return value must be of type string, none returned");
     }
 
     /**

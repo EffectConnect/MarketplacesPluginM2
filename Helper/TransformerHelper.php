@@ -197,7 +197,7 @@ class TransformerHelper extends AbstractHelper
      * @throws OffersExportGeneratingCatalogXmlFileFailedException
      * @throws CatalogExportNoProductsToExportException
      */
-    public function getSegmentedOffersXmlFile(Connection $connection, array $catalog = null, string $exportFileName = 'offers') : string
+    public function getSegmentedOffersXmlFile(Connection $connection, ?array $catalog = null, string $exportFileName = 'offers') : string
     {
         $fileLocation = $this->_offersExportTransformer
             ->saveXmlSegmented($connection, $exportFileName, $catalog);
