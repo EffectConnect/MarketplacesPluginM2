@@ -109,12 +109,12 @@ class XmlGenerator
         array $array,
         $rootElement                                    = '',
         bool $replaceSpacesByUnderScoresInKeyNames      = true,
-        string $xmlEncoding                             = null,
+        ?string $xmlEncoding                             = null,
         string $xmlVersion                              = '1.0',
         array $domProperties                            = [],
         bool $withHeader                                = true
     ) {
-        $converter = new static(
+        $converter = new self(
             $array,
             $rootElement,
             $replaceSpacesByUnderScoresInKeyNames,
@@ -352,7 +352,7 @@ class XmlGenerator
      */
     public static function startTransaction(string $fileLocation, string $rootElement = '')
     {
-        $instance = new static([], $rootElement);
+        $instance = new self([], $rootElement);
 
         if (!is_dir(dirname($fileLocation))) {
             mkdir(dirname($fileLocation), 0755, true);
@@ -421,7 +421,7 @@ class XmlGenerator
      */
     public static function startMageStorageTransaction(Filesystem $filesystem, string $directory, string $relativeFileName, string $rootElement = '')
     {
-        $instance                   = new static([], $rootElement);
+        $instance                   = new self([], $rootElement);
         $writer                     = $filesystem->getDirectoryWrite($directory);
         $instance->mageFileHandler  = $writer->openFile($relativeFileName, 'w+');
 

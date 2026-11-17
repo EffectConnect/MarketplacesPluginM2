@@ -778,7 +778,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         try
         {
             /** @var Currency $sourceCurrency */
-            $sourceCurrency         = $this->_currencyFactory->create()->load($sourceCurrencyCode);
+            $sourceCurrency         = $this->_currencyFactory->create();
+            $sourceCurrency->unsRate();
+            $sourceCurrency->setData('currency_code', $sourceCurrencyCode);
             $destinationCurrency    = $this->_storeManager->getStore($this->_storeId)->getCurrentCurrency();
 
             $conversionRate         = $sourceCurrency->getAnyRate($destinationCurrency);
@@ -1410,7 +1412,9 @@ class OrderImportTransformer extends AbstractHelper implements ValueType
         try
         {
             /** @var Currency $sourceCurrency */
-            $sourceCurrency = $this->_currencyFactory->create()->load($order->getOrderCurrencyCode());
+            $sourceCurrency = $this->_currencyFactory->create();
+            $sourceCurrency->unsRate();
+            $sourceCurrency->setData('currency_code', $order->getOrderCurrencyCode());
 
             $orderComment   = [];
 

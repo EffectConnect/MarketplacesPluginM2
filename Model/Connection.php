@@ -62,14 +62,14 @@ class Connection extends AbstractModel
         SearchCriteriaBuilder $searchCriteriaBuilder,
         ConnectionStoreviewRepositoryInterface $connectionStoreViewRepository,
         ChannelRepositoryInterface $channelRepository,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->_searchCriteriaBuilder         = $searchCriteriaBuilder;
         $this->_connectionStoreviewRepository = $connectionStoreViewRepository;
         $this->_channelRepository             = $channelRepository;
-        return parent::__construct($context, $registry, $resource, $resourceCollection, $data);
+        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     /**

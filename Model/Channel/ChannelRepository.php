@@ -164,7 +164,7 @@ class ChannelRepository implements ChannelRepositoryInterface
      * @param SearchCriteriaInterface $searchCriteria
      * @return SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
+    public function getList(?SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
     {
         if (is_null($searchCriteria)) {
             $searchCriteria = $this->_searchCriteriaBuilder->create();

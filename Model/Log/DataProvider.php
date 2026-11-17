@@ -12,6 +12,11 @@ use EffectConnect\Marketplaces\Model\ResourceModel\Log\Collection;
 class DataProvider extends AbstractDataProvider
 {
     /**
+     * @var array|null
+     */
+    protected $loadedData;
+
+    /**
      * DataProvider constructor.
      * @param string $name
      * @param string $primaryFieldName

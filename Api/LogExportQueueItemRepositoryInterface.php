@@ -17,7 +17,7 @@ interface LogExportQueueItemRepositoryInterface
      * @param SearchCriteriaInterface $searchCriteria.
      * @return SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface;
+    public function getList(?SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface;
 
     /**
      * @return SearchResultsInterface

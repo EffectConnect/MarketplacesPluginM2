@@ -11,6 +11,7 @@ use EffectConnect\Marketplaces\Model\Log as LogModel;
 use EffectConnect\Marketplaces\Model\LogFactory as LogModelFactory;
 use EffectConnect\Marketplaces\Model\ResourceModel\Log as LogModelResource;
 use EffectConnect\Marketplaces\Model\ResourceModel\Log\Collection as LogModelResourceCollection;
+use EffectConnect\Marketplaces\Model\ResourceModel\Log\CollectionFactory as LogCollectionFactory;
 use EffectConnect\Marketplaces\Objects\Loggable;
 use EffectConnect\Marketplaces\Traits\Log\CatalogLoggablesTrait;
 use EffectConnect\Marketplaces\Traits\Log\OffersLoggablesTrait;
@@ -52,24 +53,32 @@ class LogHelper extends AbstractHelper
     protected $_logResource;
 
     /**
+     * @var LogCollectionFactory
+     */
+    protected $_logCollectionFactory;
+
+    /**
      * LogHelper constructor.
      *
      * @param Context $context
      * @param SettingsHelper $settingsHelper
      * @param LogModelFactory $logFactory
      * @param LogModelResource $logResource
+     * @param LogCollectionFactory $logCollectionFactory
      */
     public function __construct(
         Context $context,
         SettingsHelper $settingsHelper,
         LogModelFactory $logFactory,
-        LogModelResource $logResource
+        LogModelResource $logResource,
+        LogCollectionFactory $logCollectionFactory
     ) {
         parent::__construct($context);
 
         $this->_settingsHelper  = $settingsHelper;
         $this->_logFactory      = $logFactory;
         $this->_logResource     = $logResource;
+        $this->_logCollectionFactory = $logCollectionFactory;
     }
 
     /**
@@ -79,10 +88,7 @@ class LogHelper extends AbstractHelper
      */
     public function getLog() : LogModelResourceCollection
     {
-        $logModel       = $this->_logFactory->create();
-        $logCollection  = $logModel->getCollection();
-
-        return $logCollection;
+        return $this->_logCollectionFactory->create();
     }
 
     /**

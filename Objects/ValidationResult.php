@@ -40,7 +40,7 @@ class ValidationResult
      * @param string|null $type
      * @return array
      */
-    public function getErrors(string $type = null): array
+    public function getErrors(?string $type = null): array
     {
         if (is_null($type)) {
             return $this->_errors;
