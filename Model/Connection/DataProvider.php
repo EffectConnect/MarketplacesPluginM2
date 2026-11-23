@@ -118,11 +118,11 @@ class DataProvider extends AbstractDataProvider implements ScopeInterface
         }
 
         // Also load mappable storeviews for 'add' form.
-        $this->loadedData[null]['storeview_mapping'] = $this->getStoreviewMappingData();
+        $this->loadedData['']['storeview_mapping'] = $this->getStoreviewMappingData();
 
         $persistedData = $this->_dataPersistor->get('effectconnect_marketplaces_connection');
         if (!empty($persistedData)) {
-            $connectionId = isset($persistedData['entity_id']) ? $persistedData['entity_id'] : null;
+            $connectionId = $persistedData['entity_id'] ?? '';
             $currentData = isset($this->loadedData[$connectionId]) ? $this->loadedData[$connectionId] : [];
             $this->loadedData[$connectionId] = array_replace($currentData, $persistedData);
             $this->_dataPersistor->clear('effectconnect_marketplaces_connection');

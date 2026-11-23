@@ -222,7 +222,7 @@ class ConnectionRepository implements ConnectionRepositoryInterface
      * @param SearchCriteriaInterface $searchCriteria
      * @return SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
+    public function getList(?SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface
     {
         /** @var ConnectionCollection $collection */
         $collection     = $this->_connectionCollectionFactory->create();

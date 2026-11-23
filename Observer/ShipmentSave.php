@@ -57,7 +57,7 @@ class ShipmentSave implements ObserverInterface
         LogHelper $logHelper,
         OrderLineRepositoryInterface $orderLineRepositoryInterface,
         SettingsHelper $settingsHelper,
-        OrderRepositoryInterface $orderRepositoryInterface,
+        OrderRepositoryInterface $orderRepositoryInterface
     ) {
         $this->_apiHelper           = $apiHelper;
         $this->_logHelper           = $logHelper;

@@ -79,6 +79,6 @@ class LogSubjectType extends AbstractEnum
      */
     public function getLinkHtml(string $url, $id) : string
     {
-        return html_entity_decode('<a href="' . $url . '">' . $this->getLabel() . ' (' . __('ID') . ': ' . $id . ')</a>');
+        return html_entity_decode('<a href="' . $url . '">' . $this->getLabel() . ' (' . __('ID') . ': ' . $id . ')</a>', ENT_COMPAT | ENT_HTML401);
     }
 }

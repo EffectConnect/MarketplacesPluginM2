@@ -55,6 +55,6 @@ interface ChannelMappingRepositoryInterface
      * @param SearchCriteriaInterface|null $searchCriteria
      * @return SearchResultsInterface
      */
-    public function getList(SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface;
+    public function getList(?SearchCriteriaInterface $searchCriteria = null) : SearchResultsInterface;
 
 }

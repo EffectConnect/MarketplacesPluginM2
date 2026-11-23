@@ -84,7 +84,7 @@ class OffersExportTransformer extends CatalogExportTransformer
      * @return bool|string
      * @throws CatalogExportNoProductsToExportException
      */
-    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'offers', array $catalog = null)
+    public function saveXmlSegmented(Connection $connection, string $exportFileName = 'offers', ?array $catalog = null)
     {
         return parent::saveXmlSegmented($connection, $exportFileName, $catalog);
     }

@@ -74,7 +74,7 @@ class Loggable
         LogType $type,
         LogCode $code,
         Process $process,
-        int $connectionId = null
+        ?int $connectionId = null
     ) {
         $this->_type            = $type;
         $this->_code            = $code;
