@@ -36,7 +36,7 @@ trait OrderCallsTrait
      * @return OrderListReadResponseContainer
      * @throws ApiCallFailedException
      */
-    public function orderListRead(array $status = [], array $excludeTags = [], array $includeTags = [], DateTime $fromDate = null) : OrderListReadResponseContainer
+    public function orderListRead(array $status = [], array $excludeTags = [], array $includeTags = [], ?DateTime $fromDate = null) : OrderListReadResponseContainer
     {
         try
         {

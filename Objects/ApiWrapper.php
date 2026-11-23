@@ -56,7 +56,7 @@ class ApiWrapper
     public function __construct(
         string $publicKey,
         string $secretKey,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->_publicKey       = $publicKey;
         $this->_secretKey       = $secretKey;

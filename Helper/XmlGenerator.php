@@ -109,7 +109,7 @@ class XmlGenerator
         array $array,
         $rootElement                                    = '',
         bool $replaceSpacesByUnderScoresInKeyNames      = true,
-        string $xmlEncoding                             = null,
+        ?string $xmlEncoding                            = null,
         string $xmlVersion                              = '1.0',
         array $domProperties                            = [],
         bool $withHeader                                = true
@@ -181,7 +181,7 @@ class XmlGenerator
         $sequential = $this->isArrayAllKeySequential($value);
 
         if (!is_array($value)) {
-            $value  = htmlspecialchars($value);
+            $value  = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401);
 
             $value  = $this->removeControlCharacters($value);
 
@@ -195,7 +195,7 @@ class XmlGenerator
                 if (($key === '_attributes') || ($key === '@attributes')) {
                     $this->addAttributes($element, $data);
                 } elseif ((($key === '_value') || ($key === '@value')) && is_string($data)) {
-                    $element->nodeValue = htmlspecialchars($data);
+                    $element->nodeValue = htmlspecialchars($data, ENT_COMPAT | ENT_HTML401);
                 } elseif ((($key === '_cdata') || ($key === '@cdata')) && is_string($data)) {
                     $element->appendChild($this->document->createCDATASection($data));
                 } elseif ((($key === '_mixed') || ($key === '@mixed')) && is_string($data)) {
@@ -266,13 +266,13 @@ class XmlGenerator
     protected function addSequentialNode(DOMElement $element, $value)
     {
         if (empty($element->nodeValue) && !is_numeric($element->nodeValue)) {
-            $element->nodeValue = htmlspecialchars($value);
+            $element->nodeValue = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401);
 
             return;
         }
 
         $child = new DOMElement($element->tagName);
-        $child->nodeValue = htmlspecialchars($value);
+        $child->nodeValue = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401);
         $element->parentNode->appendChild($child);
     }
 

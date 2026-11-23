@@ -86,7 +86,7 @@ class Customer extends Column
                     'id' => $item['customer_id']
                 ]);
 
-                $html             = html_entity_decode('<a href="' . $url . '">' . $label . '</a>');
+                $html             = html_entity_decode('<a href="' . $url . '">' . $label . '</a>', ENT_COMPAT | ENT_HTML401);
                 $item['customer'] = $html;
             }
         }

@@ -76,7 +76,7 @@ class ApiHelper extends AbstractHelper
         $this->_logHelper                           = $logHelper;
         $this->_settingsHelper                      = $settingsHelper;
 
-        $this->instantiateConnectionApis();
+        $this->_instances = [];
     }
 
     /**
